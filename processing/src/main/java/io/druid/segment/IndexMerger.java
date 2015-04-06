@@ -499,7 +499,7 @@ public class IndexMerger
       DimValueConverter[] converters = new DimValueConverter[indexes.size()];
       for (int i = 0; i < indexes.size(); i++) {
         Indexed<String> dimValues = indexes.get(i).getDimValueLookup(dimension);
-        if (dimValues != null) {
+        if (!IndexMaker.isNullColumn(dimValues)) {
           dimValueLookups.add(dimValues);
           converters[i] = new DimValueConverter(dimValues);
         }
