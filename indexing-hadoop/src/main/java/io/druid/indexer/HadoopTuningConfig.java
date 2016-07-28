@@ -62,7 +62,6 @@ public class HadoopTuningConfig implements TuningConfig
         null,
         false,
         false,
-        null,
         DEFAULT_BUILD_V9_DIRECTLY,
         DEFAULT_NUM_BACKGROUND_PERSIST_THREADS
     );
@@ -99,8 +98,6 @@ public class HadoopTuningConfig implements TuningConfig
       final @JsonProperty("jobProperties") Map<String, String> jobProperties,
       final @JsonProperty("combineText") boolean combineText,
       final @JsonProperty("useCombiner") Boolean useCombiner,
-      // See https://github.com/druid-io/druid/pull/1922
-      final @JsonProperty("rowFlushBoundary") Integer maxRowsInMemoryCOMPAT,
       final @JsonProperty("buildV9Directly") Boolean buildV9Directly,
       final @JsonProperty("numBackgroundPersistThreads") Integer numBackgroundPersistThreads
   )
@@ -110,7 +107,7 @@ public class HadoopTuningConfig implements TuningConfig
     this.partitionsSpec = partitionsSpec == null ? DEFAULT_PARTITIONS_SPEC : partitionsSpec;
     this.shardSpecs = shardSpecs == null ? DEFAULT_SHARD_SPECS : shardSpecs;
     this.indexSpec = indexSpec == null ? DEFAULT_INDEX_SPEC : indexSpec;
-    this.rowFlushBoundary = maxRowsInMemory == null ? maxRowsInMemoryCOMPAT == null ?  DEFAULT_ROW_FLUSH_BOUNDARY : maxRowsInMemoryCOMPAT : maxRowsInMemory;
+    this.rowFlushBoundary = maxRowsInMemory  == null ?  DEFAULT_ROW_FLUSH_BOUNDARY :maxRowsInMemory;
     this.leaveIntermediate = leaveIntermediate;
     this.cleanupOnFailure = cleanupOnFailure == null ? true : cleanupOnFailure;
     this.overwriteFiles = overwriteFiles;
@@ -230,7 +227,6 @@ public class HadoopTuningConfig implements TuningConfig
         jobProperties,
         combineText,
         useCombiner,
-        null,
         buildV9Directly,
         numBackgroundPersistThreads
     );
@@ -252,7 +248,6 @@ public class HadoopTuningConfig implements TuningConfig
         jobProperties,
         combineText,
         useCombiner,
-        null,
         buildV9Directly,
         numBackgroundPersistThreads
     );
@@ -274,7 +269,6 @@ public class HadoopTuningConfig implements TuningConfig
         jobProperties,
         combineText,
         useCombiner,
-        null,
         buildV9Directly,
         numBackgroundPersistThreads
     );
