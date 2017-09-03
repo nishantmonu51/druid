@@ -29,6 +29,7 @@ import io.druid.query.extraction.ExtractionFn;
 import io.druid.query.filter.ValueMatcher;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.DimensionHandlerUtils;
 import io.druid.segment.DimensionSelector;
 import io.druid.segment.DoubleColumnSelector;
 import io.druid.segment.FloatColumnSelector;
@@ -377,6 +378,13 @@ public class RowBasedColumnSelectorFactory implements ColumnSelectorFactory
         {
           return (float) row.get().getTimestampFromEpoch();
         }
+
+        @Override
+        public boolean isNull()
+        {
+          // Time column never has null values
+          return false;
+        }
       }
       return new TimeFloatColumnSelector();
     } else {
@@ -385,7 +393,13 @@ public class RowBasedColumnSelectorFactory implements ColumnSelectorFactory
         @Override
         public float getFloat()
         {
-          return row.get().getFloatMetric(columnName);
+          return DimensionHandlerUtils.nullToZero(row.get().getFloatMetric(columnName));
+        }
+
+        @Override
+        public boolean isNull()
+        {
+          return row.get().getFloatMetric(columnName) == null;
         }
       };
     }
@@ -410,6 +424,13 @@ public class RowBasedColumnSelectorFactory implements ColumnSelectorFactory
         {
           return row.get().getTimestampFromEpoch();
         }
+
+        @Override
+        public boolean isNull()
+        {
+          // Time column never has null values
+          return false;
+        }
       }
       return new TimeLongColumnSelector();
     } else {
@@ -418,7 +439,13 @@ public class RowBasedColumnSelectorFactory implements ColumnSelectorFactory
         @Override
         public long getLong()
         {
-          return row.get().getLongMetric(columnName);
+          return DimensionHandlerUtils.nullToZero(row.get().getLongMetric(columnName));
+        }
+
+        @Override
+        public boolean isNull()
+        {
+          return row.get().getLongMetric(columnName) == null;
         }
       };
     }
@@ -430,6 +457,7 @@ public class RowBasedColumnSelectorFactory implements ColumnSelectorFactory
     if (columnName.equals(Column.TIME_COLUMN_NAME)) {
       return new ObjectColumnSelector()
       {
+
         @Override
         public Class classOfObject()
         {
@@ -479,6 +507,14 @@ public class RowBasedColumnSelectorFactory implements ColumnSelectorFactory
         {
           return (double) row.get().getTimestampFromEpoch();
         }
+
+        @Override
+        public boolean isNull()
+        {
+          // Time column never has null values
+          // Time column never has null values
+          return false;
+        }
       }
       return new TimeDoubleColumnSelector();
     } else {
@@ -487,7 +523,13 @@ public class RowBasedColumnSelectorFactory implements ColumnSelectorFactory
         @Override
         public double getDouble()
         {
-          return row.get().getDoubleMetric(columnName);
+          return DimensionHandlerUtils.nullToZero(row.get().getDoubleMetric(columnName));
+        }
+
+        @Override
+        public boolean isNull()
+        {
+          return row.get().getDoubleMetric(columnName) == null;
         }
       };
     }

@@ -63,9 +63,9 @@ public class InFilterTest extends BaseFilterTest
   );
 
   private static final List<InputRow> ROWS = ImmutableList.of(
-      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "a", "dim1", "", "dim2", ImmutableList.of("a", "b"))),
+      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "a", "dim2", ImmutableList.of("a", "b"))),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "b", "dim1", "10", "dim2", ImmutableList.of())),
-      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "c", "dim1", "2", "dim2", ImmutableList.of(""))),
+      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "c", "dim1", "2", "dim2", ImmutableList.of())),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "d", "dim1", "1", "dim2", ImmutableList.of("a"))),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "e", "dim1", "def", "dim2", ImmutableList.of("c"))),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "f", "dim1", "abc"))
@@ -121,12 +121,12 @@ public class InFilterTest extends BaseFilterTest
     );
 
     assertFilterMatches(
-        toInFilter("dim1", ""),
+        toInFilter("dim1", null, ""),
         ImmutableList.of("a")
     );
 
     assertFilterMatches(
-        toInFilter("dim1", null, "10", "abc"),
+        toInFilter("dim1", null, "", "10", "abc"),
         ImmutableList.of("a", "b", "f")
     );
 
@@ -140,7 +140,7 @@ public class InFilterTest extends BaseFilterTest
   public void testMultiValueStringColumn()
   {
     assertFilterMatches(
-        toInFilter("dim2", null),
+        toInFilter("dim2", null, ""),
         ImmutableList.of("b", "c", "f")
     );
 
@@ -150,13 +150,13 @@ public class InFilterTest extends BaseFilterTest
     );
 
     assertFilterMatches(
-        toInFilter("dim2", null, "a"),
+        toInFilter("dim2", null, "", "a"),
         ImmutableList.of("a", "b", "c", "d", "f")
 
     );
 
     assertFilterMatches(
-        toInFilter("dim2", null, "b"),
+        toInFilter("dim2", null, "", "b"),
         ImmutableList.of("a", "b", "c", "f")
 
     );
@@ -176,17 +176,17 @@ public class InFilterTest extends BaseFilterTest
   public void testMissingColumn()
   {
     assertFilterMatches(
-        toInFilter("dim3", null, (String) null),
+        toInFilter("dim3", null, (String) ""),
         ImmutableList.of("a", "b", "c", "d", "e", "f")
     );
 
     assertFilterMatches(
-        toInFilter("dim3", ""),
+        toInFilter("dim3", null, ""),
         ImmutableList.of("a", "b", "c", "d", "e", "f")
     );
 
     assertFilterMatches(
-        toInFilter("dim3", null, "a"),
+        toInFilter("dim3", null, "", "a"),
         ImmutableList.of("a", "b", "c", "d", "e", "f")
     );
 
@@ -284,7 +284,7 @@ public class InFilterTest extends BaseFilterTest
     LookupExtractor mapExtractor3 = new MapLookupExtractor(stringMap3, false);
     LookupExtractionFn lookupFn3 = new LookupExtractionFn(mapExtractor3, false, null, false, true);
 
-    assertFilterMatches(toInFilterWithFn("dim0", lookupFn3, null, "c"), ImmutableList.of("a", "b", "d", "e", "f"));
+    assertFilterMatches(toInFilterWithFn("dim0", lookupFn3, null, "c", ""), ImmutableList.of("a", "b", "d", "e", "f"));
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn3, "e"), ImmutableList.<String>of());
 
   }

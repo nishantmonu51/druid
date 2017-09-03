@@ -577,7 +577,7 @@ public class IncrementalIndexStorageAdapterTest
                       new MapBasedInputRow(
                           timestamp,
                           Lists.newArrayList("billy3"),
-                          ImmutableMap.<String, Object>of("billy3", "")
+                          ImmutableMap.<String, Object>of()
                       )
                   );
                 }

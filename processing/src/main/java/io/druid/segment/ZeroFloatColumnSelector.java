@@ -43,6 +43,12 @@ public final class ZeroFloatColumnSelector implements HistoricalFloatColumnSelec
   }
 
   @Override
+  public boolean isNull()
+  {
+    return false;
+  }
+
+  @Override
   public float get(int offset)
   {
     return getFloat();

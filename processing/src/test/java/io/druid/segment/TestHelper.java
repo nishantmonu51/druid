@@ -60,6 +60,13 @@ public class TestHelper
           {
             return 0;
           }
+
+          @Override
+          public boolean useDefaultValuesForNull()
+          {
+            return true;
+          }
+
         }
     );
     INDEX_MERGER_V9 = new IndexMergerV9(jsonMapper, INDEX_IO);

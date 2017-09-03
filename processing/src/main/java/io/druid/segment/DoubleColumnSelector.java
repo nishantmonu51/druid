@@ -39,7 +39,8 @@ public interface DoubleColumnSelector extends ColumnValueSelector, HotLoopCallee
   @Override
   default float getFloat()
   {
-    return (float) getDouble();
+    Double doubleValue = getDouble();
+    return doubleValue == null ? null : doubleValue.floatValue();
   }
 
   /**
@@ -52,6 +53,7 @@ public interface DoubleColumnSelector extends ColumnValueSelector, HotLoopCallee
   @Override
   default long getLong()
   {
-    return (long) getDouble();
+    Double doubleValue = getDouble();
+    return doubleValue == null ? null : doubleValue.longValue();
   }
 }

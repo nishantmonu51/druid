@@ -110,9 +110,9 @@ public class InputRowSerdeTest
 
     Assert.assertEquals(0.0f, out.getFloatMetric("agg_non_existing"), 0.00001);
     Assert.assertEquals(5.0f, out.getFloatMetric("m1out"), 0.00001);
-    Assert.assertEquals(100L, out.getLongMetric("m2out"));
+    Assert.assertEquals(100L, out.getLongMetric("m2out").longValue());
     Assert.assertEquals(1, ((HyperLogLogCollector) out.getRaw("m3out")).estimateCardinality(), 0.001);
-    Assert.assertEquals(0L, out.getLongMetric("unparseable"));
+    Assert.assertEquals(0L, out.getLongMetric("unparseable").longValue());
 
     EasyMock.verify(mockedAggregator);
   }

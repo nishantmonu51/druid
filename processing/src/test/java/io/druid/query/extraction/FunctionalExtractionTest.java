@@ -22,6 +22,7 @@ package io.druid.query.extraction;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +42,14 @@ public class FunctionalExtractionTest
         Boolean uniqueProjections
     )
     {
-      super(extractionFunction, retainMissingValue, replaceMissingValueWith, uniqueProjections);
+      super(extractionFunction, retainMissingValue, replaceMissingValueWith, uniqueProjections, new NullHandlingConfig()
+      {
+        @Override
+        public boolean useDefaultValuesForNull()
+        {
+          return true;
+        }
+      });
     }
 
     @Override

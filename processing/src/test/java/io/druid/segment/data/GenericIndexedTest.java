@@ -99,7 +99,7 @@ public class GenericIndexedTest
   {
     Assert.assertEquals(strings.length, index.size());
     for (int i = 0; i < strings.length; i++) {
-      Assert.assertEquals(strings[i], index.get(i));
+      Assert.assertEquals("Index " + i, strings[i], index.get(i));
     }
 
     if (allowReverseLookup) {
@@ -136,4 +136,41 @@ public class GenericIndexedTest
     Assert.assertEquals(0, byteBuffer.remaining());
     return deserialized;
   }
+
+  @Test
+  public void testNullSerializationWithoutCache() throws Exception
+  {
+    final String[] strings = {null, "", "c", "d", "e", "f", "g", "h", "i", "k", "j", "l"};
+
+    Indexed<String> deserialized = serializeAndDeserialize(
+        GenericIndexed.fromArray(
+            strings, GenericIndexed.STRING_STRATEGY
+        )
+    );
+    Assert.assertNull(deserialized.get(0));
+    Assert.assertEquals(deserialized.get(1), "");
+    checkBasicAPIs(strings, deserialized, false);
+  }
+
+  @Test
+  public void testNullSerialization() throws Exception
+  {
+    final String[] strings = {null, "", "c", "d", "e", "f", "g", "h", "i", "k", "j", "l"};
+
+    GenericIndexed<String> unCached = serializeAndDeserialize(
+        GenericIndexed.fromArray(
+            strings, GenericIndexed.STRING_STRATEGY
+        ));
+
+    Indexed<String> deserialized = new CachingIndexed<String>(
+        unCached, CachingIndexed.INITIAL_CACHE_CAPACITY);
+    //  Assert.assertNull(unCached.get(0));
+    Assert.assertEquals("", unCached.get(1));
+
+    //Assert.assertNull(deserialized.get(0));
+    Assert.assertEquals("", deserialized.get(1));
+    checkBasicAPIs(strings, deserialized, false);
+  }
+
+
 }

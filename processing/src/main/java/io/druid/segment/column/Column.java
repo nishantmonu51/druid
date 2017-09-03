@@ -19,6 +19,8 @@
 
 package io.druid.segment.column;
 
+import io.druid.collections.bitmap.ImmutableBitmap;
+
 /**
  */
 public interface Column
@@ -33,4 +35,6 @@ public interface Column
   public ComplexColumn getComplexColumn();
   public BitmapIndex getBitmapIndex();
   public SpatialIndex getSpatialIndex();
+
+  public ImmutableBitmap getNullValueBitmap();
 }

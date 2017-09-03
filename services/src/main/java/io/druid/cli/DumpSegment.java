@@ -364,6 +364,7 @@ public class DumpSegment extends GuiceRunnable
                   jg.writeFieldName(columnName);
                   jg.writeStartObject();
                   for (int i = 0; i < bitmapIndex.getCardinality(); i++) {
+                    // TODO: fixme
                     jg.writeFieldName(Strings.nullToEmpty(bitmapIndex.getValue(i)));
                     final ImmutableBitmap bitmap = bitmapIndex.getBitmap(i);
                     if (decompressBitmaps) {

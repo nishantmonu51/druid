@@ -19,6 +19,7 @@
 
 package io.druid.segment.column;
 
+import io.druid.collections.bitmap.ImmutableBitmap;
 import io.druid.segment.data.CompressedLongsIndexedSupplier;
 
 /**
@@ -30,17 +31,22 @@ public class LongColumn extends AbstractColumn
   private static final ColumnCapabilitiesImpl CAPABILITIES = new ColumnCapabilitiesImpl()
       .setType(ValueType.LONG);
 
-  private final CompressedLongsIndexedSupplier column;
+  private static final ColumnCapabilitiesImpl CAPABILITIES_WITH_NULL = new ColumnCapabilitiesImpl()
+      .setType(ValueType.LONG);
 
-  public LongColumn(CompressedLongsIndexedSupplier column)
+  private final CompressedLongsIndexedSupplier column;
+  private final ImmutableBitmap nullValueBitmap;
+
+  public LongColumn(CompressedLongsIndexedSupplier column, ImmutableBitmap nullValueBitmap)
   {
     this.column = column;
+    this.nullValueBitmap = nullValueBitmap;
   }
 
   @Override
   public ColumnCapabilities getCapabilities()
   {
-    return CAPABILITIES;
+    return nullValueBitmap.size() == 0 ? CAPABILITIES : CAPABILITIES_WITH_NULL;
   }
 
   @Override
@@ -52,6 +58,12 @@ public class LongColumn extends AbstractColumn
   @Override
   public GenericColumn getGenericColumn()
   {
-    return new IndexedLongsGenericColumn(column.get());
+    return new IndexedLongsGenericColumn(column.get(), nullValueBitmap);
+  }
+
+  @Override
+  public ImmutableBitmap getNullValueBitmap()
+  {
+    return nullValueBitmap;
   }
 }

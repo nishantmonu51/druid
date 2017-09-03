@@ -136,6 +136,7 @@ public class SearchQueryRunner implements QueryRunner<Result<SearchResultValue>>
         for (int i = 0; i < vals.size(); ++i) {
           final String dimVal = selector.lookupName(vals.get(i));
           if (searchQuerySpec.accept(dimVal)) {
+            // TODO: fixme
             set.addTo(new SearchHit(outputName, Strings.nullToEmpty(dimVal)), 1);
             if (set.size() >= limit) {
               return;

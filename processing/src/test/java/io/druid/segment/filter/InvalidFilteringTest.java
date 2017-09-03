@@ -131,7 +131,7 @@ public class InvalidFilteringTest extends BaseFilterTest
     );
 
     assertFilterMatches(
-        new InDimFilter("hyperion", Arrays.asList("hello", "world", null), null),
+        new InDimFilter("hyperion", Arrays.asList("hello", "world", "", null), null),
         ImmutableList.<String>of("1", "2", "3", "4", "5", "6")
     );
   }

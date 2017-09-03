@@ -178,4 +178,9 @@ public interface BufferAggregator extends HotLoopCallee
   {
   }
 
+  default boolean isNull(ByteBuffer buf, int position)
+  {
+    return false;
+  }
+
 }

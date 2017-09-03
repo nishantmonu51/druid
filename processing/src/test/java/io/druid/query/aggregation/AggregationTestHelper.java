@@ -146,6 +146,12 @@ public class AggregationTestHelper
         new ColumnConfig()
         {
           @Override
+          public boolean useDefaultValuesForNull()
+          {
+            return true;
+          }
+
+          @Override
           public int columnCacheSizeBytes()
           {
             return 0;
@@ -202,10 +208,17 @@ public class AggregationTestHelper
         new ColumnConfig()
         {
           @Override
+          public boolean useDefaultValuesForNull()
+          {
+            return true;
+          }
+
+          @Override
           public int columnCacheSizeBytes()
           {
             return 0;
           }
+
         }
     );
 
@@ -241,6 +254,12 @@ public class AggregationTestHelper
         mapper,
         new ColumnConfig()
         {
+          @Override
+          public boolean useDefaultValuesForNull()
+          {
+            return true;
+          }
+
           @Override
           public int columnCacheSizeBytes()
           {
@@ -292,6 +311,12 @@ public class AggregationTestHelper
         mapper,
         new ColumnConfig()
         {
+          @Override
+          public boolean useDefaultValuesForNull()
+          {
+            return true;
+          }
+
           @Override
           public int columnCacheSizeBytes()
           {

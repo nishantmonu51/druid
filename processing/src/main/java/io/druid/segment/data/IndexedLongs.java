@@ -19,6 +19,7 @@
 
 package io.druid.segment.data;
 
+import io.druid.collections.bitmap.ImmutableBitmap;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.DoubleColumnSelector;
 import io.druid.segment.LongColumnSelector;
@@ -38,7 +39,7 @@ public interface IndexedLongs extends Closeable
   @Override
   void close();
 
-  default LongColumnSelector makeLongColumnSelector(ReadableOffset offset)
+  default LongColumnSelector makeLongColumnSelector(ReadableOffset offset, ImmutableBitmap nullValueBitmap)
   {
     return new LongColumnSelector()
     {
@@ -46,6 +47,12 @@ public interface IndexedLongs extends Closeable
       public long getLong()
       {
         return IndexedLongs.this.get(offset.getOffset());
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        return nullValueBitmap.get(offset.getOffset());
       }
 
       @Override
@@ -57,7 +64,7 @@ public interface IndexedLongs extends Closeable
     };
   }
 
-  default HistoricalFloatColumnSelector makeFloatColumnSelector(ReadableOffset offset)
+  default HistoricalFloatColumnSelector makeFloatColumnSelector(ReadableOffset offset, ImmutableBitmap nullValueBitmap)
   {
     return new HistoricalFloatColumnSelector()
     {
@@ -65,6 +72,12 @@ public interface IndexedLongs extends Closeable
       public float getFloat()
       {
         return (float) IndexedLongs.this.get(offset.getOffset());
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        return nullValueBitmap.get(offset.getOffset());
       }
 
       @Override
@@ -82,7 +95,7 @@ public interface IndexedLongs extends Closeable
     };
   }
 
-  default DoubleColumnSelector makeDoubleColumnSelector(ReadableOffset offset)
+  default DoubleColumnSelector makeDoubleColumnSelector(ReadableOffset offset, ImmutableBitmap nullValueBitmap)
   {
     return new DoubleColumnSelector()
     {
@@ -90,6 +103,12 @@ public interface IndexedLongs extends Closeable
       public double getDouble()
       {
         return (double) IndexedLongs.this.get(offset.getOffset());
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        return nullValueBitmap.get(offset.getOffset());
       }
 
       @Override

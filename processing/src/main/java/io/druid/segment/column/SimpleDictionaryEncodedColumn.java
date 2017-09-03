@@ -21,7 +21,7 @@ package io.druid.segment.column;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.base.Strings;
+import io.druid.java.util.common.ISE;
 import io.druid.java.util.common.guava.CloseQuietly;
 import io.druid.query.extraction.ExtractionFn;
 import io.druid.query.filter.ValueMatcher;
@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.util.BitSet;
 
 /**
-*/
+ */
 public class SimpleDictionaryEncodedColumn
     implements DictionaryEncodedColumn<String>
 {
@@ -59,6 +59,15 @@ public class SimpleDictionaryEncodedColumn
     this.column = singleValueColumn;
     this.multiValueColumn = multiValueColumn;
     this.cachedLookups = cachedLookups;
+    int count = 0;
+    for (int i = 0; i < cachedLookups.size(); i++) {
+      if (cachedLookups.get(i) == null) {
+        count++;
+      }
+    }
+    if (count > 1) {
+      throw new ISE("Multiple null values in dictionary");
+    }
   }
 
   @Override
@@ -88,8 +97,7 @@ public class SimpleDictionaryEncodedColumn
   @Override
   public String lookupName(int id)
   {
-    //Empty to Null will ensure that null and empty are equivalent for extraction function
-    return Strings.emptyToNull(cachedLookups.get(id));
+    return cachedLookups.get(id);
   }
 
   @Override

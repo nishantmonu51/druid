@@ -40,6 +40,7 @@ public class StringValueMatcherColumnSelectorStrategy implements ValueMatcherCol
   @Override
   public ValueMatcher makeValueMatcher(final DimensionSelector selector, String value)
   {
+    //TODO:FixME
     value = Strings.emptyToNull(value);
     if (selector.getValueCardinality() == 0) {
       return BooleanValueMatcher.of(value == null);

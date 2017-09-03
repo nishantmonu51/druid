@@ -20,10 +20,10 @@
 package io.druid.segment;
 
 import com.google.common.base.Function;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.PeekingIterator;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
@@ -56,6 +56,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -430,6 +431,7 @@ public interface IndexMerger
 
     DictionaryMergeIterator(Indexed<String>[] dimValueLookups, boolean useDirect)
     {
+      final Ordering<String> stringOrdering = Ordering.natural().nullsFirst();
       pQueue = new PriorityQueue<>(
           dimValueLookups.length,
           new Comparator<Pair<Integer, PeekingIterator<String>>>()
@@ -437,7 +439,7 @@ public interface IndexMerger
             @Override
             public int compare(Pair<Integer, PeekingIterator<String>> lhs, Pair<Integer, PeekingIterator<String>> rhs)
             {
-              return lhs.rhs.peek().compareTo(rhs.rhs.peek());
+              return stringOrdering.compare(lhs.rhs.peek(), rhs.rhs.peek());
             }
           }
       );
@@ -458,17 +460,7 @@ public interface IndexMerger
         }
 
         final PeekingIterator<String> iter = Iterators.peekingIterator(
-            Iterators.transform(
-                indexed.iterator(),
-                new Function<String, String>()
-                {
-                  @Override
-                  public String apply(@Nullable String input)
-                  {
-                    return Strings.nullToEmpty(input);
-                  }
-                }
-            )
+            indexed.iterator()
         );
         if (iter.hasNext()) {
           pQueue.add(Pair.of(i, iter));
@@ -491,7 +483,7 @@ public interface IndexMerger
       }
       final String value = writeTranslate(smallest, counter);
 
-      while (!pQueue.isEmpty() && value.equals(pQueue.peek().rhs.peek())) {
+      while (!pQueue.isEmpty() && Objects.equals(value, pQueue.peek().rhs.peek())) {
         writeTranslate(pQueue.remove(), counter);
       }
       counter++;

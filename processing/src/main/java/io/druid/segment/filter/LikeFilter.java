@@ -141,6 +141,7 @@ public class LikeFilter implements Filter
       final Indexed<String> dimValues
   )
   {
+    // TODO: fixme
     final String lower = Strings.nullToEmpty(likeMatcher.getPrefix());
     final String upper = Strings.nullToEmpty(likeMatcher.getPrefix()) + Character.MAX_VALUE;
     final int startIndex; // inclusive
