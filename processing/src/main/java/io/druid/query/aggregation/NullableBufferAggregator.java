@@ -50,8 +50,8 @@ public class NullableBufferAggregator implements BufferAggregator
   {
     if (buf.get() == IS_NULL_BYTE && !selector.isNull()) {
       buf.put(position, IS_NOT_NULL_BYTE);
-      delegate.aggregate(buf, position + Byte.SIZE);
     }
+    delegate.aggregate(buf, position + Byte.SIZE);
   }
 
   @Override

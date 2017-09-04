@@ -928,7 +928,8 @@ public class SchemalessTestFullTest
 
     runTests(
         new QueryableIndexSegment(
-            null, SchemalessIndexTest.getMergedIncrementalIndex(0, 0)
+            null, SchemalessIndexTest.getMergedIncrementalIndex(0, 0),
+            NullHandlingConfig.LEGACY_CONFIG
         ),
         expectedTimeseriesResults,
         expectedFilteredTimeSeriesResults,
@@ -1013,7 +1014,8 @@ public class SchemalessTestFullTest
 
     runTests(
         new QueryableIndexSegment(
-            null, SchemalessIndexTest.getMergedIncrementalIndex(1, 1)
+            null, SchemalessIndexTest.getMergedIncrementalIndex(1, 1),
+            NullHandlingConfig.LEGACY_CONFIG
         ),
         expectedTimeseriesResults,
         expectedFilteredTimeSeriesResults,
@@ -1144,7 +1146,8 @@ public class SchemalessTestFullTest
     );
 
     runTests(
-        new QueryableIndexSegment(null, SchemalessIndexTest.getMergedIncrementalIndex(new int[]{6, 7, 8})),
+        new QueryableIndexSegment(null, SchemalessIndexTest.getMergedIncrementalIndex(new int[]{6, 7, 8}),
+                                  NullHandlingConfig.LEGACY_CONFIG),
         expectedTimeseriesResults,
         expectedFilteredTimeSeriesResults,
         expectedTopNResults,
@@ -1335,7 +1338,8 @@ public class SchemalessTestFullTest
     );
 
     runTests(
-        new QueryableIndexSegment(null, SchemalessIndexTest.getMergedIncrementalIndexDiffMetrics()),
+        new QueryableIndexSegment(null, SchemalessIndexTest.getMergedIncrementalIndexDiffMetrics(),
+                                  NullHandlingConfig.LEGACY_CONFIG),
         expectedTimeseriesResults,
         expectedFilteredTimeSeriesResults,
         expectedTopNResults,
@@ -1384,7 +1388,7 @@ public class SchemalessTestFullTest
   {
     for (Pair<QueryableIndex, String> entry : getIndexes(index1, index2)) {
       runTests(
-          new QueryableIndexSegment(null, entry.lhs),
+          new QueryableIndexSegment(null, entry.lhs, NullHandlingConfig.LEGACY_CONFIG),
           expectedTimeseriesResults,
           expectedFilteredTimeseriesResults,
           expectedTopNResults,

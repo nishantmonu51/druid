@@ -72,6 +72,7 @@ import io.druid.segment.IncrementalIndexSegment;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.column.ColumnConfig;
@@ -153,9 +154,9 @@ public class SearchBenchmark
           {
             return 0;
           }
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO);
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private static final Map<String, Map<String, Druids.SearchQueryBuilder>> SCHEMA_QUERY_MAP = new LinkedHashMap<>();
@@ -220,8 +221,8 @@ public class SearchBenchmark
     }
 
     final List<DimFilter> dimFilters = Lists.newArrayList();
-    dimFilters.add(new InDimFilter("dimUniform", dimUniformFilterVals, null));
-    dimFilters.add(new InDimFilter("dimHyperUnique", dimHyperUniqueFilterVals, null));
+    dimFilters.add(new InDimFilter("dimUniform", dimUniformFilterVals, null, NullHandlingConfig.LEGACY_CONFIG));
+    dimFilters.add(new InDimFilter("dimHyperUnique", dimHyperUniqueFilterVals, null, NullHandlingConfig.LEGACY_CONFIG));
 
     return Druids.newSearchQueryBuilder()
                  .dataSource("blah")
@@ -245,8 +246,9 @@ public class SearchBenchmark
 
     final String dimName = "dimUniform";
     final List<DimFilter> dimFilters = Lists.newArrayList();
-    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, IdentityExtractionFn.getInstance()));
-    dimFilters.add(new SelectorDimFilter(dimName, "3", StrlenExtractionFn.instance()));
+    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, new IdentityExtractionFn(NullHandlingConfig.LEGACY_CONFIG),
+                                   NullHandlingConfig.LEGACY_CONFIG));
+    dimFilters.add(new SelectorDimFilter(dimName, "3", StrlenExtractionFn.instance(), NullHandlingConfig.LEGACY_CONFIG));
     dimFilters.add(new BoundDimFilter(dimName, "100", "10000", true, true, true, new DimExtractionFn()
     {
       @Override
@@ -272,10 +274,13 @@ public class SearchBenchmark
       {
         return ExtractionType.ONE_TO_ONE;
       }
-    }, null));
-    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, new LowerExtractionFn(null)));
-    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, new UpperExtractionFn(null)));
-    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, new SubstringDimExtractionFn(1, 3)));
+    }, null, NullHandlingConfig.LEGACY_CONFIG));
+    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, new LowerExtractionFn(null),
+                                   NullHandlingConfig.LEGACY_CONFIG));
+    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, new UpperExtractionFn(null),
+                                   NullHandlingConfig.LEGACY_CONFIG));
+    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, new SubstringDimExtractionFn(1, 3),
+                                   NullHandlingConfig.LEGACY_CONFIG));
 
     return Druids.newSearchQueryBuilder()
                  .dataSource("blah")
@@ -299,12 +304,14 @@ public class SearchBenchmark
 
     final String dimName = "dimUniform";
     final List<DimFilter> dimFilters = Lists.newArrayList();
-    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, null));
-    dimFilters.add(new SelectorDimFilter(dimName, "3", null));
-    dimFilters.add(new BoundDimFilter(dimName, "100", "10000", true, true, true, null, null));
-    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, null));
-    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, null));
-    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, null));
+    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, null, NullHandlingConfig.LEGACY_CONFIG));
+    dimFilters.add(new SelectorDimFilter(dimName, "3", null, NullHandlingConfig.LEGACY_CONFIG));
+    dimFilters.add(new BoundDimFilter(dimName, "100", "10000", true, true, true, null, null,
+                                      NullHandlingConfig.LEGACY_CONFIG
+    ));
+    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, null, NullHandlingConfig.LEGACY_CONFIG));
+    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, null, NullHandlingConfig.LEGACY_CONFIG));
+    dimFilters.add(new InDimFilter(dimName, dimUniformFilterVals, null, NullHandlingConfig.LEGACY_CONFIG));
 
     return Druids.newSearchQueryBuilder()
                  .dataSource("blah")
@@ -380,7 +387,7 @@ public class SearchBenchmark
             config,
             QueryBenchmarkUtil.NoopIntervalChunkingQueryRunnerDecorator()
         ),
-        QueryBenchmarkUtil.NOOP_QUERYWATCHER
+        QueryBenchmarkUtil.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
     );
   }
 
@@ -419,7 +426,7 @@ public class SearchBenchmark
     QueryRunner<SearchHit> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "incIndex",
-        new IncrementalIndexSegment(incIndexes.get(0), "incIndex")
+        new IncrementalIndexSegment(incIndexes.get(0), "incIndex", NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<SearchResultValue>> results = SearchBenchmark.runQuery(factory, runner, query);
@@ -437,7 +444,7 @@ public class SearchBenchmark
     final QueryRunner<Result<SearchResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<SearchResultValue>> results = SearchBenchmark.runQuery(factory, runner, query);
@@ -460,7 +467,7 @@ public class SearchBenchmark
       final QueryRunner<Result<SearchResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
           factory,
           segmentName,
-          new QueryableIndexSegment(segmentName, qIndexes.get(i))
+          new QueryableIndexSegment(segmentName, qIndexes.get(i), NullHandlingConfig.LEGACY_CONFIG)
       );
       singleSegmentRunners.add(toolChest.preMergeQueryDecoration(runner));
     }

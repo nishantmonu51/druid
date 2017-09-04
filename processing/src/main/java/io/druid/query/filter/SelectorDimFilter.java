@@ -19,6 +19,7 @@
 
 package io.druid.query.filter;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
@@ -33,6 +34,7 @@ import com.google.common.primitives.Floats;
 import io.druid.common.guava.GuavaUtils;
 import io.druid.java.util.common.StringUtils;
 import io.druid.query.extraction.ExtractionFn;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.filter.DimensionPredicateFilter;
 import io.druid.segment.filter.SelectorFilter;
 
@@ -47,6 +49,7 @@ public class SelectorDimFilter implements DimFilter
   private final String dimension;
   private final String value;
   private final ExtractionFn extractionFn;
+  private final NullHandlingConfig nullHandlingConfig;
 
   private final Object initLock = new Object();
 
@@ -54,52 +57,55 @@ public class SelectorDimFilter implements DimFilter
   private DruidFloatPredicate floatPredicate;
   private DruidDoublePredicate druidDoublePredicate;
 
+
   @JsonCreator
   public SelectorDimFilter(
       @JsonProperty("dimension") String dimension,
       @JsonProperty("value") String value,
-      @JsonProperty("extractionFn") ExtractionFn extractionFn
+      @JsonProperty("extractionFn") ExtractionFn extractionFn,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
   )
   {
     Preconditions.checkArgument(dimension != null, "dimension must not be null");
 
     this.dimension = dimension;
-    this.value = value;
+    this.value = nullHandlingConfig.getDefaultOrNull(value);
     this.extractionFn = extractionFn;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
   public byte[] getCacheKey()
   {
     byte[] dimensionBytes = StringUtils.toUtf8(dimension);
-    byte nullValue = value == null ? (byte) 0 : (byte) 1;
     byte[] valueBytes = (value == null) ? new byte[]{} : StringUtils.toUtf8(value);
     byte[] extractionFnBytes = extractionFn == null ? new byte[0] : extractionFn.getCacheKey();
 
-    return ByteBuffer.allocate(3 + dimensionBytes.length + valueBytes.length + extractionFnBytes.length)
+    return ByteBuffer.allocate(4 + dimensionBytes.length + valueBytes.length + extractionFnBytes.length)
                      .put(DimFilterUtils.SELECTOR_CACHE_ID)
                      .put(dimensionBytes)
                      .put(DimFilterUtils.STRING_SEPARATOR)
                      .put(valueBytes)
                      .put(DimFilterUtils.STRING_SEPARATOR)
                      .put(extractionFnBytes)
+                     .put(DimFilterUtils.STRING_SEPARATOR)
+                     .put(value == null ? (byte)1 : (byte) 0)
                      .array();
   }
 
   @Override
   public DimFilter optimize()
   {
-    return new InDimFilter(dimension, Arrays.asList(value), extractionFn).optimize();
+    return new InDimFilter(dimension, Arrays.asList(value), extractionFn, nullHandlingConfig).optimize();
   }
 
   @Override
   public Filter toFilter()
   {
+    final String valueOrNull = nullHandlingConfig.defaultToNull(value);
     if (extractionFn == null) {
-      return new SelectorFilter(dimension, value);
+      return new SelectorFilter(dimension, valueOrNull);
     } else {
-      final String valueOrNull = value;
-
       final DruidPredicateFactory predicateFactory = new DruidPredicateFactory()
       {
         @Override

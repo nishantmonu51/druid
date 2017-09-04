@@ -45,6 +45,7 @@ import io.druid.query.filter.Filter;
 import io.druid.query.filter.OrDimFilter;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.segment.IndexBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -104,7 +105,7 @@ public class FilterPartitionTest extends BaseFilterTest
         ExtractionFn extractionFn
     )
     {
-      super(dimension, value, extractionFn);
+      super(dimension, value, extractionFn, NullHandlingConfig.LEGACY_CONFIG);
     }
 
     @Override
@@ -210,14 +211,14 @@ public class FilterPartitionTest extends BaseFilterTest
   @Test
   public void testSinglePreFilterWithNulls()
   {
-    assertFilterMatches(new SelectorDimFilter("dim1", null, null), ImmutableList.of("0"));
-    assertFilterMatches(new SelectorDimFilter("dim1", null, null), ImmutableList.of("0"));
-    assertFilterMatches(new SelectorDimFilter("dim1", "10", null), ImmutableList.of("1"));
-    assertFilterMatches(new SelectorDimFilter("dim1", "2", null), ImmutableList.of("2"));
-    assertFilterMatches(new SelectorDimFilter("dim1", "1", null), ImmutableList.of("3", "9"));
-    assertFilterMatches(new SelectorDimFilter("dim1", "def", null), ImmutableList.of("4"));
-    assertFilterMatches(new SelectorDimFilter("dim1", "abc", null), ImmutableList.of("5", "8"));
-    assertFilterMatches(new SelectorDimFilter("dim1", "ab", null), ImmutableList.<String>of());
+    assertFilterMatches(new SelectorDimFilter("dim1", null, null, NullHandlingConfig.LEGACY_CONFIG), ImmutableList.of("0"));
+    assertFilterMatches(new SelectorDimFilter("dim1", null, null, NullHandlingConfig.LEGACY_CONFIG), ImmutableList.of("0"));
+    assertFilterMatches(new SelectorDimFilter("dim1", "10", null, NullHandlingConfig.LEGACY_CONFIG), ImmutableList.of("1"));
+    assertFilterMatches(new SelectorDimFilter("dim1", "2", null, NullHandlingConfig.LEGACY_CONFIG), ImmutableList.of("2"));
+    assertFilterMatches(new SelectorDimFilter("dim1", "1", null, NullHandlingConfig.LEGACY_CONFIG), ImmutableList.of("3", "9"));
+    assertFilterMatches(new SelectorDimFilter("dim1", "def", null, NullHandlingConfig.LEGACY_CONFIG), ImmutableList.of("4"));
+    assertFilterMatches(new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG), ImmutableList.of("5", "8"));
+    assertFilterMatches(new SelectorDimFilter("dim1", "ab", null, NullHandlingConfig.LEGACY_CONFIG), ImmutableList.<String>of());
   }
 
   @Test
@@ -253,7 +254,7 @@ public class FilterPartitionTest extends BaseFilterTest
   {
     assertFilterMatches(
         new AndDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim2", "a", null),
+            new SelectorDimFilter("dim2", "a", null, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim1", null, null)
         )),
         ImmutableList.of("0")
@@ -261,7 +262,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new AndDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "10", null),
+            new SelectorDimFilter("dim1", "10", null, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", null, null)
         )),
         ImmutableList.of("1")
@@ -269,7 +270,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new AndDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "1", null),
+            new SelectorDimFilter("dim1", "1", null, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "foo", null)
         )),
         ImmutableList.of("9")
@@ -277,7 +278,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new AndDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "HELLO", null),
+            new SelectorDimFilter("dim1", "HELLO", null, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "bar", null)
         )),
         ImmutableList.<String>of()
@@ -286,7 +287,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim2", "bar", null),
-            new SelectorDimFilter("dim1", "NOT_A_VALUE", null)
+            new SelectorDimFilter("dim1", "NOT_A_VALUE", null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.<String>of()
     );
@@ -294,7 +295,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new AndDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim2", "super-a", JS_EXTRACTION_FN),
+            new SelectorDimFilter("dim2", "super-a", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim1", "super-null", JS_EXTRACTION_FN)
         )),
         ImmutableList.of("0")
@@ -302,7 +303,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new AndDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "super-10", JS_EXTRACTION_FN),
+            new SelectorDimFilter("dim1", "super-10", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "super-null", JS_EXTRACTION_FN)
         )),
         ImmutableList.of("1")
@@ -310,7 +311,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new AndDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "super-2", JS_EXTRACTION_FN),
+            new SelectorDimFilter("dim1", "super-2", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "super-null", JS_EXTRACTION_FN)
         )),
         ImmutableList.of("2")
@@ -318,7 +319,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new AndDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "super-1", JS_EXTRACTION_FN),
+            new SelectorDimFilter("dim1", "super-1", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "super-foo", JS_EXTRACTION_FN)
         )),
         ImmutableList.of("9")
@@ -326,7 +327,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new AndDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "super-HELLO", JS_EXTRACTION_FN),
+            new SelectorDimFilter("dim1", "super-HELLO", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "super-bar", JS_EXTRACTION_FN)
         )),
         ImmutableList.<String>of()
@@ -338,7 +339,7 @@ public class FilterPartitionTest extends BaseFilterTest
   {
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim2", "a", null),
+            new SelectorDimFilter("dim2", "a", null, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim1", null, null)
         )),
         ImmutableList.of("0", "3")
@@ -346,7 +347,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "abc", null),
+            new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", null, null)
         )),
         ImmutableList.of("1", "2", "5", "8")
@@ -354,7 +355,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "2", null),
+            new SelectorDimFilter("dim1", "2", null, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", null, null)
         )),
         ImmutableList.of("1", "2", "5")
@@ -362,7 +363,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "INVALID_VALUE", null),
+            new SelectorDimFilter("dim1", "INVALID_VALUE", null, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "foo", null)
         )),
         ImmutableList.of("7", "9")
@@ -370,7 +371,7 @@ public class FilterPartitionTest extends BaseFilterTest
 
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "HELLO", null),
+            new SelectorDimFilter("dim1", "HELLO", null, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "bar", null)
         )),
         ImmutableList.<String>of("7", "8", "9")
@@ -379,7 +380,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "HELLO", null),
-            new SelectorDimFilter("dim2", "NOT_A_VALUE", null)
+            new SelectorDimFilter("dim2", "NOT_A_VALUE", null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.<String>of("7")
     );
@@ -387,42 +388,42 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "INVALID", null),
-            new SelectorDimFilter("dim2", "NOT_A_VALUE", null)
+            new SelectorDimFilter("dim2", "NOT_A_VALUE", null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim2", "super-a", JS_EXTRACTION_FN),
+            new SelectorDimFilter("dim2", "super-a", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim1", "super-null", JS_EXTRACTION_FN)
         )),
         ImmutableList.of("0", "3")
     );
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "super-abc", JS_EXTRACTION_FN),
+            new SelectorDimFilter("dim1", "super-abc", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "super-null", JS_EXTRACTION_FN)
         )),
         ImmutableList.of("1", "2", "5", "8")
     );
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "super-2", JS_EXTRACTION_FN),
+            new SelectorDimFilter("dim1", "super-2", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "super-null", JS_EXTRACTION_FN)
         )),
         ImmutableList.of("1", "2", "5")
     );
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "INVALID_VALUE", JS_EXTRACTION_FN),
+            new SelectorDimFilter("dim1", "INVALID_VALUE", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "super-foo", JS_EXTRACTION_FN)
         )),
         ImmutableList.of("7", "9")
     );
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
-            new SelectorDimFilter("dim1", "super-HELLO", JS_EXTRACTION_FN),
+            new SelectorDimFilter("dim1", "super-HELLO", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
             new NoBitmapSelectorDimFilter("dim2", "super-bar", JS_EXTRACTION_FN)
         )),
         ImmutableList.<String>of("7", "8", "9")
@@ -431,7 +432,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "super-HELLO", JS_EXTRACTION_FN),
-            new SelectorDimFilter("dim2", "NOT_A_VALUE", null)
+            new SelectorDimFilter("dim2", "NOT_A_VALUE", null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.<String>of("7")
     );
@@ -439,7 +440,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "INVALID", JS_EXTRACTION_FN),
-            new SelectorDimFilter("dim2", "NOT_A_VALUE", JS_EXTRACTION_FN)
+            new SelectorDimFilter("dim2", "NOT_A_VALUE", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.<String>of()
     );
@@ -463,7 +464,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "abc", null),
-            new SelectorDimFilter("dim3", "NOTHERE", null)
+            new SelectorDimFilter("dim3", "NOTHERE", null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.<String>of("5", "8")
     );
@@ -471,7 +472,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "abc", null),
-            new SelectorDimFilter("dim3", null, null)
+            new SelectorDimFilter("dim3", null, null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     );
@@ -491,7 +492,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "super-abc", JS_EXTRACTION_FN),
-            new SelectorDimFilter("dim3", "NOTHERE", JS_EXTRACTION_FN)
+            new SelectorDimFilter("dim3", "NOTHERE", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.<String>of("5", "8")
     );
@@ -499,7 +500,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "abc", JS_EXTRACTION_FN),
-            new SelectorDimFilter("dim3", "super-null", JS_EXTRACTION_FN)
+            new SelectorDimFilter("dim3", "super-null", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     );
@@ -523,7 +524,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "abc", null),
-            new SelectorDimFilter("dim4", null, null)
+            new SelectorDimFilter("dim4", null, null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     );
@@ -531,7 +532,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim4", null, null),
-            new SelectorDimFilter("dim1", "abc", null)
+            new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     );
@@ -551,7 +552,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "super-abc", JS_EXTRACTION_FN),
-            new SelectorDimFilter("dim4", "super-null", JS_EXTRACTION_FN)
+            new SelectorDimFilter("dim4", "super-null", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     );
@@ -559,7 +560,7 @@ public class FilterPartitionTest extends BaseFilterTest
     assertFilterMatches(
         new OrDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim4", "super-null", JS_EXTRACTION_FN),
-            new SelectorDimFilter("dim1", "super-abc", JS_EXTRACTION_FN)
+            new SelectorDimFilter("dim1", "super-abc", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     );
@@ -569,10 +570,10 @@ public class FilterPartitionTest extends BaseFilterTest
   public void testDistributeOrCNF()
   {
     DimFilter dimFilter1 = new OrDimFilter(Arrays.<DimFilter>asList(
-        new SelectorDimFilter("dim0", "6", null),
+        new SelectorDimFilter("dim0", "6", null, NullHandlingConfig.LEGACY_CONFIG),
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "def", null),
-            new SelectorDimFilter("dim2", "c", null)
+            new SelectorDimFilter("dim2", "c", null, NullHandlingConfig.LEGACY_CONFIG)
         )
         )
     )
@@ -590,11 +591,11 @@ public class FilterPartitionTest extends BaseFilterTest
     );
 
     DimFilter dimFilter2 = new OrDimFilter(Arrays.<DimFilter>asList(
-        new SelectorDimFilter("dim0", "2", null),
-        new SelectorDimFilter("dim0", "3", null),
+        new SelectorDimFilter("dim0", "2", null, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("dim0", "3", null, NullHandlingConfig.LEGACY_CONFIG),
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "HELLO", null),
-            new SelectorDimFilter("dim2", "foo", null)
+            new SelectorDimFilter("dim2", "foo", null, NullHandlingConfig.LEGACY_CONFIG)
         )
         )
     )
@@ -610,7 +611,7 @@ public class FilterPartitionTest extends BaseFilterTest
         dimFilter2,
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "1", null),
-            new SelectorDimFilter("dim2", "foo", null)
+            new SelectorDimFilter("dim2", "foo", null, NullHandlingConfig.LEGACY_CONFIG)
         )
         )
     )
@@ -626,10 +627,10 @@ public class FilterPartitionTest extends BaseFilterTest
   public void testDistributeOrCNFExtractionFn()
   {
     DimFilter dimFilter1 = new OrDimFilter(Arrays.<DimFilter>asList(
-        new SelectorDimFilter("dim0", "super-6", JS_EXTRACTION_FN),
+        new SelectorDimFilter("dim0", "super-6", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "super-def", JS_EXTRACTION_FN),
-            new SelectorDimFilter("dim2", "super-c", JS_EXTRACTION_FN)
+            new SelectorDimFilter("dim2", "super-c", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG)
         )
         )
     )
@@ -647,11 +648,11 @@ public class FilterPartitionTest extends BaseFilterTest
     );
 
     DimFilter dimFilter2 = new OrDimFilter(Arrays.<DimFilter>asList(
-        new SelectorDimFilter("dim0", "super-2", JS_EXTRACTION_FN),
-        new SelectorDimFilter("dim0", "super-3", JS_EXTRACTION_FN),
+        new SelectorDimFilter("dim0", "super-2", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("dim0", "super-3", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG),
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "super-HELLO", JS_EXTRACTION_FN),
-            new SelectorDimFilter("dim2", "super-foo", JS_EXTRACTION_FN)
+            new SelectorDimFilter("dim2", "super-foo", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG)
         )
         )
     )
@@ -667,7 +668,7 @@ public class FilterPartitionTest extends BaseFilterTest
         dimFilter2,
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dim1", "super-1", JS_EXTRACTION_FN),
-            new SelectorDimFilter("dim2", "super-foo", JS_EXTRACTION_FN)
+            new SelectorDimFilter("dim2", "super-foo", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG)
         )
         )
     )

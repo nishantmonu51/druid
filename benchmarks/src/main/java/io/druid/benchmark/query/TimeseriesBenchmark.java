@@ -66,6 +66,7 @@ import io.druid.segment.IncrementalIndexSegment;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.column.Column;
@@ -145,9 +146,9 @@ public class TimeseriesBenchmark
           {
             return 0;
           }
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO);
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private static final Map<String, Map<String, TimeseriesQuery>> SCHEMA_QUERY_MAP = new LinkedHashMap<>();
@@ -185,7 +186,9 @@ public class TimeseriesBenchmark
       List<AggregatorFactory> queryAggs = new ArrayList<>();
       LongSumAggregatorFactory lsaf = new LongSumAggregatorFactory("sumLongSequential", "sumLongSequential");
       BoundDimFilter timeFilter = new BoundDimFilter(Column.TIME_COLUMN_NAME, "200000", "300000", false, false, null, null,
-                                                     StringComparators.NUMERIC);
+                                                     StringComparators.NUMERIC,
+                                                     NullHandlingConfig.LEGACY_CONFIG
+      );
       queryAggs.add(new FilteredAggregatorFactory(lsaf, timeFilter));
 
       TimeseriesQuery timeFilterQuery =
@@ -205,7 +208,9 @@ public class TimeseriesBenchmark
       List<AggregatorFactory> queryAggs = new ArrayList<>();
       LongSumAggregatorFactory lsaf = new LongSumAggregatorFactory("sumLongSequential", "sumLongSequential");
       BoundDimFilter timeFilter = new BoundDimFilter(Column.TIME_COLUMN_NAME, "200000", "300000", false, false, null, null,
-                                                     StringComparators.ALPHANUMERIC);
+                                                     StringComparators.ALPHANUMERIC,
+                                                     NullHandlingConfig.LEGACY_CONFIG
+      );
       queryAggs.add(new FilteredAggregatorFactory(lsaf, timeFilter));
 
       TimeseriesQuery timeFilterQuery =
@@ -343,7 +348,7 @@ public class TimeseriesBenchmark
     QueryRunner<Result<TimeseriesResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "incIndex",
-        new IncrementalIndexSegment(incIndexes.get(0), "incIndex")
+        new IncrementalIndexSegment(incIndexes.get(0), "incIndex", NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TimeseriesResultValue>> results = TimeseriesBenchmark.runQuery(factory, runner, query);
@@ -360,7 +365,7 @@ public class TimeseriesBenchmark
     final QueryRunner<Result<TimeseriesResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TimeseriesResultValue>> results = TimeseriesBenchmark.runQuery(factory, runner, query);
@@ -377,10 +382,10 @@ public class TimeseriesBenchmark
     final QueryRunner<Result<TimeseriesResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
-    DimFilter filter = new SelectorDimFilter("dimSequential", "399", null);
+    DimFilter filter = new SelectorDimFilter("dimSequential", "399", null, NullHandlingConfig.LEGACY_CONFIG);
     Query filteredQuery = query.withDimFilter(filter);
 
     List<Result<TimeseriesResultValue>> results = TimeseriesBenchmark.runQuery(factory, runner, filteredQuery);
@@ -401,7 +406,7 @@ public class TimeseriesBenchmark
       QueryRunner<Result<TimeseriesResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
           factory,
           segmentName,
-          new QueryableIndexSegment(segmentName, qIndexes.get(i))
+          new QueryableIndexSegment(segmentName, qIndexes.get(i), NullHandlingConfig.LEGACY_CONFIG)
       );
       singleSegmentRunners.add(toolChest.preMergeQueryDecoration(runner));
     }

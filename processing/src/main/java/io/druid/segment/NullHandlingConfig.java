@@ -51,7 +51,7 @@ public interface NullHandlingConfig
     return NullHandlingConfig.this.useDefaultValuesForNull() ? Strings.nullToEmpty(value) : value;
   }
 
-  default String emptyToNull(String value){
+  default String defaultToNull(String value){
     return NullHandlingConfig.this.useDefaultValuesForNull() ? Strings.emptyToNull(value) : value;
   }
 

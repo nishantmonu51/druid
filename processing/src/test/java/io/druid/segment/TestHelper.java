@@ -68,9 +68,9 @@ public class TestHelper
             return true;
           }
 
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(jsonMapper, INDEX_IO);
+    INDEX_MERGER_V9 = new IndexMergerV9(jsonMapper, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   public static IndexMergerV9 getTestIndexMergerV9()

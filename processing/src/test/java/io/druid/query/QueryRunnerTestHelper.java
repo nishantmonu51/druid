@@ -58,6 +58,7 @@ import io.druid.query.timeseries.TimeseriesQueryEngine;
 import io.druid.query.timeseries.TimeseriesQueryQueryToolChest;
 import io.druid.query.timeseries.TimeseriesQueryRunnerFactory;
 import io.druid.segment.IncrementalIndexSegment;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.Segment;
@@ -350,15 +351,19 @@ public class QueryRunnerTestHelper
     final QueryableIndex noRollupMMappedTestIndex = TestIndex.getNoRollupMMappedTestIndex();
     final QueryableIndex mergedRealtimeIndex = TestIndex.mergedRealtimeIndex();
     return ImmutableList.of(
-        makeQueryRunner(factory, new IncrementalIndexSegment(rtIndex, segmentId), "rtIndex"),
-        makeQueryRunner(factory, new IncrementalIndexSegment(noRollupRtIndex, segmentId), "noRollupRtIndex"),
-        makeQueryRunner(factory, new QueryableIndexSegment(segmentId, mMappedTestIndex), "mMappedTestIndex"),
+        makeQueryRunner(factory, new IncrementalIndexSegment(rtIndex, segmentId, NullHandlingConfig.LEGACY_CONFIG), "rtIndex"),
+        makeQueryRunner(factory, new IncrementalIndexSegment(noRollupRtIndex, segmentId, NullHandlingConfig.LEGACY_CONFIG), "noRollupRtIndex"),
+        makeQueryRunner(factory, new QueryableIndexSegment(segmentId, mMappedTestIndex,
+                                                           NullHandlingConfig.LEGACY_CONFIG
+        ), "mMappedTestIndex"),
         makeQueryRunner(
             factory,
-            new QueryableIndexSegment(segmentId, noRollupMMappedTestIndex),
+            new QueryableIndexSegment(segmentId, noRollupMMappedTestIndex, NullHandlingConfig.LEGACY_CONFIG),
             "noRollupMMappedTestIndex"
         ),
-        makeQueryRunner(factory, new QueryableIndexSegment(segmentId, mergedRealtimeIndex), "mergedRealtimeIndex")
+        makeQueryRunner(factory, new QueryableIndexSegment(segmentId, mergedRealtimeIndex,
+                                                           NullHandlingConfig.LEGACY_CONFIG
+        ), "mergedRealtimeIndex")
     );
   }
 
@@ -374,11 +379,13 @@ public class QueryRunnerTestHelper
     final QueryableIndex mergedRealtimeIndex = TestIndex.mergedRealtimeIndex();
 
     return Arrays.asList(
-        makeUnionQueryRunner(factory, new IncrementalIndexSegment(rtIndex, segmentId), "rtIndex"),
-        makeUnionQueryRunner(factory, new QueryableIndexSegment(segmentId, mMappedTestIndex), "mMappedTestIndex"),
+        makeUnionQueryRunner(factory, new IncrementalIndexSegment(rtIndex, segmentId, NullHandlingConfig.LEGACY_CONFIG), "rtIndex"),
+        makeUnionQueryRunner(factory, new QueryableIndexSegment(segmentId, mMappedTestIndex,
+                                                                NullHandlingConfig.LEGACY_CONFIG
+        ), "mMappedTestIndex"),
         makeUnionQueryRunner(
             factory,
-            new QueryableIndexSegment(segmentId, mergedRealtimeIndex),
+            new QueryableIndexSegment(segmentId, mergedRealtimeIndex, NullHandlingConfig.LEGACY_CONFIG),
             "mergedRealtimeIndex"
         )
     );
@@ -450,7 +457,7 @@ public class QueryRunnerTestHelper
     return makeQueryRunner(
         factory,
         segmentId,
-        new IncrementalIndexSegment(TestIndex.makeRealtimeIndex(resourceFileName), segmentId),
+        new IncrementalIndexSegment(TestIndex.makeRealtimeIndex(resourceFileName), segmentId, NullHandlingConfig.LEGACY_CONFIG),
         runnerName
     );
   }

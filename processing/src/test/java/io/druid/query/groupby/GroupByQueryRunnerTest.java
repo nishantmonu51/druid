@@ -361,7 +361,8 @@ public class GroupByQueryRunnerTest
             configSupplier,
             new GroupByQueryEngine(configSupplier, bufferPool),
             QueryRunnerTestHelper.NOOP_QUERYWATCHER,
-            bufferPool
+            bufferPool, NullHandlingConfig.LEGACY_CONFIG
+
         ),
         new GroupByStrategyV2(
             processingConfig,
@@ -369,7 +370,8 @@ public class GroupByQueryRunnerTest
             bufferPool,
             mergeBufferPool,
             mapper,
-            QueryRunnerTestHelper.NOOP_QUERYWATCHER
+            QueryRunnerTestHelper.NOOP_QUERYWATCHER,
+            NullHandlingConfig.LEGACY_CONFIG
         )
     );
     final GroupByQueryQueryToolChest toolChest = new GroupByQueryQueryToolChest(
@@ -378,7 +380,8 @@ public class GroupByQueryRunnerTest
     );
     return new GroupByQueryRunnerFactory(
         strategySelector,
-        toolChest
+        toolChest,
+        NullHandlingConfig.LEGACY_CONFIG
     );
   }
 
@@ -840,7 +843,7 @@ public class GroupByQueryRunnerTest
         .builder()
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
-        .setDimFilter(new SelectorDimFilter("placementish", "a", null))
+        .setDimFilter(new SelectorDimFilter("placementish", "a", null, NullHandlingConfig.LEGACY_CONFIG))
         .setDimensions(
             Lists.<DimensionSpec>newArrayList(
                 new DefaultDimensionSpec("placementish", "alias"),
@@ -3858,11 +3861,11 @@ public class GroupByQueryRunnerTest
             ImmutableList.of(
                 new OrDimFilter(
                     ImmutableList.of(
-                        new BoundDimFilter("rows", "2", null, true, false, null, null, StringComparators.NUMERIC),
-                        new SelectorDimFilter("idx", "217", null)
+                        new BoundDimFilter("rows", "2", null, true, false, null, null, StringComparators.NUMERIC, NullHandlingConfig.LEGACY_CONFIG),
+                        new SelectorDimFilter("idx", "217", null, NullHandlingConfig.LEGACY_CONFIG)
                     )
                 ),
-                new SelectorDimFilter("__time", String.valueOf(DateTimes.of("2011-04-01").getMillis()), null)
+                new SelectorDimFilter("__time", String.valueOf(DateTimes.of("2011-04-01").getMillis()), null, NullHandlingConfig.LEGACY_CONFIG)
             )
         )
     );
@@ -3907,8 +3910,8 @@ public class GroupByQueryRunnerTest
     final DimFilterHavingSpec havingSpec = new DimFilterHavingSpec(
         new OrDimFilter(
             ImmutableList.of(
-                new BoundDimFilter("rows", "12", null, true, false, null, extractionFn2, StringComparators.NUMERIC),
-                new SelectorDimFilter("idx", "super-217", extractionFn)
+                new BoundDimFilter("rows", "12", null, true, false, null, extractionFn2, StringComparators.NUMERIC, NullHandlingConfig.LEGACY_CONFIG),
+                new SelectorDimFilter("idx", "super-217", extractionFn, NullHandlingConfig.LEGACY_CONFIG)
             )
         )
     );
@@ -4645,15 +4648,15 @@ public class GroupByQueryRunnerTest
         .setDimFilter(
             new OrDimFilter(
                 Lists.<DimFilter>newArrayList(
-                    new SelectorDimFilter("quality", "automotive", null),
-                    new SelectorDimFilter("quality", "premium", null),
-                    new SelectorDimFilter("quality", "mezzanine", null),
-                    new SelectorDimFilter("quality", "business", null),
-                    new SelectorDimFilter("quality", "entertainment", null),
-                    new SelectorDimFilter("quality", "health", null),
-                    new SelectorDimFilter("quality", "news", null),
-                    new SelectorDimFilter("quality", "technology", null),
-                    new SelectorDimFilter("quality", "travel", null)
+                    new SelectorDimFilter("quality", "automotive", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("quality", "premium", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("quality", "mezzanine", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("quality", "business", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("quality", "entertainment", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("quality", "health", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("quality", "news", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("quality", "technology", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("quality", "travel", null, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -4739,8 +4742,8 @@ public class GroupByQueryRunnerTest
         .setDimFilter(
             new OrDimFilter(
                 Arrays.<DimFilter>asList(
-                    new SelectorDimFilter("market", "spot", null),
-                    new SelectorDimFilter("market", "upfront", null)
+                    new SelectorDimFilter("market", "spot", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("market", "upfront", null, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -4771,8 +4774,8 @@ public class GroupByQueryRunnerTest
         .setHavingSpec(
             new OrHavingSpec(
                 ImmutableList.<HavingSpec>of(
-                    new DimensionSelectorHavingSpec("__time", "automotive", null),
-                    new DimensionSelectorHavingSpec("__time", "business", null)
+                    new DimensionSelectorHavingSpec("__time", "automotive", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new DimensionSelectorHavingSpec("__time", "business", null, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -5524,7 +5527,7 @@ public class GroupByQueryRunnerTest
         .setGranularity(QueryRunnerTestHelper.dayGran)
         .build();
 
-    final DimFilter filter = new SelectorDimFilter("market", "spot", null);
+    final DimFilter filter = new SelectorDimFilter("market", "spot", null, NullHandlingConfig.LEGACY_CONFIG);
     final GroupByQuery query = GroupByQuery
         .builder()
         .setDataSource(subquery)
@@ -5563,8 +5566,8 @@ public class GroupByQueryRunnerTest
         .setGranularity(QueryRunnerTestHelper.dayGran)
         .build();
 
-    final DimFilter fridayFilter = new SelectorDimFilter(Column.TIME_COLUMN_NAME, "Friday", new TimeFormatExtractionFn("EEEE", null, null, null, false));
-    final DimFilter firstDaysFilter = new InDimFilter(Column.TIME_COLUMN_NAME, ImmutableList.of("1", "2", "3"), new TimeFormatExtractionFn("d", null, null, null, false));
+    final DimFilter fridayFilter = new SelectorDimFilter(Column.TIME_COLUMN_NAME, "Friday", new TimeFormatExtractionFn("EEEE", null, null, null, false ), NullHandlingConfig.LEGACY_CONFIG);
+    final DimFilter firstDaysFilter = new InDimFilter(Column.TIME_COLUMN_NAME, ImmutableList.of("1", "2", "3"), new TimeFormatExtractionFn("d", null, null, null, false), NullHandlingConfig.LEGACY_CONFIG);
     final GroupByQuery query = GroupByQuery
         .builder()
         .setDataSource(subquery)
@@ -6173,8 +6176,8 @@ public class GroupByQueryRunnerTest
         .setDimFilter(
             new OrDimFilter(
                 Arrays.<DimFilter>asList(
-                    new SelectorDimFilter("market", "spot", null),
-                    new SelectorDimFilter("market", "upfront", null)
+                    new SelectorDimFilter("market", "spot", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("market", "upfront", null, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -6434,8 +6437,8 @@ public class GroupByQueryRunnerTest
         .setDimFilter(
             new OrDimFilter(
                 Arrays.<DimFilter>asList(
-                    new SelectorDimFilter("market", "spot", null),
-                    new SelectorDimFilter("market", "upfront", null)
+                    new SelectorDimFilter("market", "spot", null, NullHandlingConfig.LEGACY_CONFIG),
+                    new SelectorDimFilter("market", "upfront", null, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -6666,7 +6669,7 @@ public class GroupByQueryRunnerTest
             )
         )
         .setGranularity(new PeriodGranularity(new Period("P1M"), null, null))
-        .setDimFilter(new SelectorDimFilter("quality", "mezzanine", null))
+        .setDimFilter(new SelectorDimFilter("quality", "mezzanine", null, NullHandlingConfig.LEGACY_CONFIG))
         .setContext(ImmutableMap.<String, Object>of("bySegment", true));
     final GroupByQuery fullQuery = builder.build();
     QueryToolChest toolChest = factory.getToolchest();
@@ -6746,7 +6749,7 @@ public class GroupByQueryRunnerTest
             )
         )
         .setGranularity(new PeriodGranularity(new Period("P1M"), null, null))
-        .setDimFilter(new SelectorDimFilter("quality", "mezzanine", null))
+        .setDimFilter(new SelectorDimFilter("quality", "mezzanine", null, NullHandlingConfig.LEGACY_CONFIG))
         .setContext(ImmutableMap.<String, Object>of("bySegment", true));
     final GroupByQuery fullQuery = builder.build();
     QueryToolChest toolChest = factory.getToolchest();
@@ -6821,7 +6824,7 @@ public class GroupByQueryRunnerTest
             )
         )
         .setGranularity(new PeriodGranularity(new Period("P1M"), null, null))
-        .setDimFilter(new SelectorDimFilter("quality", "mezzanine", null))
+        .setDimFilter(new SelectorDimFilter("quality", "mezzanine", null, NullHandlingConfig.LEGACY_CONFIG))
         .setContext(ImmutableMap.<String, Object>of("bySegment", true));
     final GroupByQuery fullQuery = builder.build();
     QueryToolChest toolChest = factory.getToolchest();
@@ -6857,12 +6860,12 @@ public class GroupByQueryRunnerTest
     LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false, NullHandlingConfig.LEGACY_CONFIG);
 
     List<DimFilter> dimFilters = Lists.<DimFilter>newArrayList(
-        new ExtractionDimFilter("quality", "automotiveAndBusinessAndNewsAndMezzanine", lookupExtractionFn, null),
-        new SelectorDimFilter("quality", "entertainment", null),
-        new SelectorDimFilter("quality", "health", null),
-        new SelectorDimFilter("quality", "premium", null),
-        new SelectorDimFilter("quality", "technology", null),
-        new SelectorDimFilter("quality", "travel", null)
+        new ExtractionDimFilter("quality", "automotiveAndBusinessAndNewsAndMezzanine", lookupExtractionFn, null, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("quality", "entertainment", null, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("quality", "health", null, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("quality", "premium", null, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("quality", "technology", null, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("quality", "travel", null, NullHandlingConfig.LEGACY_CONFIG)
     );
 
     GroupByQuery query = GroupByQuery.builder().setDataSource(QueryRunnerTestHelper.dataSource)
@@ -6947,7 +6950,8 @@ public class GroupByQueryRunnerTest
                                      .setDimFilter(new InDimFilter(
                                          "quality",
                                          Arrays.asList("", null),
-                                         lookupExtractionFn
+                                         lookupExtractionFn,
+                                         NullHandlingConfig.LEGACY_CONFIG
                                      ))
                                      .build();
     List<Row> expectedResults = Arrays.asList(
@@ -6990,7 +6994,8 @@ public class GroupByQueryRunnerTest
                                              "quality",
                                              "NOT_THERE",
                                              lookupExtractionFn,
-                                             null
+                                             null,
+                                             NullHandlingConfig.LEGACY_CONFIG
                                          )
                                      ).build();
     List<Row> expectedResults = Arrays.asList();
@@ -7031,7 +7036,8 @@ public class GroupByQueryRunnerTest
                                              "null_column",
                                              "NULLorEMPTY",
                                              lookupExtractionFn,
-                                             null
+                                             null,
+                                             NullHandlingConfig.LEGACY_CONFIG
                                          )
                                      ).build();
     List<Row> expectedResults = Arrays
@@ -7060,7 +7066,7 @@ public class GroupByQueryRunnerTest
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
     LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, "missing", true, false, NullHandlingConfig.LEGACY_CONFIG);
-    DimFilter filter = new ExtractionDimFilter("quality", "mezzanineANDnews", lookupExtractionFn, null);
+    DimFilter filter = new ExtractionDimFilter("quality", "mezzanineANDnews", lookupExtractionFn, null, NullHandlingConfig.LEGACY_CONFIG);
     GroupByQuery query = GroupByQuery.builder().setDataSource(QueryRunnerTestHelper.dataSource)
                                      .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
                                      .setDimensions(
@@ -7136,7 +7142,8 @@ public class GroupByQueryRunnerTest
                                          "quality",
                                          "newsANDmezzanine",
                                          lookupExtractionFn,
-                                         null
+                                         null,
+                                         NullHandlingConfig.LEGACY_CONFIG
                                      ))
                                      .build();
     List<Row> expectedResults = Arrays.asList(
@@ -7176,7 +7183,8 @@ public class GroupByQueryRunnerTest
                                          "null_column",
                                          "EMPTY",
                                          lookupExtractionFn,
-                                         null
+                                         null,
+                                         NullHandlingConfig.LEGACY_CONFIG
                                      )).build();
     List<Row> expectedResults = Arrays
         .asList(
@@ -7219,11 +7227,12 @@ public class GroupByQueryRunnerTest
     ExtractionFn extractionFn = new JavaScriptExtractionFn(extractionJsFn, false, JavaScriptConfig.getEnabledInstance());
 
     List<DimFilter> superFilterList = new ArrayList<>();
-    superFilterList.add(new SelectorDimFilter("quality", "super-mezzanine", extractionFn));
+    superFilterList.add(new SelectorDimFilter("quality", "super-mezzanine", extractionFn, NullHandlingConfig.LEGACY_CONFIG));
     superFilterList.add(new InDimFilter(
         "quality",
         Arrays.asList("not-super-mezzanine", "FOOBAR", "super-mezzanine"),
-        extractionFn
+        extractionFn,
+        NullHandlingConfig.LEGACY_CONFIG
     ));
     superFilterList.add(new BoundDimFilter(
         "quality",
@@ -7233,7 +7242,8 @@ public class GroupByQueryRunnerTest
         false,
         true,
         extractionFn,
-        StringComparators.ALPHANUMERIC
+        StringComparators.ALPHANUMERIC,
+        NullHandlingConfig.LEGACY_CONFIG
     ));
     superFilterList.add(new RegexDimFilter("quality", "super-mezzanine", extractionFn));
     superFilterList.add(new SearchQueryDimFilter(
@@ -7289,10 +7299,11 @@ public class GroupByQueryRunnerTest
     String jsFn = "function(x) { return(x === 'EMPTY') }";
 
     List<DimFilter> superFilterList = new ArrayList<>();
-    superFilterList.add(new SelectorDimFilter("null_column", "EMPTY", extractionFn));
-    superFilterList.add(new InDimFilter("null_column", Arrays.asList("NOT-EMPTY", "FOOBAR", "EMPTY"), extractionFn));
+    superFilterList.add(new SelectorDimFilter("null_column", "EMPTY", extractionFn, NullHandlingConfig.LEGACY_CONFIG));
+    superFilterList.add(new InDimFilter("null_column", Arrays.asList("NOT-EMPTY", "FOOBAR", "EMPTY"), extractionFn, NullHandlingConfig.LEGACY_CONFIG));
     superFilterList.add(new BoundDimFilter("null_column", "EMPTY", "EMPTY", false, false, true, extractionFn,
-                                           StringComparators.ALPHANUMERIC
+                                           StringComparators.ALPHANUMERIC,
+                                           NullHandlingConfig.LEGACY_CONFIG
     ));
     superFilterList.add(new RegexDimFilter("null_column", "EMPTY", extractionFn));
     superFilterList.add(new SearchQueryDimFilter(
@@ -7418,7 +7429,7 @@ public class GroupByQueryRunnerTest
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
         .setDimensions(Lists.<DimensionSpec>newArrayList(new DefaultDimensionSpec("qualityLong", "ql_alias", ValueType.LONG)))
-        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null))
+        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -7479,7 +7490,7 @@ public class GroupByQueryRunnerTest
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
         .setDimensions(Lists.<DimensionSpec>newArrayList(new DefaultDimensionSpec("qualityLong", "ql_alias", ValueType.LONG)))
-        .setDimFilter(new InDimFilter("quality", Arrays.asList("entertainment", "technology"), null))
+        .setDimFilter(new InDimFilter("quality", Arrays.asList("entertainment", "technology"), null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -7543,7 +7554,7 @@ public class GroupByQueryRunnerTest
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
         .setDimensions(Lists.<DimensionSpec>newArrayList(new ExtractionDimensionSpec("qualityLong", "ql_alias", jsExtractionFn)))
-        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null))
+        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -7590,7 +7601,7 @@ public class GroupByQueryRunnerTest
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
         .setDimensions(Lists.<DimensionSpec>newArrayList(new DefaultDimensionSpec("__time", "time_alias", ValueType.LONG)))
-        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null))
+        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -7635,7 +7646,7 @@ public class GroupByQueryRunnerTest
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
         .setDimensions(Lists.<DimensionSpec>newArrayList(new ExtractionDimensionSpec("__time", "time_alias", jsExtractionFn)))
-        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null))
+        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -7682,7 +7693,7 @@ public class GroupByQueryRunnerTest
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
         .setDimensions(Lists.<DimensionSpec>newArrayList(new DefaultDimensionSpec("index", "index_alias", ValueType.FLOAT)))
-        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null))
+        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -7744,7 +7755,7 @@ public class GroupByQueryRunnerTest
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
         .setDimensions(Lists.<DimensionSpec>newArrayList(new DefaultDimensionSpec("qualityFloat", "qf_alias", ValueType.FLOAT)))
-        .setDimFilter(new InDimFilter("quality", Arrays.asList("entertainment", "technology"), null))
+        .setDimFilter(new InDimFilter("quality", Arrays.asList("entertainment", "technology"), null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -7805,7 +7816,7 @@ public class GroupByQueryRunnerTest
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
         .setDimensions(Lists.newArrayList(new DefaultDimensionSpec("qualityDouble", "alias", ValueType.DOUBLE)))
-        .setDimFilter(new InDimFilter("quality", Arrays.asList("entertainment", "technology"), null))
+        .setDimFilter(new InDimFilter("quality", Arrays.asList("entertainment", "technology"), null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -7869,7 +7880,7 @@ public class GroupByQueryRunnerTest
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
         .setDimensions(Lists.<DimensionSpec>newArrayList(new ExtractionDimensionSpec("index", "index_alias", jsExtractionFn)))
-        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null))
+        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -7935,8 +7946,8 @@ public class GroupByQueryRunnerTest
             new DimFilterHavingSpec(
                 new AndDimFilter(
                     Lists.<DimFilter>newArrayList(
-                        new SelectorDimFilter("ql_alias", "1400", null),
-                        new SelectorDimFilter("time_alias", "1301616000000", null),
+                        new SelectorDimFilter("ql_alias", "1400", null, NullHandlingConfig.LEGACY_CONFIG),
+                        new SelectorDimFilter("time_alias", "1301616000000", null, NullHandlingConfig.LEGACY_CONFIG),
                         new BoundDimFilter(
                             "index_alias",
                             "1310.0",
@@ -7945,7 +7956,8 @@ public class GroupByQueryRunnerTest
                             true,
                             null,
                             null,
-                            StringComparators.NUMERIC
+                            StringComparators.NUMERIC,
+                            NullHandlingConfig.LEGACY_CONFIG
                         )
                     )
                 )
@@ -7987,7 +7999,7 @@ public class GroupByQueryRunnerTest
                 new DefaultDimensionSpec("qualityFloat", "qf_alias")
             )
         )
-        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null))
+        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -8044,7 +8056,7 @@ public class GroupByQueryRunnerTest
                 new DefaultDimensionSpec(Column.TIME_COLUMN_NAME, "time_alias")
             )
         )
-        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null))
+        .setDimFilter(new SelectorDimFilter("quality", "entertainment", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -8127,7 +8139,7 @@ public class GroupByQueryRunnerTest
                 listFilteredSpec
             )
         )
-        .setDimFilter(new InDimFilter("quality", Arrays.asList("entertainment", "technology"), null))
+        .setDimFilter(new InDimFilter("quality", Arrays.asList("entertainment", "technology"), null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.<AggregatorFactory>asList(
                 new CountAggregatorFactory("count")
@@ -8185,7 +8197,7 @@ public class GroupByQueryRunnerTest
                 listFilteredSpec
             )
         )
-        .setDimFilter(new InDimFilter("quality", Arrays.asList("entertainment", "technology"), null))
+        .setDimFilter(new InDimFilter("quality", Arrays.asList("entertainment", "technology"), null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.<AggregatorFactory>asList(
                 new CountAggregatorFactory("count")
@@ -8236,7 +8248,8 @@ public class GroupByQueryRunnerTest
             new InDimFilter(
                 "quality",
                 Lists.newArrayList("entertainment"),
-                null
+                null,
+                NullHandlingConfig.LEGACY_CONFIG
             )
         )
         .setAggregatorSpecs(
@@ -8261,7 +8274,7 @@ public class GroupByQueryRunnerTest
         .setDimFilter(
             new AndDimFilter(
                 Lists.<DimFilter>newArrayList(
-                    new SelectorDimFilter("ql_alias", "1200", null),
+                    new SelectorDimFilter("ql_alias", "1200", null, NullHandlingConfig.LEGACY_CONFIG),
                     new BoundDimFilter(
                         "qf_alias",
                         "11095.0",
@@ -8270,7 +8283,8 @@ public class GroupByQueryRunnerTest
                         true,
                         null,
                         null,
-                        StringComparators.NUMERIC
+                        StringComparators.NUMERIC,
+                        NullHandlingConfig.LEGACY_CONFIG
                     )
                 )
             )
@@ -8413,7 +8427,7 @@ public class GroupByQueryRunnerTest
             ValueType.LONG,
             strlenFn
         )))
-        .setDimFilter(new SelectorDimFilter(QueryRunnerTestHelper.qualityDimension, "entertainment", null))
+        .setDimFilter(new SelectorDimFilter(QueryRunnerTestHelper.qualityDimension, "entertainment", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -8456,7 +8470,7 @@ public class GroupByQueryRunnerTest
         .setDataSource(QueryRunnerTestHelper.dataSource)
         .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
         .setDimensions(Lists.<DimensionSpec>newArrayList(new DefaultDimensionSpec("quality", "alias")))
-        .setDimFilter(new SelectorDimFilter("quality", "technology", null))
+        .setDimFilter(new SelectorDimFilter("quality", "technology", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount,
@@ -8540,7 +8554,7 @@ public class GroupByQueryRunnerTest
                 )
             )
         )
-        .setDimFilter(new SelectorDimFilter("quality", "technology", null))
+        .setDimFilter(new SelectorDimFilter("quality", "technology", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount
@@ -8608,7 +8622,7 @@ public class GroupByQueryRunnerTest
                 )
             )
         )
-        .setDimFilter(new SelectorDimFilter("quality", "technology", null))
+        .setDimFilter(new SelectorDimFilter("quality", "technology", null, NullHandlingConfig.LEGACY_CONFIG))
         .setAggregatorSpecs(
             Arrays.asList(
                 QueryRunnerTestHelper.rowsCount
@@ -9329,7 +9343,8 @@ public class GroupByQueryRunnerTest
         .setDimFilter(new SelectorDimFilter(
             "quality",
             "technology",
-            null
+            null,
+            NullHandlingConfig.LEGACY_CONFIG
         ))
         .setAggregatorSpecs(
             Arrays.asList(

@@ -81,6 +81,7 @@ import io.druid.query.topn.TopNQueryConfig;
 import io.druid.query.topn.TopNQueryQueryToolChest;
 import io.druid.query.topn.TopNQueryRunnerFactory;
 import io.druid.segment.IndexBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.TestHelper;
 import io.druid.segment.incremental.IncrementalIndexSchema;
@@ -153,7 +154,7 @@ public class CalciteTests
                   new SegmentMetadataQueryQueryToolChest(
                       new SegmentMetadataQueryConfig("P1W")
                   ),
-                  QueryRunnerTestHelper.NOOP_QUERYWATCHER
+                  QueryRunnerTestHelper.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
               )
           )
           .put(

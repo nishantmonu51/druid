@@ -38,6 +38,7 @@ import io.druid.query.search.search.SearchQuery;
 import io.druid.query.search.search.SearchQueryConfig;
 import io.druid.query.search.search.UseIndexesStrategy;
 import io.druid.segment.IncrementalIndexSegment;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.TestIndex;
@@ -101,25 +102,25 @@ public class SearchQueryRunnerWithCaseTest
           makeQueryRunner(
               makeRunnerFactory(config),
               "index1",
-              new IncrementalIndexSegment(index1, "index1"),
+              new IncrementalIndexSegment(index1, "index1", NullHandlingConfig.LEGACY_CONFIG),
               "index1"
           ),
           makeQueryRunner(
               makeRunnerFactory(config),
               "index2",
-              new IncrementalIndexSegment(index2, "index2"),
+              new IncrementalIndexSegment(index2, "index2", NullHandlingConfig.LEGACY_CONFIG),
               "index2"
           ),
           makeQueryRunner(
               makeRunnerFactory(config),
               "index3",
-              new QueryableIndexSegment("index3", index3),
+              new QueryableIndexSegment("index3", index3, NullHandlingConfig.LEGACY_CONFIG),
               "index3"
           ),
           makeQueryRunner(
               makeRunnerFactory(config),
               "index4",
-              new QueryableIndexSegment("index4", index4),
+              new QueryableIndexSegment("index4", index4, NullHandlingConfig.LEGACY_CONFIG),
               "index4"
           )
       ));
@@ -136,7 +137,7 @@ public class SearchQueryRunnerWithCaseTest
             config,
             NoopIntervalChunkingQueryRunnerDecorator()
         ),
-        NOOP_QUERYWATCHER
+        NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
     );
   }
 

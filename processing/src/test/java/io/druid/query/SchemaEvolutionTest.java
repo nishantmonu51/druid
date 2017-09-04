@@ -117,7 +117,9 @@ public class SchemaEvolutionTest
                           @Override
                           public QueryRunner<T> apply(final QueryableIndex index)
                           {
-                            return factory.createRunner(new QueryableIndexSegment("xxx", index));
+                            return factory.createRunner(new QueryableIndexSegment("xxx", index,
+                                                                                  NullHandlingConfig.LEGACY_CONFIG
+                            ));
                           }
                         }
                     )
@@ -327,7 +329,7 @@ public class SchemaEvolutionTest
         .newTimeseriesQueryBuilder()
         .dataSource(DATA_SOURCE)
         .intervals("1000/3000")
-        .filters(new BoundDimFilter("c1", "9", "11", false, false, null, null, StringComparators.NUMERIC))
+        .filters(new BoundDimFilter("c1", "9", "11", false, false, null, null, StringComparators.NUMERIC, NullHandlingConfig.LEGACY_CONFIG))
         .aggregators(
             ImmutableList.of(
                 new LongSumAggregatorFactory("a", "c1"),

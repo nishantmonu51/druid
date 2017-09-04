@@ -76,6 +76,7 @@ import io.druid.segment.IncrementalIndexSegment;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.column.ColumnConfig;
@@ -171,9 +172,9 @@ public class GroupByBenchmark
           {
             return 0;
           }
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO);
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private static final Map<String, Map<String, GroupByQuery>> SCHEMA_QUERY_MAP = new LinkedHashMap<>();
@@ -268,7 +269,9 @@ public class GroupByBenchmark
           .setDimensions(ImmutableList.of(new DefaultDimensionSpec("dimUniform", null)))
           .setAggregatorSpecs(queryAggs)
           .setGranularity(Granularity.fromString(queryGranularity))
-          .setDimFilter(new BoundDimFilter("dimUniform", "0", "100", true, true, null, null, null))
+          .setDimFilter(new BoundDimFilter("dimUniform", "0", "100", true, true, null, null, null,
+                                           NullHandlingConfig.LEGACY_CONFIG
+          ))
           .build();
 
       basicQueries.put("filter", queryA);
@@ -511,7 +514,7 @@ public class GroupByBenchmark
             configSupplier,
             new GroupByQueryEngine(configSupplier, bufferPool),
             QueryBenchmarkUtil.NOOP_QUERYWATCHER,
-            bufferPool
+            bufferPool, NullHandlingConfig.LEGACY_CONFIG
         ),
         new GroupByStrategyV2(
             druidProcessingConfig,
@@ -519,7 +522,7 @@ public class GroupByBenchmark
             bufferPool,
             mergePool,
             new ObjectMapper(new SmileFactory()),
-            QueryBenchmarkUtil.NOOP_QUERYWATCHER
+            QueryBenchmarkUtil.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
         )
     );
 
@@ -528,7 +531,7 @@ public class GroupByBenchmark
         new GroupByQueryQueryToolChest(
             strategySelector,
             QueryBenchmarkUtil.NoopIntervalChunkingQueryRunnerDecorator()
-        )
+        ), NullHandlingConfig.LEGACY_CONFIG
     );
   }
 
@@ -591,7 +594,7 @@ public class GroupByBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "incIndex",
-        new IncrementalIndexSegment(anIncrementalIndex, "incIndex")
+        new IncrementalIndexSegment(anIncrementalIndex, "incIndex", NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Row> results = GroupByBenchmark.runQuery(factory, runner, query);
@@ -609,7 +612,7 @@ public class GroupByBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Row> results = GroupByBenchmark.runQuery(factory, runner, query);
@@ -699,7 +702,7 @@ public class GroupByBenchmark
       QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
           factory,
           segmentName,
-          new QueryableIndexSegment(segmentName, queryableIndexes.get(i))
+          new QueryableIndexSegment(segmentName, queryableIndexes.get(i), NullHandlingConfig.LEGACY_CONFIG)
       );
       runners.add(factory.getToolchest().preMergeQueryDecoration(runner));
     }

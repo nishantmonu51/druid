@@ -62,6 +62,7 @@ import io.druid.java.util.common.StringUtils;
 import io.druid.java.util.common.granularity.Granularities;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeIOConfig;
@@ -591,7 +592,7 @@ public class KafkaSupervisorTest extends EasyMockSupport
             new RealtimeIOConfig(null, null, null),
             null
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     List<Task> existingTasks = ImmutableList.of(id1, id2, id3, id4, id5);
@@ -1920,7 +1921,7 @@ public class KafkaSupervisorTest extends EasyMockSupport
             false
         ),
         ImmutableMap.<String, Object>of(),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
   }
 

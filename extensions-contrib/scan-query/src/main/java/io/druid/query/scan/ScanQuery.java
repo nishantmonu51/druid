@@ -32,6 +32,7 @@ import io.druid.query.filter.InDimFilter;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.spec.LegacySegmentSpec;
 import io.druid.query.spec.QuerySegmentSpec;
+import io.druid.segment.NullHandlingConfig;
 import org.joda.time.Interval;
 
 import java.util.Arrays;
@@ -323,13 +324,13 @@ public class ScanQuery extends BaseQuery<ScanResultValue>
 
     public ScanQueryBuilder filters(String dimensionName, String value)
     {
-      dimFilter = new SelectorDimFilter(dimensionName, value, null);
+      dimFilter = new SelectorDimFilter(dimensionName, value, null, NullHandlingConfig.LEGACY_CONFIG);
       return this;
     }
 
     public ScanQueryBuilder filters(String dimensionName, String value, String... values)
     {
-      dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null);
+      dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null, NullHandlingConfig.LEGACY_CONFIG);
       return this;
     }
 

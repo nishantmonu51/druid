@@ -92,6 +92,7 @@ import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeIOConfig;
 import io.druid.segment.indexing.RealtimeTuningConfig;
@@ -599,7 +600,7 @@ public class TaskLifecycleTest
                   {
                     return Lists.newArrayList();
                   }
-                }, new DefaultObjectMapper()
+                }, new DefaultObjectMapper(), NullHandlingConfig.LEGACY_CONFIG
             )
         ),
         MAPPER,
@@ -670,7 +671,7 @@ public class TaskLifecycleTest
             new IndexIOConfig(new MockFirehoseFactory(false), false),
             new IndexTuningConfig(10000, 10, null, null, null, indexSpec, 3, true, true, false, null, null)
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final Optional<TaskStatus> preRunTaskStatus = tsqa.getStatus(indexTask.getId());
@@ -727,7 +728,7 @@ public class TaskLifecycleTest
             new IndexIOConfig(new MockExceptionalFirehoseFactory(), false),
             new IndexTuningConfig(10000, 10, null, null, null, indexSpec, 3, true, true, false, null, null)
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final TaskStatus status = runTask(indexTask);
@@ -1091,7 +1092,7 @@ public class TaskLifecycleTest
             new IndexIOConfig(new MockFirehoseFactory(false), false),
             new IndexTuningConfig(10000, 10, null, null, null, indexSpec, null, false, null, null, null, null)
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final long startTime = System.currentTimeMillis();
@@ -1217,7 +1218,7 @@ public class TaskLifecycleTest
         taskId,
         new TaskResource(taskId, 1),
         fireDepartment,
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
   }
 }

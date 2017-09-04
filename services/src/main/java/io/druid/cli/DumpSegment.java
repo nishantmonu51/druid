@@ -71,6 +71,7 @@ import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.Cursor;
 import io.druid.segment.DimensionSelector;
 import io.druid.segment.IndexIO;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.ObjectColumnSelector;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
@@ -249,7 +250,7 @@ public class DumpSegment extends GuiceRunnable
   private void runDump(final Injector injector, final QueryableIndex index) throws IOException
   {
     final ObjectMapper objectMapper = injector.getInstance(Key.get(ObjectMapper.class, Json.class));
-    final QueryableIndexStorageAdapter adapter = new QueryableIndexStorageAdapter(index);
+    final QueryableIndexStorageAdapter adapter = new QueryableIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG);
     final List<String> columnNames = getColumnsToInclude(index);
     final DimFilter filter = filterJson != null ? objectMapper.readValue(filterJson, DimFilter.class) : null;
 
@@ -481,7 +482,9 @@ public class DumpSegment extends GuiceRunnable
   {
     final QueryRunnerFactoryConglomerate conglomerate = injector.getInstance(QueryRunnerFactoryConglomerate.class);
     final QueryRunnerFactory factory = conglomerate.findFactory(query);
-    final QueryRunner<T> runner = factory.createRunner(new QueryableIndexSegment("segment", index));
+    final QueryRunner<T> runner = factory.createRunner(new QueryableIndexSegment("segment", index,
+                                                                                 NullHandlingConfig.LEGACY_CONFIG
+    ));
     final Sequence results = factory.getToolchest().mergeResults(
         factory.mergeRunners(MoreExecutors.sameThreadExecutor(), ImmutableList.<QueryRunner>of(runner))
     ).run(QueryPlus.wrap(query), Maps.<String, Object>newHashMap());

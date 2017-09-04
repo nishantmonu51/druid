@@ -125,7 +125,7 @@ public class AppendTest
             Intervals.of("2011-01-14T22:00:00.000Z/2011-01-16T00:00:00.000Z")
         )
     );
-    segment = new QueryableIndexSegment(null, appendedIndex);
+    segment = new QueryableIndexSegment(null, appendedIndex, NullHandlingConfig.LEGACY_CONFIG);
 
     // (3, 4) cover overlapping segments of the form
     // |------------|
@@ -140,7 +140,7 @@ public class AppendTest
             Intervals.of("2011-01-13T00:00:00.000Z/2011-01-14T00:00:00.000Z")
         )
     );
-    segment2 = new QueryableIndexSegment(null, append2);
+    segment2 = new QueryableIndexSegment(null, append2, NullHandlingConfig.LEGACY_CONFIG);
 
     // (5, 6, 7) test gaps that can be created in data because of rows being discounted
     // |-------------|
@@ -158,7 +158,7 @@ public class AppendTest
             Intervals.of("2011-01-18T00:00:00.000Z/2011-01-21T00:00:00.000Z")
         )
     );
-    segment3 = new QueryableIndexSegment(null, append3);
+    segment3 = new QueryableIndexSegment(null, append3, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   @Test

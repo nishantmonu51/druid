@@ -42,16 +42,19 @@ public class ColumnSelectorBitmapIndexSelector implements BitmapIndexSelector
   private final BitmapFactory bitmapFactory;
   private final VirtualColumns virtualColumns;
   private final ColumnSelector index;
+  private final NullHandlingConfig nullHandlingConfig;
 
   public ColumnSelectorBitmapIndexSelector(
       final BitmapFactory bitmapFactory,
       final VirtualColumns virtualColumns,
-      final ColumnSelector index
+      final ColumnSelector index,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     this.bitmapFactory = bitmapFactory;
     this.virtualColumns = virtualColumns;
     this.index = index;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -164,7 +167,7 @@ public class ColumnSelectorBitmapIndexSelector implements BitmapIndexSelector
         @Override
         public boolean hasNulls()
         {
-          return true;
+          return !nullHandlingConfig.useDefaultValuesForNull();
         }
 
         @Override
@@ -179,7 +182,7 @@ public class ColumnSelectorBitmapIndexSelector implements BitmapIndexSelector
           // Return -2 for non-null values to match what the BitmapIndex implementation in BitmapIndexColumnPartSupplier
           // would return for getIndex() when there is only a single index, for the null value.
           // i.e., return an 'insertion point' of 1 for non-null values (see BitmapIndex interface)
-          return value == null ? 0 : -2;
+          return nullHandlingConfig.isNullOrDefault(value) ? 0 : -2;
         }
 
         @Override
@@ -209,7 +212,7 @@ public class ColumnSelectorBitmapIndexSelector implements BitmapIndexSelector
 
     final Column column = index.getColumn(dimension);
     if (column == null || !columnSupportsFiltering(column)) {
-      if (value == null) {
+      if (nullHandlingConfig.isNullOrDefault(value)) {
         return bitmapFactory.complement(bitmapFactory.makeEmptyImmutableBitmap(), getNumRows());
       } else {
         return bitmapFactory.makeEmptyImmutableBitmap();

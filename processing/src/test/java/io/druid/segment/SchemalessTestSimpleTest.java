@@ -80,16 +80,18 @@ public class SchemalessTestSimpleTest
     return Arrays.asList(
         new Object[][]{
             {
-                new IncrementalIndexSegment(incrementalIndex, null)
+                new IncrementalIndexSegment(incrementalIndex, null, NullHandlingConfig.LEGACY_CONFIG)
             },
             {
                 new QueryableIndexSegment(
-                    null, persistedIncrementalIndex
+                    null, persistedIncrementalIndex,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             },
             {
                 new QueryableIndexSegment(
-                    null, mergedIncrementalIndex
+                    null, mergedIncrementalIndex,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             }
         }

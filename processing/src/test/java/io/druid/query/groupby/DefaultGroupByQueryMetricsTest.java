@@ -88,7 +88,7 @@ public class DefaultGroupByQueryMetricsTest
             )
         )
         .setGranularity(new PeriodGranularity(new Period("P1M"), null, null))
-        .setDimFilter(new SelectorDimFilter("quality", "mezzanine", null))
+        .setDimFilter(new SelectorDimFilter("quality", "mezzanine", null, NullHandlingConfig.LEGACY_CONFIG))
         .setContext(ImmutableMap.<String, Object>of("bySegment", true));
     GroupByQuery query = builder.build();
     queryMetrics.query(query);

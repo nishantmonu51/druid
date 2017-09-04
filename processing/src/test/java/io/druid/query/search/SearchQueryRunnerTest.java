@@ -94,7 +94,8 @@ public class SearchQueryRunnerTest
             new SearchQueryRunnerFactory(
                 selector,
                 toolChest,
-                QueryRunnerTestHelper.NOOP_QUERYWATCHER
+                QueryRunnerTestHelper.NOOP_QUERYWATCHER,
+                NullHandlingConfig.LEGACY_CONFIG
             )
         )
     );
@@ -376,7 +377,8 @@ public class SearchQueryRunnerTest
                                       QueryRunnerTestHelper.qualityDimension,
                                       automotiveSnowman,
                                       lookupExtractionFn,
-                                      null
+                                      null,
+                                      NullHandlingConfig.LEGACY_CONFIG
                                   )
                               )
                               .intervals(QueryRunnerTestHelper.fullOnInterval)
@@ -406,8 +408,8 @@ public class SearchQueryRunnerTest
               .filters(
                   new AndDimFilter(
                       Arrays.<DimFilter>asList(
-                          new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "total_market", null),
-                          new SelectorDimFilter(QueryRunnerTestHelper.qualityDimension, "mezzanine", null)
+                          new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "total_market", null, NullHandlingConfig.LEGACY_CONFIG),
+                          new SelectorDimFilter(QueryRunnerTestHelper.qualityDimension, "mezzanine", null, NullHandlingConfig.LEGACY_CONFIG)
                       )))
               .intervals(QueryRunnerTestHelper.fullOnInterval)
               .dimensions(QueryRunnerTestHelper.qualityDimension)
@@ -783,9 +785,11 @@ public class SearchQueryRunnerTest
     QueryRunnerFactory factory = new SearchQueryRunnerFactory(
         selector,
         toolChest,
-        QueryRunnerTestHelper.NOOP_QUERYWATCHER
+        QueryRunnerTestHelper.NOOP_QUERYWATCHER,
+        NullHandlingConfig.LEGACY_CONFIG
     );
-    QueryRunner runner = factory.createRunner(new QueryableIndexSegment("asdf", TestIndex.persistRealtimeAndLoadMMapped(index)));
+    QueryRunner runner = factory.createRunner(new QueryableIndexSegment("asdf", TestIndex.persistRealtimeAndLoadMMapped(index),
+                                                                        NullHandlingConfig.LEGACY_CONFIG));
     List<SearchHit> expectedHits = Lists.newLinkedList();
     expectedHits.add(new SearchHit("table", "table", 1));
     expectedHits.add(new SearchHit("table", "", 1));

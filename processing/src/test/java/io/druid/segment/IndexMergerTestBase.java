@@ -1822,7 +1822,7 @@ public class IndexMergerTestBase
         indexSpec
     );
     final QueryableIndexStorageAdapter adapter = new QueryableIndexStorageAdapter(closer.closeLater(INDEX_IO.loadIndex(
-        merged)));
+        merged)), NullHandlingConfig.LEGACY_CONFIG);
     Assert.assertEquals(ImmutableSet.of("A", "C"), ImmutableSet.copyOf(adapter.getAvailableMetrics()));
 
   }
@@ -1893,7 +1893,7 @@ public class IndexMergerTestBase
         indexSpec
     );
     final QueryableIndexStorageAdapter adapter = new QueryableIndexStorageAdapter(closer.closeLater(INDEX_IO.loadIndex(
-        merged)));
+        merged)), NullHandlingConfig.LEGACY_CONFIG);
     Assert.assertEquals(ImmutableSet.of("A", "C"), ImmutableSet.copyOf(adapter.getAvailableMetrics()));
 
   }
@@ -1958,7 +1958,7 @@ public class IndexMergerTestBase
 
     // Since D was not present in any of the indices, it is not present in the output
     final QueryableIndexStorageAdapter adapter = new QueryableIndexStorageAdapter(closer.closeLater(INDEX_IO.loadIndex(
-        merged)));
+        merged)), NullHandlingConfig.LEGACY_CONFIG);
     Assert.assertEquals(ImmutableSet.of("A", "B", "C"), ImmutableSet.copyOf(adapter.getAvailableMetrics()));
 
   }
@@ -2000,7 +2000,7 @@ public class IndexMergerTestBase
         indexSpec
     );
     final QueryableIndexStorageAdapter adapter = new QueryableIndexStorageAdapter(closer.closeLater(INDEX_IO.loadIndex(
-        merged)));
+        merged)), NullHandlingConfig.LEGACY_CONFIG);
     Assert.assertEquals(ImmutableSet.of("A", "B", "C"), ImmutableSet.copyOf(adapter.getAvailableMetrics()));
   }
 

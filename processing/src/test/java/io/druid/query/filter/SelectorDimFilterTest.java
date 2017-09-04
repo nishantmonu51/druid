@@ -20,6 +20,7 @@
 package io.druid.query.filter;
 
 import io.druid.query.extraction.RegexDimExtractionFn;
+import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,21 +31,21 @@ public class SelectorDimFilterTest
   @Test
   public void testGetCacheKey()
   {
-    SelectorDimFilter selectorDimFilter = new SelectorDimFilter("abc", "d", null);
-    SelectorDimFilter selectorDimFilter2 = new SelectorDimFilter("ab", "cd", null);
+    SelectorDimFilter selectorDimFilter = new SelectorDimFilter("abc", "d", null, NullHandlingConfig.LEGACY_CONFIG);
+    SelectorDimFilter selectorDimFilter2 = new SelectorDimFilter("ab", "cd", null, NullHandlingConfig.LEGACY_CONFIG);
     Assert.assertFalse(Arrays.equals(selectorDimFilter.getCacheKey(), selectorDimFilter2.getCacheKey()));
 
     RegexDimExtractionFn regexFn = new RegexDimExtractionFn(".*", false, null);
-    SelectorDimFilter selectorDimFilter3 = new SelectorDimFilter("abc", "d", regexFn);
+    SelectorDimFilter selectorDimFilter3 = new SelectorDimFilter("abc", "d", regexFn, NullHandlingConfig.LEGACY_CONFIG);
     Assert.assertFalse(Arrays.equals(selectorDimFilter.getCacheKey(), selectorDimFilter3.getCacheKey()));
   }
 
   @Test
   public void testToString()
   {
-    SelectorDimFilter selectorDimFilter = new SelectorDimFilter("abc", "d", null);
+    SelectorDimFilter selectorDimFilter = new SelectorDimFilter("abc", "d", null, NullHandlingConfig.LEGACY_CONFIG);
     RegexDimExtractionFn regexFn = new RegexDimExtractionFn(".*", false, null);
-    SelectorDimFilter selectorDimFilter2 = new SelectorDimFilter("abc", "d", regexFn);
+    SelectorDimFilter selectorDimFilter2 = new SelectorDimFilter("abc", "d", regexFn, NullHandlingConfig.LEGACY_CONFIG);
 
     Assert.assertEquals("abc = d", selectorDimFilter.toString());
     Assert.assertEquals("regex(/.*/, 1)(abc) = d", selectorDimFilter2.toString());
@@ -53,9 +54,9 @@ public class SelectorDimFilterTest
   @Test
   public void testHashCode()
   {
-    SelectorDimFilter selectorDimFilter = new SelectorDimFilter("abc", "d", null);
+    SelectorDimFilter selectorDimFilter = new SelectorDimFilter("abc", "d", null, NullHandlingConfig.LEGACY_CONFIG);
     RegexDimExtractionFn regexFn = new RegexDimExtractionFn(".*", false, null);
-    SelectorDimFilter selectorDimFilter2 = new SelectorDimFilter("abc", "d", regexFn);
+    SelectorDimFilter selectorDimFilter2 = new SelectorDimFilter("abc", "d", regexFn, NullHandlingConfig.LEGACY_CONFIG);
 
     Assert.assertNotEquals(selectorDimFilter.hashCode(), selectorDimFilter2.hashCode());
   }
@@ -63,7 +64,7 @@ public class SelectorDimFilterTest
   @Test
   public void testSimpleOptimize()
   {
-    SelectorDimFilter selectorDimFilter = new SelectorDimFilter("abc", "d", null);
+    SelectorDimFilter selectorDimFilter = new SelectorDimFilter("abc", "d", null, NullHandlingConfig.LEGACY_CONFIG);
     DimFilter filter = new AndDimFilter(
         Arrays.<DimFilter>asList(
             new OrDimFilter(

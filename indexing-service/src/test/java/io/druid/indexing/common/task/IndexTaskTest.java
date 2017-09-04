@@ -51,6 +51,7 @@ import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.granularity.ArbitraryGranularitySpec;
 import io.druid.segment.indexing.granularity.GranularitySpec;
@@ -144,7 +145,7 @@ public class IndexTaskTest
             createTuningConfig(2, null, false, true),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -187,7 +188,7 @@ public class IndexTaskTest
             createTuningConfig(2, null, true, false),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     Assert.assertEquals(indexTask.getId(), indexTask.getGroupId());
@@ -233,7 +234,7 @@ public class IndexTaskTest
             createTuningConfig(10, null, false, true),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     List<DataSegment> segments = runTask(indexTask);
@@ -267,7 +268,7 @@ public class IndexTaskTest
             createTuningConfig(50, null, false, true),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -297,7 +298,7 @@ public class IndexTaskTest
             createTuningConfig(null, 1, false, true),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -333,7 +334,7 @@ public class IndexTaskTest
             createTuningConfig(2, null, false, false),
             true
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     Assert.assertEquals("index_append_test", indexTask.getGroupId());
@@ -380,7 +381,7 @@ public class IndexTaskTest
             createTuningConfig(2, null, false, true),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -440,7 +441,7 @@ public class IndexTaskTest
             createTuningConfig(2, null, false, true),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -489,7 +490,7 @@ public class IndexTaskTest
             createTuningConfig(2, null, false, true),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -533,7 +534,7 @@ public class IndexTaskTest
             createTuningConfig(2, 2, 2, null, false, false, true),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -575,7 +576,7 @@ public class IndexTaskTest
             createTuningConfig(3, 2, 2, null, false, true, true),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -616,7 +617,7 @@ public class IndexTaskTest
             createTuningConfig(3, 2, 2, null, false, false, true),
             false
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -691,7 +692,7 @@ public class IndexTaskTest
         null,
         null,
         parseExceptionIgnoreSpec,
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -744,7 +745,7 @@ public class IndexTaskTest
         null,
         null,
         parseExceptionIgnoreSpec,
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     runTask(indexTask);
@@ -803,7 +804,7 @@ public class IndexTaskTest
         null,
         null,
         parseExceptionIgnoreSpec,
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     final List<DataSegment> segments = runTask(indexTask);
@@ -873,7 +874,7 @@ public class IndexTaskTest
         null,
         null,
         parseExceptionIgnoreSpec,
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     runTask(indexTask);

@@ -25,11 +25,12 @@ public class NullableObjectAggregateCombiner extends ObjectAggregateCombiner
 {
   private boolean isNull;
 
-  private ObjectAggregateCombiner delegate;
+  private final ObjectAggregateCombiner delegate;
 
   public NullableObjectAggregateCombiner(ObjectAggregateCombiner delegate)
   {
     this.delegate = delegate;
+    this.isNull = true;
   }
 
   @Override
@@ -42,7 +43,7 @@ public class NullableObjectAggregateCombiner extends ObjectAggregateCombiner
   public void fold(ColumnValueSelector selector)
   {
     if (isNull && !selector.isNull()) {
-      isNull = true;
+      isNull = false;
     }
     delegate.fold(selector);
 

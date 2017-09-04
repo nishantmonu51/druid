@@ -19,6 +19,7 @@
 
 package io.druid.query.filter;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
@@ -34,6 +35,7 @@ import io.druid.java.util.common.StringUtils;
 import io.druid.query.extraction.ExtractionFn;
 import io.druid.query.ordering.StringComparator;
 import io.druid.query.ordering.StringComparators;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.filter.BoundFilter;
 
 import javax.annotation.Nullable;
@@ -54,6 +56,7 @@ public class BoundDimFilter implements DimFilter
   private final Supplier<DruidLongPredicate> longPredicateSupplier;
   private final Supplier<DruidFloatPredicate> floatPredicateSupplier;
   private final Supplier<DruidDoublePredicate> doublePredicateSupplier;
+  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public BoundDimFilter(
@@ -64,7 +67,8 @@ public class BoundDimFilter implements DimFilter
       @JsonProperty("upperStrict") Boolean upperStrict,
       @Deprecated @JsonProperty("alphaNumeric") Boolean alphaNumeric,
       @JsonProperty("extractionFn") ExtractionFn extractionFn,
-      @JsonProperty("ordering") StringComparator ordering
+      @JsonProperty("ordering") StringComparator ordering,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
   )
   {
     this.dimension = Preconditions.checkNotNull(dimension, "dimension can not be null");
@@ -96,6 +100,7 @@ public class BoundDimFilter implements DimFilter
     this.longPredicateSupplier = makeLongPredicateSupplier();
     this.floatPredicateSupplier = makeFloatPredicateSupplier();
     this.doublePredicateSupplier = makeDoublePredicateSupplier();
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @JsonProperty
@@ -807,5 +812,10 @@ public class BoundDimFilter implements DimFilter
     } else {
       return DruidDoublePredicate.ALWAYS_TRUE;
     }
+  }
+
+  public NullHandlingConfig getNullHandlingConfig()
+  {
+    return nullHandlingConfig;
   }
 }

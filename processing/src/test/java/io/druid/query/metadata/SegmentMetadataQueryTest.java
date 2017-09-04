@@ -48,6 +48,7 @@ import io.druid.query.metadata.metadata.ListColumnIncluderator;
 import io.druid.query.metadata.metadata.SegmentAnalysis;
 import io.druid.query.metadata.metadata.SegmentMetadataQuery;
 import io.druid.segment.IncrementalIndexSegment;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.TestHelper;
@@ -74,7 +75,7 @@ public class SegmentMetadataQueryTest
 {
   private static final SegmentMetadataQueryRunnerFactory FACTORY = new SegmentMetadataQueryRunnerFactory(
       new SegmentMetadataQueryQueryToolChest(new SegmentMetadataQueryConfig()),
-      QueryRunnerTestHelper.NOOP_QUERYWATCHER
+      QueryRunnerTestHelper.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
   );
   private static final ObjectMapper MAPPER = new DefaultObjectMapper();
 
@@ -89,7 +90,7 @@ public class SegmentMetadataQueryTest
     return QueryRunnerTestHelper.makeQueryRunner(
         factory,
         segmentId,
-        new QueryableIndexSegment(segmentId, index),
+        new QueryableIndexSegment(segmentId, index, NullHandlingConfig.LEGACY_CONFIG),
         null
     );
   }
@@ -105,7 +106,7 @@ public class SegmentMetadataQueryTest
     return QueryRunnerTestHelper.makeQueryRunner(
         factory,
         segmentId,
-        new IncrementalIndexSegment(index, segmentId),
+        new IncrementalIndexSegment(index, segmentId, NullHandlingConfig.LEGACY_CONFIG),
         null
     );
   }

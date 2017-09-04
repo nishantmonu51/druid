@@ -102,7 +102,7 @@ public class DistinctCountTimeseriesQueryTest
     final Iterable<Result<TimeseriesResultValue>> results = Sequences.toList(
         engine.process(
             query,
-            new IncrementalIndexStorageAdapter(index)
+            new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG)
         ),
         Lists.<Result<TimeseriesResultValue>>newLinkedList()
     );

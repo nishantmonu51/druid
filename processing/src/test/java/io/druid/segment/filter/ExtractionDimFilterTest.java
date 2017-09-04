@@ -34,6 +34,7 @@ import io.druid.query.filter.DimFilters;
 import io.druid.query.filter.ExtractionDimFilter;
 import io.druid.query.filter.Filter;
 import io.druid.query.filter.SelectorDimFilter;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.BitmapIndex;
 import io.druid.segment.data.ArrayIndexed;
 import io.druid.segment.data.BitmapSerdeFactory;
@@ -169,7 +170,7 @@ public class ExtractionDimFilterTest
   public void testEmpty()
   {
     Filter extractionFilter = new SelectorDimFilter(
-        "foo", "NFDJUKFNDSJFNS", DIM_EXTRACTION_FN
+        "foo", "NFDJUKFNDSJFNS", DIM_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG
     ).toFilter();
     ImmutableBitmap immutableBitmap = extractionFilter.getBitmapIndex(BITMAP_INDEX_SELECTOR);
     Assert.assertEquals(0, immutableBitmap.size());
@@ -179,7 +180,7 @@ public class ExtractionDimFilterTest
   public void testNull()
   {
     Filter extractionFilter = new SelectorDimFilter(
-        "FDHJSFFHDS", "extractDimVal", DIM_EXTRACTION_FN
+        "FDHJSFFHDS", "extractDimVal", DIM_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG
     ).toFilter();
     ImmutableBitmap immutableBitmap = extractionFilter.getBitmapIndex(BITMAP_INDEX_SELECTOR);
     Assert.assertEquals(0, immutableBitmap.size());
@@ -189,7 +190,7 @@ public class ExtractionDimFilterTest
   public void testNormal()
   {
     Filter extractionFilter = new SelectorDimFilter(
-        "foo", "extractDimVal", DIM_EXTRACTION_FN
+        "foo", "extractDimVal", DIM_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG
     ).toFilter();
     ImmutableBitmap immutableBitmap = extractionFilter.getBitmapIndex(BITMAP_INDEX_SELECTOR);
     Assert.assertEquals(1, immutableBitmap.size());
@@ -205,7 +206,8 @@ public class ExtractionDimFilterTest
                     "foo",
                     "extractDimVal",
                     DIM_EXTRACTION_FN,
-                    null
+                    null,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         ).getBitmapIndex(BITMAP_INDEX_SELECTOR).size()
@@ -219,13 +221,15 @@ public class ExtractionDimFilterTest
                     "foo",
                     "extractDimVal",
                     DIM_EXTRACTION_FN,
-                    null
+                    null,
+                    NullHandlingConfig.LEGACY_CONFIG
                 ),
                 new ExtractionDimFilter(
                     "foo",
                     "DOES NOT EXIST",
                     DIM_EXTRACTION_FN,
-                    null
+                    null,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         ).getBitmapIndex(BITMAP_INDEX_SELECTOR).size()
@@ -242,7 +246,8 @@ public class ExtractionDimFilterTest
                     "foo",
                     "extractDimVal",
                     DIM_EXTRACTION_FN,
-                    null
+                    null,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         ).getBitmapIndex(BITMAP_INDEX_SELECTOR).size()
@@ -256,13 +261,15 @@ public class ExtractionDimFilterTest
                     "foo",
                     "extractDimVal",
                     DIM_EXTRACTION_FN,
-                    null
+                    null,
+                    NullHandlingConfig.LEGACY_CONFIG
                 ),
                 new ExtractionDimFilter(
                     "foo",
                     "extractDimVal",
                     DIM_EXTRACTION_FN,
-                    null
+                    null,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         ).getBitmapIndex(BITMAP_INDEX_SELECTOR).size()
@@ -280,7 +287,8 @@ public class ExtractionDimFilterTest
                     "foo",
                     "extractDimVal",
                     DIM_EXTRACTION_FN,
-                    null
+                    null,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         ).getBitmapIndex(BITMAP_INDEX_SELECTOR).size()
@@ -294,7 +302,8 @@ public class ExtractionDimFilterTest
                     "foo",
                     "DOES NOT EXIST",
                     DIM_EXTRACTION_FN,
-                    null
+                    null,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         ).getBitmapIndex(BITMAP_INDEX_SELECTOR).size()

@@ -20,16 +20,18 @@
 package io.druid.query.extraction;
 
 import com.google.common.base.Strings;
+import io.druid.segment.NullHandlingConfig;
 
 import javax.annotation.Nullable;
 
 public class IdentityExtractionFn implements ExtractionFn
 {
-  private static final IdentityExtractionFn instance = new IdentityExtractionFn();
 
-  private IdentityExtractionFn()
+  private final NullHandlingConfig nullHandlingConfig;
+
+  public IdentityExtractionFn(NullHandlingConfig nullHandlingConfig)
   {
-
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -43,14 +45,14 @@ public class IdentityExtractionFn implements ExtractionFn
   public String apply(@Nullable Object value)
   {
 
-    return value == null ? null : Strings.emptyToNull(value.toString());
+    return value == null ? null : nullHandlingConfig.defaultToNull(value.toString());
   }
 
   @Override
   @Nullable
   public String apply(@Nullable String value)
   {
-    return Strings.emptyToNull(value);
+    return nullHandlingConfig.defaultToNull(value);
   }
 
   @Override
@@ -83,8 +85,4 @@ public class IdentityExtractionFn implements ExtractionFn
      return o != null && o instanceof IdentityExtractionFn;
   }
 
-  public static final IdentityExtractionFn getInstance()
-  {
-    return instance;
-  }
 }

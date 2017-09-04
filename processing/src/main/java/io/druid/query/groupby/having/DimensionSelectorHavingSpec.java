@@ -19,6 +19,7 @@
 
 package io.druid.query.groupby.having;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
@@ -26,6 +27,7 @@ import com.google.common.base.Strings;
 import io.druid.data.input.Row;
 import io.druid.query.extraction.ExtractionFn;
 import io.druid.query.extraction.IdentityExtractionFn;
+import io.druid.segment.NullHandlingConfig;
 
 import java.util.List;
 import java.util.Objects;
@@ -40,12 +42,13 @@ public class DimensionSelectorHavingSpec extends BaseHavingSpec
   public DimensionSelectorHavingSpec(
       @JsonProperty("dimension") String dimName,
       @JsonProperty("value") String value,
-      @JsonProperty("extractionFn") ExtractionFn extractionFn
+      @JsonProperty("extractionFn") ExtractionFn extractionFn,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
   )
   {
     dimension = Preconditions.checkNotNull(dimName, "Must have attribute 'dimension'");
     this.value = value;
-    this.extractionFn = extractionFn != null ? extractionFn : IdentityExtractionFn.getInstance();
+    this.extractionFn = extractionFn != null ? extractionFn : new IdentityExtractionFn(nullHandlingConfig);
   }
 
   @JsonProperty("value")

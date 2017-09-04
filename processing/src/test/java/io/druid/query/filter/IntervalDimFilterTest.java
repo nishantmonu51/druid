@@ -26,6 +26,7 @@ import io.druid.guice.GuiceInjectors;
 import io.druid.guice.annotations.Json;
 import io.druid.java.util.common.Intervals;
 import io.druid.query.extraction.RegexDimExtractionFn;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,7 +55,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
     String filterStr = mapper.writeValueAsString(intervalFilter);
     IntervalDimFilter actualFilter = mapper.reader(DimFilter.class).readValue(filterStr);
@@ -66,7 +67,8 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        new RegexDimExtractionFn(".*", false, null)
+        new RegexDimExtractionFn(".*", false, null),
+        NullHandlingConfig.LEGACY_CONFIG
     );
 
     filterStr = mapper.writeValueAsString(intervalFilter);
@@ -83,7 +85,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     DimFilter intervalFilter2 = new IntervalDimFilter(
@@ -92,7 +94,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1976-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
     Assert.assertNotEquals(intervalFilter1.getCacheKey(), intervalFilter2.getCacheKey());
 
@@ -103,7 +105,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        regexFn
+        regexFn, NullHandlingConfig.LEGACY_CONFIG
     );
     DimFilter intervalFilter4 = new IntervalDimFilter(
         Column.TIME_COLUMN_NAME,
@@ -111,7 +113,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1976-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        regexFn
+        regexFn, NullHandlingConfig.LEGACY_CONFIG
     );
     Assert.assertNotEquals(intervalFilter3.getCacheKey(), intervalFilter4.getCacheKey());
   }
@@ -127,7 +129,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     DimFilter intervalFilter2 = new IntervalDimFilter(
@@ -136,7 +138,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        regexFn
+        regexFn, NullHandlingConfig.LEGACY_CONFIG
     );
 
     DimFilter intervalFilter3 = new IntervalDimFilter(
@@ -145,7 +147,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1977-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     Assert.assertNotEquals(intervalFilter1.hashCode(), intervalFilter2.hashCode());
@@ -158,7 +160,7 @@ public class IntervalDimFilterTest
             Intervals.of("1975-01-01T00:00:00.001Z/1977-01-01T00:00:00.004Z"),
             Intervals.of("1976-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     Assert.assertEquals(intervalFilter1.hashCode(), intervalFilter4.hashCode());
@@ -169,7 +171,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
     Assert.assertNotEquals(intervalFilter1.hashCode(), intervalFilter5.hashCode());
   }
@@ -185,7 +187,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     DimFilter intervalFilter2 = new IntervalDimFilter(
@@ -194,7 +196,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        regexFn
+        regexFn, NullHandlingConfig.LEGACY_CONFIG
     );
 
     DimFilter intervalFilter3 = new IntervalDimFilter(
@@ -203,7 +205,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1977-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     Assert.assertNotEquals(intervalFilter1, intervalFilter2);
@@ -216,7 +218,7 @@ public class IntervalDimFilterTest
             Intervals.of("1975-01-01T00:00:00.001Z/1977-01-01T00:00:00.004Z"),
             Intervals.of("1976-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
     Assert.assertEquals(intervalFilter1, intervalFilter4);
 
@@ -226,7 +228,7 @@ public class IntervalDimFilterTest
             Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
             Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
         ),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
     Assert.assertNotEquals(intervalFilter1, intervalFilter5);
   }

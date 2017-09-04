@@ -69,6 +69,7 @@ import io.druid.segment.IncrementalIndexSegment;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.column.ColumnConfig;
@@ -150,9 +151,9 @@ public class FilteredAggregatorBenchmark
           {
             return 0;
           }
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO);
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   @Setup
@@ -177,7 +178,9 @@ public class FilteredAggregatorBenchmark
 
     filter = new OrDimFilter(
         Arrays.asList(
-            new BoundDimFilter("dimSequential", "-1", "-1", true, true, null, null, StringComparators.ALPHANUMERIC),
+            new BoundDimFilter("dimSequential", "-1", "-1", true, true, null, null, StringComparators.ALPHANUMERIC,
+                               NullHandlingConfig.LEGACY_CONFIG
+            ),
             new JavaScriptDimFilter(
                 "dimSequential",
                 "function(x) { return false }",
@@ -186,7 +189,7 @@ public class FilteredAggregatorBenchmark
             ),
             new RegexDimFilter("dimSequential", "X", null),
             new SearchQueryDimFilter("dimSequential", new ContainsSearchQuerySpec("X", false), null),
-            new InDimFilter("dimSequential", Collections.singletonList("X"), null)
+            new InDimFilter("dimSequential", Collections.singletonList("X"), null, NullHandlingConfig.LEGACY_CONFIG)
         )
     );
     filteredMetrics = new AggregatorFactory[1];
@@ -284,7 +287,7 @@ public class FilteredAggregatorBenchmark
     QueryRunner<Result<TimeseriesResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "incIndex",
-        new IncrementalIndexSegment(incIndex, "incIndex")
+        new IncrementalIndexSegment(incIndex, "incIndex", NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TimeseriesResultValue>> results = FilteredAggregatorBenchmark.runQuery(factory, runner, query);
@@ -301,7 +304,7 @@ public class FilteredAggregatorBenchmark
     final QueryRunner<Result<TimeseriesResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndex)
+        new QueryableIndexSegment("qIndex", qIndex, NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TimeseriesResultValue>> results = FilteredAggregatorBenchmark.runQuery(factory, runner, query);

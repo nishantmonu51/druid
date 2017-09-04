@@ -57,6 +57,7 @@ import io.druid.query.timeseries.TimeseriesQueryQueryToolChest;
 import io.druid.query.timeseries.TimeseriesQueryRunnerFactory;
 import io.druid.query.timeseries.TimeseriesResultValue;
 import io.druid.segment.IncrementalIndexSegment;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import org.joda.time.Interval;
 import org.junit.Assert;
@@ -342,7 +343,7 @@ public class OnheapIncrementalIndexBenchmark extends AbstractBenchmark
     final Interval queryInterval = Intervals.of("1900-01-01T00:00:00Z/2900-01-01T00:00:00Z");
     final List<ListenableFuture<?>> indexFutures = new LinkedList<>();
     final List<ListenableFuture<?>> queryFutures = new LinkedList<>();
-    final Segment incrementalIndexSegment = new IncrementalIndexSegment(incrementalIndex, null);
+    final Segment incrementalIndexSegment = new IncrementalIndexSegment(incrementalIndex, null, NullHandlingConfig.LEGACY_CONFIG);
     final QueryRunnerFactory factory = new TimeseriesQueryRunnerFactory(
         new TimeseriesQueryQueryToolChest(QueryRunnerTestHelper.NoopIntervalChunkingQueryRunnerDecorator()),
         new TimeseriesQueryEngine(),

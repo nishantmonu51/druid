@@ -52,6 +52,7 @@ import io.druid.segment.DimensionSelector;
 import io.druid.segment.IndexBuilder;
 import io.druid.segment.IndexMerger;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexStorageAdapter;
 import io.druid.segment.StorageAdapter;
@@ -195,7 +196,7 @@ public abstract class BaseFilterTest
           {
             final IncrementalIndex index = input.buildIncrementalIndex();
             return Pair.<StorageAdapter, Closeable>of(
-                new IncrementalIndexStorageAdapter(index),
+                new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG ),
                 new Closeable()
                 {
                   @Override
@@ -214,7 +215,7 @@ public abstract class BaseFilterTest
           {
             final QueryableIndex index = input.buildMMappedIndex();
             return Pair.<StorageAdapter, Closeable>of(
-                new QueryableIndexStorageAdapter(index),
+                new QueryableIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG),
                 new Closeable()
                 {
                   @Override
@@ -233,7 +234,7 @@ public abstract class BaseFilterTest
           {
             final QueryableIndex index = input.buildMMappedMergedIndex();
             return Pair.<StorageAdapter, Closeable>of(
-                new QueryableIndexStorageAdapter(index),
+                new QueryableIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG),
                 new Closeable()
                 {
                   @Override

@@ -110,25 +110,25 @@ public class TimeFilteringTest extends BaseFilterTest
   public void testTimeFilterAsLong()
   {
     assertFilterMatches(
-        new SelectorDimFilter(Column.TIME_COLUMN_NAME, "0", null),
+        new SelectorDimFilter(Column.TIME_COLUMN_NAME, "0", null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("0")
     );
     assertFilterMatches(
-        new SelectorDimFilter(Column.TIME_COLUMN_NAME, "9000", null),
+        new SelectorDimFilter(Column.TIME_COLUMN_NAME, "9000", null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new BoundDimFilter(Column.TIME_COLUMN_NAME, "0", "4", false, false, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(Column.TIME_COLUMN_NAME, "0", "4", false, false, null, null, StringComparators.NUMERIC, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("0", "1", "2", "3", "4")
     );
     assertFilterMatches(
-        new BoundDimFilter(Column.TIME_COLUMN_NAME, "0", "4", true, true, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(Column.TIME_COLUMN_NAME, "0", "4", true, true, null, null, StringComparators.NUMERIC, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("1", "2", "3")
     );
 
     assertFilterMatches(
-        new InDimFilter(Column.TIME_COLUMN_NAME, Arrays.asList("2", "4", "8"), null),
+        new InDimFilter(Column.TIME_COLUMN_NAME, Arrays.asList("2", "4", "8"), null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("2", "4")
     );
 
@@ -138,7 +138,7 @@ public class TimeFilteringTest extends BaseFilterTest
       infilterValues.add(String.valueOf(i * 2));
     }
     assertFilterMatches(
-        new InDimFilter(Column.TIME_COLUMN_NAME, infilterValues, null),
+        new InDimFilter(Column.TIME_COLUMN_NAME, infilterValues, null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("0", "2", "4")
     );
 
@@ -175,25 +175,27 @@ public class TimeFilteringTest extends BaseFilterTest
     );
 
     assertFilterMatches(
-        new SelectorDimFilter(Column.TIME_COLUMN_NAME, "Monday", exfn),
+        new SelectorDimFilter(Column.TIME_COLUMN_NAME, "Monday", exfn, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("0")
     );
     assertFilterMatches(
-        new SelectorDimFilter(Column.TIME_COLUMN_NAME, "Notaday", exfn),
+        new SelectorDimFilter(Column.TIME_COLUMN_NAME, "Notaday", exfn, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new BoundDimFilter(Column.TIME_COLUMN_NAME, "Fridax", "Fridaz", false, false, null, exfn, StringComparators.ALPHANUMERIC),
+        new BoundDimFilter(Column.TIME_COLUMN_NAME, "Fridax", "Fridaz", false, false, null, exfn, StringComparators.ALPHANUMERIC, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("4")
     );
     assertFilterMatches(
-        new BoundDimFilter(Column.TIME_COLUMN_NAME, "Friday", "Friday", true, true, null, exfn, StringComparators.ALPHANUMERIC),
+        new BoundDimFilter(Column.TIME_COLUMN_NAME, "Friday", "Friday", true, true, null, exfn, StringComparators.ALPHANUMERIC, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new InDimFilter(Column.TIME_COLUMN_NAME, Arrays.asList("Caturday", "Saturday", "Tuesday"), exfn),
+        new InDimFilter(Column.TIME_COLUMN_NAME, Arrays.asList("Caturday", "Saturday", "Tuesday"), exfn,
+                        NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("1", "5")
     );
 
@@ -204,7 +206,7 @@ public class TimeFilteringTest extends BaseFilterTest
         "Hello", "World", "1", "2", "3", "4", "5", "6", "7"
     );
     assertFilterMatches(
-        new InDimFilter(Column.TIME_COLUMN_NAME, bigList, exfn),
+        new InDimFilter(Column.TIME_COLUMN_NAME, bigList, exfn, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("1", "5")
     );
 
@@ -230,7 +232,7 @@ public class TimeFilteringTest extends BaseFilterTest
   {
     ExtractionFn exfn = new TimeFormatExtractionFn("EEEE", DateTimeZone.forID("America/New_York"), "en", null, false);
     assertFilterMatches(
-        new SelectorDimFilter(Column.TIME_COLUMN_NAME, "Wednesday", exfn),
+        new SelectorDimFilter(Column.TIME_COLUMN_NAME, "Wednesday", exfn, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("0", "1", "2", "3", "4", "5")
     );
   }
@@ -242,7 +244,7 @@ public class TimeFilteringTest extends BaseFilterTest
         new IntervalDimFilter(
             Column.TIME_COLUMN_NAME,
             Arrays.asList(Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.005Z")),
-            null
+            null, NullHandlingConfig.LEGACY_CONFIG
         ),
         ImmutableList.<String>of("1", "2", "3", "4")
     );
@@ -254,7 +256,7 @@ public class TimeFilteringTest extends BaseFilterTest
                 Intervals.of("1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.003Z"),
                 Intervals.of("1970-01-01T00:00:00.004Z/1970-01-01T00:00:00.006Z")
             ),
-            null
+            null, NullHandlingConfig.LEGACY_CONFIG
         ),
         ImmutableList.<String>of("0", "1", "2", "4", "5")
     );
@@ -267,7 +269,7 @@ public class TimeFilteringTest extends BaseFilterTest
                 Intervals.of("1970-01-01T00:00:00.003Z/1970-01-01T00:00:00.006Z"),
                 Intervals.of("1970-01-01T00:00:00.002Z/1970-01-01T00:00:00.005Z")
             ),
-            null
+            null, NullHandlingConfig.LEGACY_CONFIG
         ),
         ImmutableList.<String>of("0", "2", "3", "4", "5")
     );
@@ -279,7 +281,7 @@ public class TimeFilteringTest extends BaseFilterTest
         new IntervalDimFilter(
             Column.TIME_COLUMN_NAME,
             Arrays.asList(Intervals.of("1970-01-01T02:00:00.001Z/1970-01-01T02:00:00.005Z")),
-            exFn
+            exFn, NullHandlingConfig.LEGACY_CONFIG
         ),
         ImmutableList.<String>of("1", "2", "3", "4")
     );
@@ -292,7 +294,7 @@ public class TimeFilteringTest extends BaseFilterTest
         new IntervalDimFilter(
             "dim0",
             Arrays.asList(Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.005Z")),
-            null
+            null, NullHandlingConfig.LEGACY_CONFIG
         ),
         ImmutableList.<String>of("1", "2", "3", "4")
     );
@@ -304,7 +306,7 @@ public class TimeFilteringTest extends BaseFilterTest
                 Intervals.of("1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.003Z"),
                 Intervals.of("1970-01-01T00:00:00.004Z/1970-01-01T00:00:00.006Z")
             ),
-            null
+            null, NullHandlingConfig.LEGACY_CONFIG
         ),
         ImmutableList.<String>of("0", "1", "2", "4", "5")
     );
@@ -317,7 +319,7 @@ public class TimeFilteringTest extends BaseFilterTest
                 Intervals.of("1970-01-01T00:00:00.003Z/1970-01-01T00:00:00.006Z"),
                 Intervals.of("1970-01-01T00:00:00.002Z/1970-01-01T00:00:00.005Z")
             ),
-            null
+            null, NullHandlingConfig.LEGACY_CONFIG
         ),
         ImmutableList.<String>of("0", "2", "3", "4", "5")
     );
@@ -326,7 +328,7 @@ public class TimeFilteringTest extends BaseFilterTest
         new IntervalDimFilter(
             "dim1",
             Arrays.asList(Intervals.of("1970-01-01T00:00:00.002Z/1970-01-01T00:00:00.011Z")),
-            null
+            null, NullHandlingConfig.LEGACY_CONFIG
         ),
         ImmutableList.<String>of("1", "2")
     );
@@ -338,7 +340,7 @@ public class TimeFilteringTest extends BaseFilterTest
         new IntervalDimFilter(
             "dim0",
             Arrays.asList(Intervals.of("1970-01-01T02:00:00.001Z/1970-01-01T02:00:00.005Z")),
-            exFn
+            exFn, NullHandlingConfig.LEGACY_CONFIG
         ),
         ImmutableList.<String>of("1", "2", "3", "4")
     );

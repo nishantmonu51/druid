@@ -161,42 +161,50 @@ public class FloatAndDoubleFilteringTest extends BaseFilterTest
   private void doTestFloatColumnFiltering(final String columnName)
   {
     assertFilterMatches(
-        new SelectorDimFilter(columnName, "3", null),
+        new SelectorDimFilter(columnName, "3", null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("3")
     );
 
     assertFilterMatches(
-        new SelectorDimFilter(columnName, "3.0", null),
+        new SelectorDimFilter(columnName, "3.0", null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("3")
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, "2", "5", false, false, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(columnName, "2", "5", false, false, null, null, StringComparators.NUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("2", "3", "4", "5")
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, "2.0", "5.0", false, false, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(columnName, "2.0", "5.0", false, false, null, null, StringComparators.NUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("2", "3", "4", "5")
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, "1", "4", true, true, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(columnName, "1", "4", true, true, null, null, StringComparators.NUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("2", "3")
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, "1.0", "4.0", true, true, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(columnName, "1.0", "4.0", true, true, null, null, StringComparators.NUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("2", "3")
     );
 
     assertFilterMatches(
-        new InDimFilter(columnName, Arrays.asList("2", "4", "8"), null),
+        new InDimFilter(columnName, Arrays.asList("2", "4", "8"), null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("2", "4")
     );
 
     assertFilterMatches(
-        new InDimFilter(columnName, Arrays.asList("2.0", "4.0", "8.0"), null),
+        new InDimFilter(columnName, Arrays.asList("2.0", "4.0", "8.0"), null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("2", "4")
     );
 
@@ -206,7 +214,7 @@ public class FloatAndDoubleFilteringTest extends BaseFilterTest
       infilterValues.add(String.valueOf(i * 2));
     }
     assertFilterMatches(
-        new InDimFilter(columnName, infilterValues, null),
+        new InDimFilter(columnName, infilterValues, null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("2", "4", "6")
     );
 
@@ -247,47 +255,59 @@ public class FloatAndDoubleFilteringTest extends BaseFilterTest
   private void doTestFloatColumnFilteringWithNonNumbers(final String columnName)
   {
     assertFilterMatches(
-        new SelectorDimFilter(columnName, "", null),
+        new SelectorDimFilter(columnName, "", null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new SelectorDimFilter(columnName, null, null),
+        new SelectorDimFilter(columnName, null, null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new SelectorDimFilter(columnName, "abc", null),
+        new SelectorDimFilter(columnName, "abc", null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, "a", "b", false, false, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(columnName, "a", "b", false, false, null, null, StringComparators.NUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, " ", "4", false, false, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(columnName, " ", "4", false, false, null, null, StringComparators.NUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("1", "2", "3", "4")
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, " ", "4", false, false, null, null, StringComparators.LEXICOGRAPHIC),
+        new BoundDimFilter(columnName, " ", "4", false, false, null, null, StringComparators.LEXICOGRAPHIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("1", "2", "3")
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, " ", "4.0", false, false, null, null, StringComparators.LEXICOGRAPHIC),
+        new BoundDimFilter(columnName, " ", "4.0", false, false, null, null, StringComparators.LEXICOGRAPHIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("1", "2", "3", "4")
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, " ", "A", false, false, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(columnName, " ", "A", false, false, null, null, StringComparators.NUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, " ", "A", false, false, null, null, StringComparators.LEXICOGRAPHIC),
+        new BoundDimFilter(columnName, " ", "A", false, false, null, null, StringComparators.LEXICOGRAPHIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("1", "2", "3", "4", "5", "6")
     );
   }
@@ -305,25 +325,31 @@ public class FloatAndDoubleFilteringTest extends BaseFilterTest
     LookupExtractionFn exfn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true, NullHandlingConfig.LEGACY_CONFIG);
 
     assertFilterMatches(
-        new SelectorDimFilter(columnName, "Monday", exfn),
+        new SelectorDimFilter(columnName, "Monday", exfn, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("1")
     );
     assertFilterMatches(
-        new SelectorDimFilter(columnName, "Notaday", exfn),
+        new SelectorDimFilter(columnName, "Notaday", exfn, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, "Fridax", "Fridaz", false, false, null, exfn, StringComparators.ALPHANUMERIC),
+        new BoundDimFilter(columnName, "Fridax", "Fridaz", false, false, null, exfn, StringComparators.ALPHANUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("5")
     );
     assertFilterMatches(
-        new BoundDimFilter(columnName, "Friday", "Friday", true, true, null, exfn, StringComparators.ALPHANUMERIC),
+        new BoundDimFilter(columnName, "Friday", "Friday", true, true, null, exfn, StringComparators.ALPHANUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new InDimFilter(columnName, Arrays.asList("Caturday", "Saturday", "Tuesday"), exfn),
+        new InDimFilter(columnName, Arrays.asList("Caturday", "Saturday", "Tuesday"), exfn,
+                        NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("2", "6")
     );
 
@@ -334,7 +360,7 @@ public class FloatAndDoubleFilteringTest extends BaseFilterTest
         "Hello", "World", "1", "2", "3", "4", "5", "6", "7"
     );
     assertFilterMatches(
-        new InDimFilter(columnName, bigList, exfn),
+        new InDimFilter(columnName, bigList, exfn, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("2", "6")
     );
 
@@ -358,22 +384,22 @@ public class FloatAndDoubleFilteringTest extends BaseFilterTest
   private void doTestMultithreaded(final String columnName)
   {
     assertFilterMatchesMultithreaded(
-        new SelectorDimFilter(columnName, "3", null),
+        new SelectorDimFilter(columnName, "3", null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("3")
     );
 
     assertFilterMatchesMultithreaded(
-        new SelectorDimFilter(columnName, "3.0", null),
+        new SelectorDimFilter(columnName, "3.0", null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("3")
     );
 
     assertFilterMatchesMultithreaded(
-        new InDimFilter(columnName, Arrays.asList("2", "4", "8"), null),
+        new InDimFilter(columnName, Arrays.asList("2", "4", "8"), null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("2", "4")
     );
 
     assertFilterMatchesMultithreaded(
-        new InDimFilter(columnName, Arrays.asList("2.0", "4.0", "8.0"), null),
+        new InDimFilter(columnName, Arrays.asList("2.0", "4.0", "8.0"), null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("2", "4")
     );
 
@@ -383,17 +409,21 @@ public class FloatAndDoubleFilteringTest extends BaseFilterTest
       infilterValues.add(String.valueOf(i * 2));
     }
     assertFilterMatchesMultithreaded(
-        new InDimFilter(columnName, infilterValues, null),
+        new InDimFilter(columnName, infilterValues, null, NullHandlingConfig.LEGACY_CONFIG),
         ImmutableList.<String>of("2", "4", "6")
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, "2", "5", false, false, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(columnName, "2", "5", false, false, null, null, StringComparators.NUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("2", "3", "4", "5")
     );
 
     assertFilterMatches(
-        new BoundDimFilter(columnName, "2.0", "5.0", false, false, null, null, StringComparators.NUMERIC),
+        new BoundDimFilter(columnName, "2.0", "5.0", false, false, null, null, StringComparators.NUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        ),
         ImmutableList.<String>of("2", "3", "4", "5")
     );
   }

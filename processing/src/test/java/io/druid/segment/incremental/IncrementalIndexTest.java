@@ -37,6 +37,7 @@ import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.FilteredAggregatorFactory;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.segment.CloserRule;
+import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -84,7 +85,7 @@ public class IncrementalIndexTest
     AggregatorFactory[] metrics = {
         new FilteredAggregatorFactory(
             new CountAggregatorFactory("cnt"),
-            new SelectorDimFilter("billy", "A", null)
+            new SelectorDimFilter("billy", "A", null, NullHandlingConfig.LEGACY_CONFIG)
         )
     };
     final IncrementalIndexSchema schema = new IncrementalIndexSchema.Builder()

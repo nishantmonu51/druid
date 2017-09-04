@@ -512,7 +512,6 @@ public class RowBasedColumnSelectorFactory implements ColumnSelectorFactory
         public boolean isNull()
         {
           // Time column never has null values
-          // Time column never has null values
           return false;
         }
       }

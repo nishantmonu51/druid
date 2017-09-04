@@ -292,11 +292,11 @@ public class InFilterTest extends BaseFilterTest
 
   private DimFilter toInFilter(String dim, String value, String... values)
   {
-    return new InDimFilter(dim, Lists.asList(value, values), null);
+    return new InDimFilter(dim, Lists.asList(value, values), null, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private DimFilter toInFilterWithFn(String dim, ExtractionFn fn, String value, String... values)
   {
-    return new InDimFilter(dim, Lists.asList(value, values), fn);
+    return new InDimFilter(dim, Lists.asList(value, values), fn, NullHandlingConfig.LEGACY_CONFIG);
   }
 }

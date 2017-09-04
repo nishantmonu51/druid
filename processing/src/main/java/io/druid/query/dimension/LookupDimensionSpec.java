@@ -81,7 +81,7 @@ public class LookupDimensionSpec implements DimensionSpec
   {
     this.retainMissingValue = retainMissingValue;
     this.optimize = optimize == null ? true : optimize;
-    this.replaceMissingValueWith = nullHandlingConfig.emptyToNull(replaceMissingValueWith);
+    this.replaceMissingValueWith = nullHandlingConfig.defaultToNull(replaceMissingValueWith);
     this.dimension = Preconditions.checkNotNull(dimension, "dimension can not be Null");
     this.outputName = Preconditions.checkNotNull(outputName, "outputName can not be Null");
     this.lookupReferencesManager = lookupReferencesManager;

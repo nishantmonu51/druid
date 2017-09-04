@@ -35,6 +35,7 @@ import io.druid.query.filter.DimFilter;
 import io.druid.query.filter.NotDimFilter;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.segment.IndexBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -88,43 +89,43 @@ public class AndFilterTest extends BaseFilterTest
   {
     assertFilterMatches(
         new AndDimFilter(ImmutableList.<DimFilter>of(
-            new SelectorDimFilter("dim0", "0", null),
-            new SelectorDimFilter("dim1", "0", null)
+            new SelectorDimFilter("dim0", "0", null, NullHandlingConfig.LEGACY_CONFIG),
+            new SelectorDimFilter("dim1", "0", null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.of("0")
     );
     assertFilterMatches(
         new AndDimFilter(ImmutableList.<DimFilter>of(
-            new SelectorDimFilter("dim0", "0", null),
-            new SelectorDimFilter("dim1", "1", null)
+            new SelectorDimFilter("dim0", "0", null, NullHandlingConfig.LEGACY_CONFIG),
+            new SelectorDimFilter("dim1", "1", null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.<String>of()
     );
     assertFilterMatches(
         new AndDimFilter(ImmutableList.<DimFilter>of(
-            new SelectorDimFilter("dim0", "1", null),
-            new SelectorDimFilter("dim1", "0", null)
+            new SelectorDimFilter("dim0", "1", null, NullHandlingConfig.LEGACY_CONFIG),
+            new SelectorDimFilter("dim1", "0", null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.of("1")
     );
     assertFilterMatches(
         new AndDimFilter(ImmutableList.<DimFilter>of(
-            new SelectorDimFilter("dim0", "1", null),
-            new SelectorDimFilter("dim1", "1", null)
+            new SelectorDimFilter("dim0", "1", null, NullHandlingConfig.LEGACY_CONFIG),
+            new SelectorDimFilter("dim1", "1", null, NullHandlingConfig.LEGACY_CONFIG)
         )),
         ImmutableList.<String>of()
     );
     assertFilterMatches(
         new AndDimFilter(ImmutableList.<DimFilter>of(
-            new NotDimFilter(new SelectorDimFilter("dim0", "1", null)),
-            new NotDimFilter(new SelectorDimFilter("dim1", "1", null))
+            new NotDimFilter(new SelectorDimFilter("dim0", "1", null, NullHandlingConfig.LEGACY_CONFIG)),
+            new NotDimFilter(new SelectorDimFilter("dim1", "1", null, NullHandlingConfig.LEGACY_CONFIG))
         )),
         ImmutableList.of("0", "2", "3", "4", "5")
     );
     assertFilterMatches(
         new AndDimFilter(ImmutableList.<DimFilter>of(
-            new NotDimFilter(new SelectorDimFilter("dim0", "0", null)),
-            new NotDimFilter(new SelectorDimFilter("dim1", "0", null))
+            new NotDimFilter(new SelectorDimFilter("dim0", "0", null, NullHandlingConfig.LEGACY_CONFIG)),
+            new NotDimFilter(new SelectorDimFilter("dim1", "0", null, NullHandlingConfig.LEGACY_CONFIG))
         )),
         ImmutableList.<String>of()
     );
@@ -135,43 +136,43 @@ public class AndFilterTest extends BaseFilterTest
   {
     assertFilterMatches(
         new NotDimFilter(new AndDimFilter(ImmutableList.<DimFilter>of(
-            new SelectorDimFilter("dim0", "0", null),
-            new SelectorDimFilter("dim1", "0", null)
+            new SelectorDimFilter("dim0", "0", null, NullHandlingConfig.LEGACY_CONFIG),
+            new SelectorDimFilter("dim1", "0", null, NullHandlingConfig.LEGACY_CONFIG)
         ))),
         ImmutableList.of("1", "2", "3", "4", "5")
     );
     assertFilterMatches(
         new NotDimFilter(new AndDimFilter(ImmutableList.<DimFilter>of(
-            new SelectorDimFilter("dim0", "0", null),
-            new SelectorDimFilter("dim1", "1", null)
+            new SelectorDimFilter("dim0", "0", null, NullHandlingConfig.LEGACY_CONFIG),
+            new SelectorDimFilter("dim1", "1", null, NullHandlingConfig.LEGACY_CONFIG)
         ))),
         ImmutableList.<String>of("0", "1", "2", "3", "4", "5")
     );
     assertFilterMatches(
         new NotDimFilter(new AndDimFilter(ImmutableList.<DimFilter>of(
-            new SelectorDimFilter("dim0", "1", null),
-            new SelectorDimFilter("dim1", "0", null)
+            new SelectorDimFilter("dim0", "1", null, NullHandlingConfig.LEGACY_CONFIG),
+            new SelectorDimFilter("dim1", "0", null, NullHandlingConfig.LEGACY_CONFIG)
         ))),
         ImmutableList.of("0", "2", "3", "4", "5")
     );
     assertFilterMatches(
         new NotDimFilter(new AndDimFilter(ImmutableList.<DimFilter>of(
-            new SelectorDimFilter("dim0", "1", null),
-            new SelectorDimFilter("dim1", "1", null)
+            new SelectorDimFilter("dim0", "1", null, NullHandlingConfig.LEGACY_CONFIG),
+            new SelectorDimFilter("dim1", "1", null, NullHandlingConfig.LEGACY_CONFIG)
         ))),
         ImmutableList.<String>of("0", "1", "2", "3", "4", "5")
     );
     assertFilterMatches(
         new NotDimFilter(new AndDimFilter(ImmutableList.<DimFilter>of(
-            new NotDimFilter(new SelectorDimFilter("dim0", "1", null)),
-            new NotDimFilter(new SelectorDimFilter("dim1", "1", null))
+            new NotDimFilter(new SelectorDimFilter("dim0", "1", null, NullHandlingConfig.LEGACY_CONFIG)),
+            new NotDimFilter(new SelectorDimFilter("dim1", "1", null, NullHandlingConfig.LEGACY_CONFIG))
         ))),
         ImmutableList.of("1")
     );
     assertFilterMatches(
         new NotDimFilter(new AndDimFilter(ImmutableList.<DimFilter>of(
-            new NotDimFilter(new SelectorDimFilter("dim0", "0", null)),
-            new NotDimFilter(new SelectorDimFilter("dim1", "0", null))
+            new NotDimFilter(new SelectorDimFilter("dim0", "0", null, NullHandlingConfig.LEGACY_CONFIG)),
+            new NotDimFilter(new SelectorDimFilter("dim1", "0", null, NullHandlingConfig.LEGACY_CONFIG))
         ))),
         ImmutableList.<String>of("0", "1", "2", "3", "4", "5")
     );

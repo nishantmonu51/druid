@@ -66,6 +66,7 @@ import io.druid.query.topn.TopNResultValue;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.column.ColumnConfig;
@@ -149,9 +150,9 @@ public class TopNTypeInterfaceBenchmark
           {
             return 0;
           }
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO);
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private static final Map<String, Map<String, TopNQueryBuilder>> SCHEMA_QUERY_MAP = new LinkedHashMap<>();
@@ -176,7 +177,7 @@ public class TopNTypeInterfaceBenchmark
       TopNQueryBuilder queryBuilderString = new TopNQueryBuilder()
           .dataSource("blah")
           .granularity(Granularities.ALL)
-          .dimension(new ExtractionDimensionSpec("dimSequential", "dimSequential", IdentityExtractionFn.getInstance()))
+          .dimension(new ExtractionDimensionSpec("dimSequential", "dimSequential", new IdentityExtractionFn(NullHandlingConfig.LEGACY_CONFIG)))
           .metric("sumFloatNormal")
           .intervals(intervalSpec)
           .aggregators(queryAggs);
@@ -346,7 +347,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -363,7 +364,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -374,7 +375,7 @@ public class TopNTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -391,7 +392,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -402,7 +403,7 @@ public class TopNTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -419,7 +420,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -430,7 +431,7 @@ public class TopNTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -447,7 +448,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -464,7 +465,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -475,7 +476,7 @@ public class TopNTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -492,7 +493,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -503,7 +504,7 @@ public class TopNTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -520,7 +521,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -531,7 +532,7 @@ public class TopNTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -548,7 +549,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -565,7 +566,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -576,7 +577,7 @@ public class TopNTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -593,7 +594,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -604,7 +605,7 @@ public class TopNTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -621,7 +622,7 @@ public class TopNTypeInterfaceBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -632,7 +633,7 @@ public class TopNTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     results = TopNTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);

@@ -52,6 +52,7 @@ import io.druid.segment.IncrementalIndexSegment;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMerger;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.Segment;
@@ -104,13 +105,13 @@ public class SpatialFilterBonusTest
     return Arrays.asList(
         new Object[][]{
             {
-                new IncrementalIndexSegment(rtIndex, null)
+                new IncrementalIndexSegment(rtIndex, null, NullHandlingConfig.LEGACY_CONFIG)
             },
             {
-                new QueryableIndexSegment(null, mMappedTestIndex)
+                new QueryableIndexSegment(null, mMappedTestIndex, NullHandlingConfig.LEGACY_CONFIG)
             },
             {
-                new QueryableIndexSegment(null, mergedRealtimeIndex)
+                new QueryableIndexSegment(null, mergedRealtimeIndex, NullHandlingConfig.LEGACY_CONFIG)
             }
         }
     );

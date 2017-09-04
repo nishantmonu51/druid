@@ -35,6 +35,7 @@ import io.druid.query.QueryRunner;
 import io.druid.query.Result;
 import io.druid.query.dimension.ColumnSelectorStrategy;
 import io.druid.query.dimension.ColumnSelectorStrategyFactory;
+import io.druid.query.extraction.StringFormatExtractionFn;
 import io.druid.query.search.search.SearchHit;
 import io.druid.query.search.search.SearchQuery;
 import io.druid.query.search.search.SearchQueryExecutor;
@@ -44,6 +45,7 @@ import io.druid.segment.DimensionSelector;
 import io.druid.segment.DoubleColumnSelector;
 import io.druid.segment.FloatColumnSelector;
 import io.druid.segment.LongColumnSelector;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.column.ColumnCapabilities;
 import io.druid.segment.column.ValueType;
@@ -63,11 +65,13 @@ public class SearchQueryRunner implements QueryRunner<Result<SearchResultValue>>
 
   private final Segment segment;
   private final SearchStrategySelector strategySelector;
+  private final NullHandlingConfig nullHandlingConfig;
 
-  public SearchQueryRunner(Segment segment, SearchStrategySelector strategySelector)
+  public SearchQueryRunner(Segment segment, SearchStrategySelector strategySelector, NullHandlingConfig nullHandlingConfig)
   {
     this.segment = segment;
     this.strategySelector = strategySelector;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   private static class SearchColumnSelectorStrategyFactory
@@ -116,7 +120,8 @@ public class SearchQueryRunner implements QueryRunner<Result<SearchResultValue>>
         ValueSelectorType dimSelector,
         SearchQuerySpec searchQuerySpec,
         int limit,
-        Object2IntRBTreeMap<SearchHit> set
+        Object2IntRBTreeMap<SearchHit> set,
+        NullHandlingConfig nullHandlingConfig
     );
   }
 
@@ -128,7 +133,8 @@ public class SearchQueryRunner implements QueryRunner<Result<SearchResultValue>>
         DimensionSelector selector,
         SearchQuerySpec searchQuerySpec,
         int limit,
-        final Object2IntRBTreeMap<SearchHit> set
+        final Object2IntRBTreeMap<SearchHit> set,
+        NullHandlingConfig nullHandlingConfig
     )
     {
       if (selector != null && !isNilSelector(selector)) {
@@ -136,8 +142,7 @@ public class SearchQueryRunner implements QueryRunner<Result<SearchResultValue>>
         for (int i = 0; i < vals.size(); ++i) {
           final String dimVal = selector.lookupName(vals.get(i));
           if (searchQuerySpec.accept(dimVal)) {
-            // TODO: fixme
-            set.addTo(new SearchHit(outputName, Strings.nullToEmpty(dimVal)), 1);
+            set.addTo(new SearchHit(outputName, nullHandlingConfig.getDefaultOrNull(dimVal)), 1);
             if (set.size() >= limit) {
               return;
             }
@@ -162,11 +167,12 @@ public class SearchQueryRunner implements QueryRunner<Result<SearchResultValue>>
         LongColumnSelector selector,
         SearchQuerySpec searchQuerySpec,
         int limit,
-        Object2IntRBTreeMap<SearchHit> set
+        Object2IntRBTreeMap<SearchHit> set,
+        NullHandlingConfig nullHandlingConfig
     )
     {
       if (selector != null) {
-        final String dimVal = String.valueOf(selector.getLong());
+        final String dimVal = !nullHandlingConfig.useDefaultValuesForNull() && selector.isNull() ? null : String.valueOf(selector.getLong());
         if (searchQuerySpec.accept(dimVal)) {
           set.addTo(new SearchHit(outputName, dimVal), 1);
         }
@@ -182,11 +188,12 @@ public class SearchQueryRunner implements QueryRunner<Result<SearchResultValue>>
         FloatColumnSelector selector,
         SearchQuerySpec searchQuerySpec,
         int limit,
-        Object2IntRBTreeMap<SearchHit> set
+        Object2IntRBTreeMap<SearchHit> set,
+        NullHandlingConfig nullHandlingConfig
     )
     {
       if (selector != null) {
-        final String dimVal = String.valueOf(selector.getFloat());
+        final String dimVal = !nullHandlingConfig.useDefaultValuesForNull() && selector.isNull() ? null :String.valueOf(selector.getFloat());
         if (searchQuerySpec.accept(dimVal)) {
           set.addTo(new SearchHit(outputName, dimVal), 1);
         }
@@ -202,11 +209,12 @@ public class SearchQueryRunner implements QueryRunner<Result<SearchResultValue>>
         DoubleColumnSelector selector,
         SearchQuerySpec searchQuerySpec,
         int limit,
-        Object2IntRBTreeMap<SearchHit> set
+        Object2IntRBTreeMap<SearchHit> set,
+        NullHandlingConfig nullHandlingConfig
     )
     {
       if (selector != null) {
-        final String dimVal = String.valueOf(selector.getDouble());
+        final String dimVal = !nullHandlingConfig.useDefaultValuesForNull() && selector.isNull() ? null :String.valueOf(selector.getDouble());
         if (searchQuerySpec.accept(dimVal)) {
           set.addTo(new SearchHit(outputName, dimVal), 1);
         }
@@ -226,7 +234,7 @@ public class SearchQueryRunner implements QueryRunner<Result<SearchResultValue>>
     }
 
     final SearchQuery query = (SearchQuery) input;
-    final List<SearchQueryExecutor> plan = strategySelector.strategize(query).getExecutionPlan(query, segment);
+    final List<SearchQueryExecutor> plan = strategySelector.strategize(query).getExecutionPlan(query, segment, nullHandlingConfig);
     final Object2IntRBTreeMap<SearchHit> retVal = new Object2IntRBTreeMap<>(query.getSort().getComparator());
     retVal.defaultReturnValue(0);
 

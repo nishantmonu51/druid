@@ -43,6 +43,7 @@ import io.druid.query.groupby.GroupByQueryConfig;
 import io.druid.query.groupby.RowBasedColumnSelectorFactory;
 import io.druid.query.groupby.epinephelinae.RowBasedGrouperHelper.RowBasedKey;
 import io.druid.query.groupby.resource.GroupByQueryResource;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.ValueType;
 import io.druid.segment.filter.BooleanValueMatcher;
 import io.druid.segment.filter.Filters;
@@ -66,7 +67,8 @@ public class GroupByRowProcessor
       final GroupByQueryConfig config,
       final GroupByQueryResource resource,
       final ObjectMapper spillMapper,
-      final String processingTmpDir
+      final String processingTmpDir,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     final GroupByQuery query = (GroupByQuery) queryParam;
@@ -157,7 +159,8 @@ public class GroupByRowProcessor
                   },
                   temporaryStorage,
                   spillMapper,
-                  aggregatorFactories
+                  aggregatorFactories,
+                  nullHandlingConfig
               );
               final Grouper<RowBasedKey> grouper = pair.lhs;
               final Accumulator<AggregateResult, Row> accumulator = pair.rhs;

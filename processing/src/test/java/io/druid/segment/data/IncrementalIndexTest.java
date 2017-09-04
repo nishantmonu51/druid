@@ -63,6 +63,7 @@ import io.druid.query.timeseries.TimeseriesQueryRunnerFactory;
 import io.druid.query.timeseries.TimeseriesResultValue;
 import io.druid.segment.CloserRule;
 import io.druid.segment.IncrementalIndexSegment;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.incremental.IncrementalIndex;
 import io.druid.segment.incremental.IncrementalIndexSchema;
@@ -336,19 +337,19 @@ public class IncrementalIndexTest
             new CountAggregatorFactory("count"),
             new FilteredAggregatorFactory(
                 new CountAggregatorFactory("count_selector_filtered"),
-                new SelectorDimFilter("dim2", "2", null)
+                new SelectorDimFilter("dim2", "2", null, NullHandlingConfig.LEGACY_CONFIG)
             ),
             new FilteredAggregatorFactory(
                 new CountAggregatorFactory("count_bound_filtered"),
-                new BoundDimFilter("dim2", "2", "3", false, true, null, null, StringComparators.NUMERIC)
+                new BoundDimFilter("dim2", "2", "3", false, true, null, null, StringComparators.NUMERIC, NullHandlingConfig.LEGACY_CONFIG)
             ),
             new FilteredAggregatorFactory(
                 new CountAggregatorFactory("count_multivaldim_filtered"),
-                new SelectorDimFilter("dim3", "b", null)
+                new SelectorDimFilter("dim3", "b", null, NullHandlingConfig.LEGACY_CONFIG)
             ),
             new FilteredAggregatorFactory(
                 new CountAggregatorFactory("count_numeric_filtered"),
-                new SelectorDimFilter("met1", "11", null)
+                new SelectorDimFilter("met1", "11", null, NullHandlingConfig.LEGACY_CONFIG)
             )
         })
     );
@@ -473,7 +474,7 @@ public class IncrementalIndexTest
                                   .aggregators(queryAggregatorFactories)
                                   .build();
 
-    final Segment incrementalIndexSegment = new IncrementalIndexSegment(index, null);
+    final Segment incrementalIndexSegment = new IncrementalIndexSegment(index, null, NullHandlingConfig.LEGACY_CONFIG);
     final QueryRunnerFactory factory = new TimeseriesQueryRunnerFactory(
         new TimeseriesQueryQueryToolChest(QueryRunnerTestHelper.NoopIntervalChunkingQueryRunnerDecorator()),
         new TimeseriesQueryEngine(),
@@ -573,7 +574,7 @@ public class IncrementalIndexTest
     final Interval queryInterval = Intervals.of("1900-01-01T00:00:00Z/2900-01-01T00:00:00Z");
     final List<ListenableFuture<?>> indexFutures = Lists.newArrayListWithExpectedSize(concurrentThreads);
     final List<ListenableFuture<?>> queryFutures = Lists.newArrayListWithExpectedSize(concurrentThreads);
-    final Segment incrementalIndexSegment = new IncrementalIndexSegment(index, null);
+    final Segment incrementalIndexSegment = new IncrementalIndexSegment(index, null, NullHandlingConfig.LEGACY_CONFIG);
     final QueryRunnerFactory factory = new TimeseriesQueryRunnerFactory(
         new TimeseriesQueryQueryToolChest(QueryRunnerTestHelper.NoopIntervalChunkingQueryRunnerDecorator()),
         new TimeseriesQueryEngine(),

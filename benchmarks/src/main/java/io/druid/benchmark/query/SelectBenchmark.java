@@ -62,6 +62,7 @@ import io.druid.segment.IncrementalIndexSegment;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.column.ColumnConfig;
@@ -147,9 +148,9 @@ public class SelectBenchmark
           {
             return 0;
           }
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO);
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private static final Map<String, Map<String, Druids.SelectQueryBuilder>> SCHEMA_QUERY_MAP = new LinkedHashMap<>();
@@ -302,7 +303,7 @@ public class SelectBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         segmentId,
-        new IncrementalIndexSegment(incIndexes.get(0), segmentId)
+        new IncrementalIndexSegment(incIndexes.get(0), segmentId, NullHandlingConfig.LEGACY_CONFIG)
     );
 
     boolean done = false;
@@ -332,7 +333,7 @@ public class SelectBenchmark
     QueryRunner<Result<SelectResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         segmentId,
-        new QueryableIndexSegment(segmentId, qIndexes.get(0))
+        new QueryableIndexSegment(segmentId, qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     boolean done = false;
@@ -366,7 +367,7 @@ public class SelectBenchmark
       QueryRunner<Result<SelectResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
           factory,
           segmentName,
-          new QueryableIndexSegment(segmentName, qIndexes.get(i))
+          new QueryableIndexSegment(segmentName, qIndexes.get(i), NullHandlingConfig.LEGACY_CONFIG)
       );
       singleSegmentRunners.add(toolChest.preMergeQueryDecoration(runner));
     }

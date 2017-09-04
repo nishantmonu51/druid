@@ -43,6 +43,7 @@ import io.druid.query.dimension.DimensionSpec;
 import io.druid.query.spec.LegacySegmentSpec;
 import io.druid.segment.CloserRule;
 import io.druid.segment.IncrementalIndexSegment;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.TestHelper;
 import io.druid.segment.incremental.IncrementalIndex;
@@ -159,6 +160,6 @@ public class GroupByQueryRunnerFactoryTest
 
     closerRule.closeLater(incrementalIndex);
 
-    return new IncrementalIndexSegment(incrementalIndex, "test");
+    return new IncrementalIndexSegment(incrementalIndex, "test", NullHandlingConfig.LEGACY_CONFIG);
   }
 }
