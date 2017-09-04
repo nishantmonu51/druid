@@ -40,6 +40,7 @@ import io.druid.query.filter.InDimFilter;
 import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.lookup.LookupExtractor;
 import io.druid.segment.IndexBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -256,7 +257,7 @@ public class InFilterTest extends BaseFilterTest
         "c", "BYE"
     );
     LookupExtractor mapExtractor = new MapLookupExtractor(stringMap, false);
-    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true);
+    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true, NullHandlingConfig.LEGACY_CONFIG);
 
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn, null, "HELLO"), ImmutableList.of("a"));
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn, "HELLO", "BYE"), ImmutableList.of("a", "c"));
@@ -272,7 +273,7 @@ public class InFilterTest extends BaseFilterTest
             "a", "e"
     );
     LookupExtractor mapExtractor2 = new MapLookupExtractor(stringMap2, false);
-    LookupExtractionFn lookupFn2 = new LookupExtractionFn(mapExtractor2, true, null, false, true);
+    LookupExtractionFn lookupFn2 = new LookupExtractionFn(mapExtractor2, true, null, false, true, NullHandlingConfig.LEGACY_CONFIG);
 
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn2, null, "e"), ImmutableList.of("a", "e"));
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn2, "a"), ImmutableList.<String>of());
@@ -282,7 +283,7 @@ public class InFilterTest extends BaseFilterTest
             "100", "e"
     );
     LookupExtractor mapExtractor3 = new MapLookupExtractor(stringMap3, false);
-    LookupExtractionFn lookupFn3 = new LookupExtractionFn(mapExtractor3, false, null, false, true);
+    LookupExtractionFn lookupFn3 = new LookupExtractionFn(mapExtractor3, false, null, false, true, NullHandlingConfig.LEGACY_CONFIG);
 
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn3, null, "c", ""), ImmutableList.of("a", "b", "d", "e", "f"));
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn3, "e"), ImmutableList.<String>of());

@@ -36,6 +36,7 @@ import io.druid.query.groupby.GroupByQueryRunnerTestHelper;
 import io.druid.query.groupby.orderby.DefaultLimitSpec;
 import io.druid.query.groupby.orderby.OrderByColumnSpec;
 import io.druid.segment.IncrementalIndexSegment;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.TestHelper;
 import io.druid.segment.incremental.IncrementalIndex;
@@ -116,7 +117,7 @@ public class DistinctCountGroupByQueryTest
         .setAggregatorSpecs(
             Lists.newArrayList(
                 QueryRunnerTestHelper.rowsCount,
-                new DistinctCountAggregatorFactory("UV", visitor_id, null)
+                new DistinctCountAggregatorFactory("UV", visitor_id, null, NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .build();

@@ -31,6 +31,7 @@ import com.google.common.collect.Sets;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.java.util.common.IAE;
 import io.druid.query.extraction.MapLookupExtractor;
+import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,14 +92,16 @@ public class LookupExtractionFnTest
         retainMissing,
         replaceMissing,
         injective,
-        false
+        false,
+        NullHandlingConfig.LEGACY_CONFIG
     );
     final LookupExtractionFn lookupExtractionFn2 = new LookupExtractionFn(
         new MapLookupExtractor(ImmutableMap.of("foo", "bar"), false),
         retainMissing,
         replaceMissing,
         injective,
-        false
+        false,
+        NullHandlingConfig.LEGACY_CONFIG
     );
 
 
@@ -107,7 +110,8 @@ public class LookupExtractionFnTest
         retainMissing,
         replaceMissing,
         injective,
-        false
+        false,
+        NullHandlingConfig.LEGACY_CONFIG
     );
 
     Assert.assertEquals(lookupExtractionFn1, lookupExtractionFn2);
@@ -128,7 +132,8 @@ public class LookupExtractionFnTest
         retainMissing,
         replaceMissing,
         injective,
-        false
+        false,
+        NullHandlingConfig.LEGACY_CONFIG
     );
     final String str1 = OBJECT_MAPPER.writeValueAsString(lookupExtractionFn);
 
@@ -155,7 +160,8 @@ public class LookupExtractionFnTest
           retainMissing,
           Strings.emptyToNull(replaceMissing),
           injective,
-          false
+          false,
+          NullHandlingConfig.LEGACY_CONFIG
       );
     } else {
       throw new IAE("Case not valid");
@@ -177,7 +183,8 @@ public class LookupExtractionFnTest
         retainMissing,
         replaceMissing,
         injective,
-        false
+        false,
+        NullHandlingConfig.LEGACY_CONFIG
     );
 
     if (Strings.isNullOrEmpty(replaceMissing) || retainMissing) {
@@ -189,7 +196,8 @@ public class LookupExtractionFnTest
                   !lookupExtractionFn.isRetainMissingValue(),
                   lookupExtractionFn.getReplaceMissingValueWith(),
                   lookupExtractionFn.isInjective(),
-                  false
+                  false,
+                  NullHandlingConfig.LEGACY_CONFIG
               ).getCacheKey()
           )
       );
@@ -201,7 +209,8 @@ public class LookupExtractionFnTest
                   !lookupExtractionFn.isRetainMissingValue(),
                   lookupExtractionFn.getReplaceMissingValueWith(),
                   !lookupExtractionFn.isInjective(),
-                  false
+                  false,
+                  NullHandlingConfig.LEGACY_CONFIG
               ).getCacheKey()
           )
       );
@@ -214,7 +223,8 @@ public class LookupExtractionFnTest
                 lookupExtractionFn.isRetainMissingValue(),
                 lookupExtractionFn.getReplaceMissingValueWith(),
                 lookupExtractionFn.isInjective(),
-                false
+                false,
+                NullHandlingConfig.LEGACY_CONFIG
             ).getCacheKey()
         )
     );
@@ -226,7 +236,8 @@ public class LookupExtractionFnTest
                 lookupExtractionFn.isRetainMissingValue(),
                 lookupExtractionFn.getReplaceMissingValueWith(),
                 !lookupExtractionFn.isInjective(),
-                false
+                false,
+                NullHandlingConfig.LEGACY_CONFIG
             ).getCacheKey()
         )
     );

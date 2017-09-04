@@ -37,6 +37,7 @@ import io.druid.query.filter.JavaScriptDimFilter;
 import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.lookup.LookupExtractor;
 import io.druid.segment.IndexBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -157,7 +158,9 @@ public class JavaScriptFilterTest extends BaseFilterTest
         "abc", "UNKNOWN"
     );
     LookupExtractor mapExtractor = new MapLookupExtractor(stringMap, false);
-    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true);
+    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true,
+                                                         NullHandlingConfig.LEGACY_CONFIG
+    );
 
     assertFilterMatches(newJavaScriptDimFilter("dim0", jsValueFilter("HELLO"), lookupFn), ImmutableList.of("1"));
     assertFilterMatches(newJavaScriptDimFilter("dim0", jsValueFilter("UNKNOWN"), lookupFn), ImmutableList.of("0", "2", "3", "4", "5"));

@@ -39,6 +39,7 @@ import io.druid.query.filter.NotDimFilter;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.spec.MultipleIntervalSegmentSpec;
 import io.druid.segment.IndexBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.TestHelper;
 import io.druid.segment.column.ValueType;
@@ -133,7 +134,8 @@ public class QuantileSqlAggregatorTest
         operatorTable,
         CalciteTests.createExprMacroTable(),
         plannerConfig,
-        CalciteTests.getJsonMapper()
+        CalciteTests.getJsonMapper(),
+        NullHandlingConfig.LEGACY_CONFIG
     );
   }
 

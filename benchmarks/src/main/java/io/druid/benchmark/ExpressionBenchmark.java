@@ -36,6 +36,7 @@ import io.druid.query.expression.TestExprMacroTable;
 import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.Cursor;
 import io.druid.segment.FloatColumnSelector;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexStorageAdapter;
 import io.druid.segment.VirtualColumns;
@@ -114,7 +115,8 @@ public class ExpressionBenchmark
         "name",
         null,
         "if(x>0,1.0+x,y+1)",
-        TestExprMacroTable.INSTANCE
+        TestExprMacroTable.INSTANCE,
+        NullHandlingConfig.LEGACY_CONFIG
     );
   }
 

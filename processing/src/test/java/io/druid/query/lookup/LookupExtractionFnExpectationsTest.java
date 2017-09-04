@@ -21,6 +21,7 @@ package io.druid.query.lookup;
 
 import com.google.common.collect.ImmutableMap;
 import io.druid.query.extraction.MapLookupExtractor;
+import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,7 +38,8 @@ public class LookupExtractionFnExpectationsTest
         true,
         null,
         false,
-        false
+        false,
+        NullHandlingConfig.LEGACY_CONFIG
     );
     Assert.assertNull(lookupExtractionFn.apply(null));
   }
@@ -50,7 +52,8 @@ public class LookupExtractionFnExpectationsTest
         false,
         "REPLACE",
         false,
-        false
+        false,
+        NullHandlingConfig.LEGACY_CONFIG
     );
     Assert.assertEquals("REPLACE", lookupExtractionFn.apply(null));
   }
@@ -63,7 +66,8 @@ public class LookupExtractionFnExpectationsTest
         false,
         "REPLACE",
         false,
-        false
+        false,
+        NullHandlingConfig.LEGACY_CONFIG
     );
     Assert.assertEquals("bar", lookupExtractionFn.apply(null));
   }
@@ -76,7 +80,8 @@ public class LookupExtractionFnExpectationsTest
         false,
         "REPLACE",
         false,
-        false
+        false,
+        NullHandlingConfig.LEGACY_CONFIG
     );
     Assert.assertEquals("REPLACE", lookupExtractionFn.apply(null));
   }

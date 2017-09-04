@@ -27,6 +27,7 @@ import io.druid.query.aggregation.TestDoubleColumnSelectorImpl;
 import io.druid.query.aggregation.TestLongColumnSelector;
 import io.druid.query.aggregation.TestObjectColumnSelector;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -56,7 +57,7 @@ public class DoubleLastAggregationTest
   @Before
   public void setup()
   {
-    doubleLastAggFactory = new DoubleLastAggregatorFactory("billy", "nilly");
+    doubleLastAggFactory = new DoubleLastAggregatorFactory("billy", "nilly", NullHandlingConfig.LEGACY_CONFIG);
     combiningAggFactory = (DoubleLastAggregatorFactory) doubleLastAggFactory.getCombiningFactory();
     timeSelector = new TestLongColumnSelector(times);
     valueSelector = new TestDoubleColumnSelectorImpl(doubles);

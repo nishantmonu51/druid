@@ -55,6 +55,7 @@ import io.druid.query.search.search.SearchQuery;
 import io.druid.query.search.search.SearchQueryConfig;
 import io.druid.query.search.search.SearchSortSpec;
 import io.druid.query.spec.MultipleIntervalSegmentSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.TestHelper;
 import io.druid.segment.TestIndex;
@@ -363,7 +364,8 @@ public class SearchQueryRunnerTest
         true,
         null,
         true,
-        true
+        true,
+        NullHandlingConfig.LEGACY_CONFIG
     );
 
     SearchQuery query = Druids.newSearchQueryBuilder()

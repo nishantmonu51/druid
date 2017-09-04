@@ -27,6 +27,7 @@ import io.druid.query.aggregation.TestFloatColumnSelector;
 import io.druid.query.aggregation.TestLongColumnSelector;
 import io.druid.query.aggregation.TestObjectColumnSelector;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -56,7 +57,7 @@ public class FloatFirstAggregationTest
   @Before
   public void setup()
   {
-    floatFirstAggregatorFactory = new FloatFirstAggregatorFactory("billy", "nilly");
+    floatFirstAggregatorFactory = new FloatFirstAggregatorFactory("billy", "nilly", NullHandlingConfig.LEGACY_CONFIG);
     combiningAggFactory = (FloatFirstAggregatorFactory) floatFirstAggregatorFactory.getCombiningFactory();
     timeSelector = new TestLongColumnSelector(times);
     valueSelector = new TestFloatColumnSelector(floats);

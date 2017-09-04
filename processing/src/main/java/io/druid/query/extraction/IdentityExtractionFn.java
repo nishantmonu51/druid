@@ -20,7 +20,6 @@
 package io.druid.query.extraction;
 
 import com.google.common.base.Strings;
-import io.druid.segment.NullHandlingConfig;
 
 import javax.annotation.Nullable;
 
@@ -28,7 +27,7 @@ public class IdentityExtractionFn implements ExtractionFn
 {
   private static final IdentityExtractionFn instance = new IdentityExtractionFn();
 
-  private IdentityExtractionFn(NullHandlingConfig nullHandlingConfig)
+  private IdentityExtractionFn()
   {
 
   }

@@ -22,6 +22,7 @@ package io.druid.sql.calcite.planner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import io.druid.math.expr.ExprMacroTable;
+import io.druid.segment.NullHandlingConfig;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.linq4j.QueryProvider;
@@ -47,13 +48,15 @@ public class PlannerContext
   private final DateTime localNow;
   private final long queryStartTimeMillis;
   private final Map<String, Object> queryContext;
+  private final NullHandlingConfig nullHandlingConfig;
 
   private PlannerContext(
       final DruidOperatorTable operatorTable,
       final ExprMacroTable macroTable,
       final PlannerConfig plannerConfig,
       final DateTime localNow,
-      final Map<String, Object> queryContext
+      final Map<String, Object> queryContext,
+      final NullHandlingConfig nullHandlingConfig
   )
   {
     this.operatorTable = operatorTable;
@@ -62,14 +65,16 @@ public class PlannerContext
     this.queryContext = queryContext != null ? ImmutableMap.copyOf(queryContext) : ImmutableMap.<String, Object>of();
     this.localNow = Preconditions.checkNotNull(localNow, "localNow");
     this.queryStartTimeMillis = System.currentTimeMillis();
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   public static PlannerContext create(
       final DruidOperatorTable operatorTable,
       final ExprMacroTable macroTable,
       final PlannerConfig plannerConfig,
-      final Map<String, Object> queryContext
-  )
+      final Map<String, Object> queryContext,
+      final NullHandlingConfig nullHandlingConfig
+      )
   {
     final DateTime utcNow;
     final DateTimeZone timeZone;
@@ -99,7 +104,8 @@ public class PlannerContext
         macroTable,
         plannerConfig.withOverrides(queryContext),
         utcNow.withZone(timeZone),
-        queryContext
+        queryContext,
+        nullHandlingConfig
     );
   }
 
@@ -136,6 +142,10 @@ public class PlannerContext
   public long getQueryStartTimeMillis()
   {
     return queryStartTimeMillis;
+  }
+
+  public NullHandlingConfig getNullHandlingConfig(){
+    return nullHandlingConfig;
   }
 
   public DataContext createDataContext(final JavaTypeFactory typeFactory)

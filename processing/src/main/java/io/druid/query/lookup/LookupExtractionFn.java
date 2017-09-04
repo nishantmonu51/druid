@@ -51,7 +51,7 @@ public class LookupExtractionFn extends FunctionalExtraction
       @Nullable @JsonProperty("replaceMissingValueWith") final String replaceMissingValueWith,
       @JsonProperty("injective") final boolean injective,
       @JsonProperty("optimize") Boolean optimize,
-      @JacksonInject  NullHandlingConfig nullHandlingConfig
+      @JacksonInject NullHandlingConfig nullHandlingConfig
   )
   {
     super(

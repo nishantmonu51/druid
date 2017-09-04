@@ -24,7 +24,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.druid.java.util.common.StringUtils;
 import io.druid.math.expr.ExprMacroTable;
+import io.druid.query.extraction.StringFormatExtractionFn;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.FloatColumnSelector;
+import io.druid.segment.NullHandlingConfig;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -34,32 +37,38 @@ import java.util.List;
  */
 public class FloatSumAggregatorFactory extends SimpleFloatAggregatorFactory
 {
+  private final NullHandlingConfig nullHandlingConfig;
+
   @JsonCreator
   public FloatSumAggregatorFactory(
       @JsonProperty("name") String name,
       @JsonProperty("fieldName") String fieldName,
       @JsonProperty("expression") String expression,
-      @JacksonInject ExprMacroTable macroTable
+      @JacksonInject ExprMacroTable macroTable,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
   )
   {
     super(macroTable, name, fieldName, expression);
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   public FloatSumAggregatorFactory(String name, String fieldName)
   {
-    this(name, fieldName, null, ExprMacroTable.nil());
+    this(name, fieldName, null, ExprMacroTable.nil(), NullHandlingConfig.LEGACY_CONFIG);
   }
 
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new FloatSumAggregator(getFloatColumnSelector(metricFactory, 0.0f));
+    FloatColumnSelector floatColumnSelector = getFloatColumnSelector(metricFactory, 0.0f);
+    return nullHandlingConfig.getNullableAggregator(new FloatSumAggregator(floatColumnSelector), floatColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
-    return new FloatSumBufferAggregator(getFloatColumnSelector(metricFactory, 0.0f));
+    FloatColumnSelector floatColumnSelector = getFloatColumnSelector(metricFactory, 0.0f);
+    return nullHandlingConfig.getNullableAggregator(new FloatSumBufferAggregator(floatColumnSelector), floatColumnSelector);
   }
 
   @Override
@@ -71,20 +80,20 @@ public class FloatSumAggregatorFactory extends SimpleFloatAggregatorFactory
   @Override
   public AggregateCombiner makeAggregateCombiner()
   {
-    return new DoubleSumAggregateCombiner();
+    return nullHandlingConfig.getNullableCombiner(new DoubleSumAggregateCombiner());
   }
 
   @Override
   public AggregatorFactory getCombiningFactory()
   {
-    return new FloatSumAggregatorFactory(name, name, null, macroTable);
+    return new FloatSumAggregatorFactory(name, name, null, macroTable, nullHandlingConfig);
   }
 
 
   @Override
   public List<AggregatorFactory> getRequiredColumns()
   {
-    return Arrays.asList(new FloatSumAggregatorFactory(fieldName, fieldName, expression, macroTable));
+    return Arrays.asList(new FloatSumAggregatorFactory(fieldName, fieldName, expression, macroTable, nullHandlingConfig));
   }
 
   @JsonProperty

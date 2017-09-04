@@ -64,6 +64,8 @@ public class LookupDimensionSpec implements DimensionSpec
 
   private final LookupReferencesManager lookupReferencesManager;
 
+  private final NullHandlingConfig nullHandlingConfig;
+
   @JsonCreator
   public LookupDimensionSpec(
       @JsonProperty("dimension") String dimension,
@@ -75,7 +77,7 @@ public class LookupDimensionSpec implements DimensionSpec
       @JacksonInject LookupReferencesManager lookupReferencesManager,
       @JsonProperty("optimize") Boolean optimize,
       @JacksonInject NullHandlingConfig nullHandlingConfig
-      )
+  )
   {
     this.retainMissingValue = retainMissingValue;
     this.optimize = optimize == null ? true : optimize;
@@ -96,6 +98,7 @@ public class LookupDimensionSpec implements DimensionSpec
           "The system is not configured to allow for lookups, please read about configuring a lookup manager in the docs"
       );
     }
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -149,7 +152,8 @@ public class LookupDimensionSpec implements DimensionSpec
         retainMissingValue,
         replaceMissingValueWith,
         lookupExtractor.isOneToOne(),
-        optimize
+        optimize,
+        nullHandlingConfig
     );
   }
 

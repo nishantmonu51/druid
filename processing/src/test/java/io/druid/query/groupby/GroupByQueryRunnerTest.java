@@ -124,6 +124,7 @@ import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.ordering.StringComparators;
 import io.druid.query.search.search.ContainsSearchQuerySpec;
 import io.druid.query.spec.MultipleIntervalSegmentSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.column.Column;
 import io.druid.segment.column.ValueType;
@@ -1636,7 +1637,7 @@ public class GroupByQueryRunnerTest
                 new ExtractionDimensionSpec(
                     "quality",
                     "alias",
-                    new LookupExtractionFn(new MapLookupExtractor(map, false), false, null, false, false)
+                    new LookupExtractionFn(new MapLookupExtractor(map, false), false, null, false, false, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -1714,7 +1715,7 @@ public class GroupByQueryRunnerTest
                 new ExtractionDimensionSpec(
                     "quality",
                     "alias",
-                    new LookupExtractionFn(new MapLookupExtractor(map, false), true, null, false, false)
+                    new LookupExtractionFn(new MapLookupExtractor(map, false), true, null, false, false, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -1792,7 +1793,7 @@ public class GroupByQueryRunnerTest
                 new ExtractionDimensionSpec(
                     "quality",
                     "alias",
-                    new LookupExtractionFn(new MapLookupExtractor(map, false), true, null, true, false)
+                    new LookupExtractionFn(new MapLookupExtractor(map, false), true, null, true, false, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -1870,7 +1871,7 @@ public class GroupByQueryRunnerTest
                 new ExtractionDimensionSpec(
                     "quality",
                     "alias",
-                    new LookupExtractionFn(new MapLookupExtractor(map, false), false, "MISSING", true, false)
+                    new LookupExtractionFn(new MapLookupExtractor(map, false), false, "MISSING", true, false, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -1947,7 +1948,7 @@ public class GroupByQueryRunnerTest
                 new ExtractionDimensionSpec(
                     "quality",
                     "alias",
-                    new LookupExtractionFn(new MapLookupExtractor(map, false), false, null, true, false)
+                    new LookupExtractionFn(new MapLookupExtractor(map, false), false, null, true, false, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -2110,8 +2111,8 @@ public class GroupByQueryRunnerTest
         .setDimensions(Lists.<DimensionSpec>newArrayList(new DefaultDimensionSpec("market", "market")))
         .setAggregatorSpecs(
             Arrays.asList(
-                new LongFirstAggregatorFactory("first", "index"),
-                new LongLastAggregatorFactory("last", "index")
+                new LongFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG),
+                new LongLastAggregatorFactory("last", "index", NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .setGranularity(QueryRunnerTestHelper.monthGran)
@@ -2149,8 +2150,8 @@ public class GroupByQueryRunnerTest
                 QueryRunnerTestHelper.rowsCount,
                 QueryRunnerTestHelper.indexLongSum,
                 QueryRunnerTestHelper.qualityCardinality,
-                new LongFirstAggregatorFactory("first", "index"),
-                new LongLastAggregatorFactory("last", "index")
+                new LongFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG),
+                new LongLastAggregatorFactory("last", "index", NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .setGranularity(QueryRunnerTestHelper.dayGran)
@@ -2902,7 +2903,7 @@ public class GroupByQueryRunnerTest
            .setAggregatorSpecs(
                Arrays.asList(
                    QueryRunnerTestHelper.rowsCount,
-                   new DoubleSumAggregatorFactory("idx", null, "index / 2 + indexMin", TestExprMacroTable.INSTANCE)
+                   new DoubleSumAggregatorFactory("idx", null, "index / 2 + indexMin", TestExprMacroTable.INSTANCE, NullHandlingConfig.LEGACY_CONFIG)
                )
            );
 
@@ -3487,7 +3488,7 @@ public class GroupByQueryRunnerTest
                 new ExtractionDimensionSpec(
                     "quality",
                     "alias",
-                    new LookupExtractionFn(new MapLookupExtractor(map, false), false, null, false, false)
+                    new LookupExtractionFn(new MapLookupExtractor(map, false), false, null, false, false, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -6078,8 +6079,8 @@ public class GroupByQueryRunnerTest
         .setAggregatorSpecs(
             ImmutableList.<AggregatorFactory>of(
                 QueryRunnerTestHelper.rowsCount,
-                new LongFirstAggregatorFactory("innerfirst", "index"),
-                new LongLastAggregatorFactory("innerlast", "index")
+                new LongFirstAggregatorFactory("innerfirst", "index", NullHandlingConfig.LEGACY_CONFIG),
+                new LongLastAggregatorFactory("innerlast", "index", NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .setGranularity(QueryRunnerTestHelper.dayGran)
@@ -6093,8 +6094,8 @@ public class GroupByQueryRunnerTest
         .setDimensions(Lists.<DimensionSpec>newArrayList())
         .setAggregatorSpecs(
             ImmutableList.<AggregatorFactory>of(
-                new LongFirstAggregatorFactory("first", "innerfirst"),
-                new LongLastAggregatorFactory("last", "innerlast")
+                new LongFirstAggregatorFactory("first", "innerfirst", NullHandlingConfig.LEGACY_CONFIG),
+                new LongLastAggregatorFactory("last", "innerlast", NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .setGranularity(QueryRunnerTestHelper.monthGran)
@@ -6732,7 +6733,8 @@ public class GroupByQueryRunnerTest
                             ),
                             false
                         ), false, null, false,
-                        false
+                        false,
+                        NullHandlingConfig.LEGACY_CONFIG
                     )
                 )
             )
@@ -6806,7 +6808,8 @@ public class GroupByQueryRunnerTest
                             ),
                             false
                         ), false, null, true,
-                        false
+                        false,
+                        NullHandlingConfig.LEGACY_CONFIG
                     )
                 )
             )
@@ -6851,7 +6854,7 @@ public class GroupByQueryRunnerTest
     extractionMap.put("news", "automotiveAndBusinessAndNewsAndMezzanine");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false, NullHandlingConfig.LEGACY_CONFIG);
 
     List<DimFilter> dimFilters = Lists.<DimFilter>newArrayList(
         new ExtractionDimFilter("quality", "automotiveAndBusinessAndNewsAndMezzanine", lookupExtractionFn, null),
@@ -6923,7 +6926,7 @@ public class GroupByQueryRunnerTest
     extractionMap.put("travel", "travel0");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false, NullHandlingConfig.LEGACY_CONFIG);
     GroupByQuery query = GroupByQuery.builder().setDataSource(QueryRunnerTestHelper.dataSource)
                                      .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
                                      .setDimensions(
@@ -6963,7 +6966,7 @@ public class GroupByQueryRunnerTest
   {
     Map<String, String> extractionMap = new HashMap<>();
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false, NullHandlingConfig.LEGACY_CONFIG);
 
     GroupByQuery query = GroupByQuery.builder().setDataSource(QueryRunnerTestHelper.dataSource)
                                      .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
@@ -7004,7 +7007,7 @@ public class GroupByQueryRunnerTest
     extractionMap.put("", "NULLorEMPTY");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false, NullHandlingConfig.LEGACY_CONFIG);
 
     GroupByQuery query = GroupByQuery.builder().setDataSource(QueryRunnerTestHelper.dataSource)
                                      .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
@@ -7056,7 +7059,7 @@ public class GroupByQueryRunnerTest
     extractionMap.put("travel", "travel0");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, "missing", true, false);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, "missing", true, false, NullHandlingConfig.LEGACY_CONFIG);
     DimFilter filter = new ExtractionDimFilter("quality", "mezzanineANDnews", lookupExtractionFn, null);
     GroupByQuery query = GroupByQuery.builder().setDataSource(QueryRunnerTestHelper.dataSource)
                                      .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
@@ -7116,7 +7119,7 @@ public class GroupByQueryRunnerTest
     extractionMap.put("news", "newsANDmezzanine");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true, NullHandlingConfig.LEGACY_CONFIG);
     GroupByQuery query = GroupByQuery.builder().setDataSource(QueryRunnerTestHelper.dataSource)
                                      .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
                                      .setDimensions(Lists.<DimensionSpec>newArrayList(new DefaultDimensionSpec(
@@ -7155,7 +7158,7 @@ public class GroupByQueryRunnerTest
     extractionMap.put("", "EMPTY");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, "EMPTY", true, true);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, "EMPTY", true, true, NullHandlingConfig.LEGACY_CONFIG);
 
     GroupByQuery query = GroupByQuery.builder().setDataSource(QueryRunnerTestHelper.dataSource)
                                      .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
@@ -7282,7 +7285,7 @@ public class GroupByQueryRunnerTest
     extractionMap.put(null, "EMPTY");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn extractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true);
+    LookupExtractionFn extractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true, NullHandlingConfig.LEGACY_CONFIG);
     String jsFn = "function(x) { return(x === 'EMPTY') }";
 
     List<DimFilter> superFilterList = new ArrayList<>();

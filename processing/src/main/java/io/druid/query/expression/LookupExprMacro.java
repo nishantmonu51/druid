@@ -27,6 +27,7 @@ import io.druid.math.expr.ExprEval;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.query.lookup.LookupReferencesManager;
 import io.druid.query.lookup.RegisteredLookupExtractionFn;
+import io.druid.segment.NullHandlingConfig;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -34,11 +35,14 @@ import java.util.List;
 public class LookupExprMacro implements ExprMacroTable.ExprMacro
 {
   private final LookupReferencesManager lookupReferencesManager;
+  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
-  public LookupExprMacro(final LookupReferencesManager lookupReferencesManager)
+  public LookupExprMacro(final LookupReferencesManager lookupReferencesManager,
+                         NullHandlingConfig nullHandlingConfig)
   {
     this.lookupReferencesManager = lookupReferencesManager;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -68,7 +72,8 @@ public class LookupExprMacro implements ExprMacroTable.ExprMacro
         false,
         null,
         false,
-        null
+        null,
+        nullHandlingConfig
     );
 
     class LookupExpr implements Expr

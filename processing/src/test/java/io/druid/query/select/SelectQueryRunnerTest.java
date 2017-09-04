@@ -55,6 +55,7 @@ import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.ordering.StringComparators;
 import io.druid.query.spec.LegacySegmentSpec;
 import io.druid.query.spec.QuerySegmentSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import io.druid.segment.column.ValueType;
 import io.druid.segment.virtual.ExpressionVirtualColumn;
@@ -267,7 +268,9 @@ public class SelectQueryRunnerTest
                 new ExtractionDimensionSpec(
                     QueryRunnerTestHelper.qualityDimension,
                     "qual",
-                    new LookupExtractionFn(new MapLookupExtractor(map, true), false, null, true, false)
+                    new LookupExtractionFn(new MapLookupExtractor(map, true), false, null, true, false,
+                                           NullHandlingConfig.LEGACY_CONFIG
+                    )
                 ),
                 new DefaultDimensionSpec(QueryRunnerTestHelper.placementDimension, "place")
             )
@@ -575,7 +578,9 @@ public class SelectQueryRunnerTest
     Map<String, String> extractionMap = new HashMap<>();
     extractionMap.put("total_market", "replaced");
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true,
+                                                                   NullHandlingConfig.LEGACY_CONFIG
+    );
     SelectQuery query = newTestQuery()
         .intervals(I_0112_0114)
         .filters(new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "replaced", lookupExtractionFn))

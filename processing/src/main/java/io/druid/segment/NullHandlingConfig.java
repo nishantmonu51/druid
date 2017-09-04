@@ -22,11 +22,29 @@ package io.druid.segment;
 import com.google.common.base.Strings;
 import io.druid.query.aggregation.Aggregator;
 import io.druid.query.aggregation.BufferAggregator;
+import io.druid.query.aggregation.DoubleAggregateCombiner;
+import io.druid.query.aggregation.LongAggregateCombiner;
+import io.druid.query.aggregation.NullFilteringAggregator;
+import io.druid.query.aggregation.NullFilteringBufferAggregator;
 import io.druid.query.aggregation.NullableAggregator;
 import io.druid.query.aggregation.NullableBufferAggregator;
+import io.druid.query.aggregation.NullableDoubleAggregateCombiner;
+import io.druid.query.aggregation.NullableLongAggregateCombiner;
+import io.druid.query.aggregation.NullableObjectAggregateCombiner;
+import io.druid.query.aggregation.ObjectAggregateCombiner;
 
 public interface NullHandlingConfig
 {
+
+  public static final NullHandlingConfig LEGACY_CONFIG = new NullHandlingConfig(){
+
+    @Override
+    public boolean useDefaultValuesForNull()
+    {
+      return true;
+    }
+  };
+
   boolean useDefaultValuesForNull();
 
   default String getDefaultOrNull(String value){
@@ -57,7 +75,29 @@ public interface NullHandlingConfig
     return NullHandlingConfig.this.useDefaultValuesForNull() ? aggregator : new NullableAggregator(aggregator, selector);
   }
 
+  default Aggregator getNullFilteringAggregator(Aggregator aggregator, ColumnValueSelector selector){
+    return NullHandlingConfig.this.useDefaultValuesForNull() ? aggregator : new NullFilteringAggregator(aggregator, selector);
+  }
+
+  default BufferAggregator getNullFilteringAggregator(BufferAggregator aggregator, ColumnValueSelector selector){
+    return NullHandlingConfig.this.useDefaultValuesForNull() ? aggregator : new NullFilteringBufferAggregator(aggregator, selector);
+  }
+
   default BufferAggregator getNullableAggregator(BufferAggregator aggregator, ColumnValueSelector selector){
     return NullHandlingConfig.this.useDefaultValuesForNull() ? aggregator : new NullableBufferAggregator(aggregator, selector);
   }
+
+  default DoubleAggregateCombiner getNullableCombiner(DoubleAggregateCombiner combiner){
+    return NullHandlingConfig.this.useDefaultValuesForNull() ? combiner : new NullableDoubleAggregateCombiner(combiner);
+  }
+
+  default LongAggregateCombiner getNullableCombiner(LongAggregateCombiner combiner){
+    return NullHandlingConfig.this.useDefaultValuesForNull() ? combiner : new NullableLongAggregateCombiner(combiner);
+  }
+
+  default ObjectAggregateCombiner getNullableCombiner(ObjectAggregateCombiner combiner){
+    return NullHandlingConfig.this.useDefaultValuesForNull() ? combiner : new NullableObjectAggregateCombiner(combiner);
+  }
+
+
 }
