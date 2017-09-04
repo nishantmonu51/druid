@@ -57,7 +57,7 @@ public class LessThanHavingSpec extends BaseHavingSpec
   {
     Object metricVal = row.getRaw(aggregationName);
     if(metricVal == null || value == null){
-      return metricVal == null && value == null;
+      return false;
     }
     return HavingSpecMetricComparator.compare(row, aggregationName, value) < 0;
   }

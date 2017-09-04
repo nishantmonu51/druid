@@ -31,6 +31,7 @@ import io.druid.java.util.common.guava.Sequences;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.query.Result;
 import io.druid.query.expression.TestExprMacroTable;
+import io.druid.query.extraction.StringFormatExtractionFn;
 import io.druid.query.timeseries.TimeseriesResultValue;
 import io.druid.query.topn.TopNResultValue;
 import io.druid.segment.column.ColumnConfig;
@@ -89,7 +90,9 @@ public class TestHelper
         new InjectableValues.Std()
             .addValue(ExprMacroTable.class.getName(), TestExprMacroTable.INSTANCE)
             .addValue(ObjectMapper.class.getName(), mapper)
+            .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
     );
+
     return mapper;
   }
 
@@ -100,6 +103,7 @@ public class TestHelper
         new InjectableValues.Std()
             .addValue(ExprMacroTable.class.getName(), TestExprMacroTable.INSTANCE)
             .addValue(ObjectMapper.class.getName(), mapper)
+            .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
     );
     return mapper;
   }

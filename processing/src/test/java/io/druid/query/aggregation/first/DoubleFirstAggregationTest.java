@@ -19,6 +19,7 @@
 
 package io.druid.query.aggregation.first;
 
+import com.fasterxml.jackson.databind.InjectableValues;
 import io.druid.collections.SerializablePair;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.java.util.common.Pair;
@@ -170,6 +171,10 @@ public class DoubleFirstAggregationTest
   public void testSerde() throws Exception
   {
     DefaultObjectMapper mapper = new DefaultObjectMapper();
+    mapper.setInjectableValues(
+      new InjectableValues.Std()
+          .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
+    );
     String doubleSpecJson = "{\"type\":\"doubleFirst\",\"name\":\"billy\",\"fieldName\":\"nilly\"}";
     Assert.assertEquals(doubleFirstAggFactory, mapper.readValue(doubleSpecJson, AggregatorFactory.class));
   }

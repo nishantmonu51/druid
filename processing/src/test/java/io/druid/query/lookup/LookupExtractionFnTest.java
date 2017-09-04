@@ -19,6 +19,7 @@
 
 package io.druid.query.lookup;
 
+import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
@@ -30,6 +31,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.java.util.common.IAE;
+import io.druid.math.expr.ExprMacroTable;
+import io.druid.query.expression.TestExprMacroTable;
 import io.druid.query.extraction.MapLookupExtractor;
 import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
@@ -69,6 +72,12 @@ public class LookupExtractionFnTest
   }
 
   private static final ObjectMapper OBJECT_MAPPER = new DefaultObjectMapper();
+  static {
+    OBJECT_MAPPER.setInjectableValues(
+        new InjectableValues.Std()
+            .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
+    );
+  }
   private final boolean retainMissing;
   private final String replaceMissing;
   private final boolean injective;
