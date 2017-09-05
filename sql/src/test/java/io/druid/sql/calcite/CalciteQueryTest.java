@@ -81,7 +81,6 @@ import io.druid.query.topn.DimensionTopNMetricSpec;
 import io.druid.query.topn.InvertedTopNMetricSpec;
 import io.druid.query.topn.NumericTopNMetricSpec;
 import io.druid.query.topn.TopNQueryBuilder;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import io.druid.segment.column.ValueType;
 import io.druid.segment.virtual.ExpressionVirtualColumn;
@@ -2070,11 +2069,11 @@ public class CalciteQueryTest
                   .intervals(QSS(Filtration.eternity()))
                   .granularity(Granularities.ALL)
                   .aggregators(AGGS(
-                      new LongSumAggregatorFactory("a0", null, "(\"cnt\" * 3)", macroTable, NullHandlingConfig.LEGACY_CONFIG),
+                      new LongSumAggregatorFactory("a0", null, "(\"cnt\" * 3)", macroTable),
                       new LongSumAggregatorFactory("a1", "cnt"),
                       new DoubleSumAggregatorFactory("a2", "m1"),
-                      new LongSumAggregatorFactory("a3", null, "strlen(CAST((\"cnt\" * 10), 'STRING'))", macroTable, NullHandlingConfig.LEGACY_CONFIG),
-                      new DoubleMaxAggregatorFactory("a4", null, "(strlen(\"dim2\") + log(\"m1\"))", macroTable, NullHandlingConfig.LEGACY_CONFIG)
+                      new LongSumAggregatorFactory("a3", null, "strlen(CAST((\"cnt\" * 10), 'STRING'))", macroTable),
+                      new DoubleMaxAggregatorFactory("a4", null, "(strlen(\"dim2\") + log(\"m1\"))", macroTable)
                   ))
                   .postAggregators(ImmutableList.of(
                       EXPRESSION_POST_AGG("p0", "log((\"a1\" + \"a2\"))"),
@@ -2707,8 +2706,7 @@ public class CalciteQueryTest
                           "a0",
                           null,
                           "CAST(\"dim1\", 'LONG')",
-                          CalciteTests.createExprMacroTable(),
-                          NullHandlingConfig.LEGACY_CONFIG
+                          CalciteTests.createExprMacroTable()
                       )
                   ))
                   .context(TIMESERIES_CONTEXT_DEFAULT)
@@ -2737,8 +2735,7 @@ public class CalciteQueryTest
                           "a0",
                           null,
                           "CAST(substring(\"dim1\", 0, 10), 'LONG')",
-                          CalciteTests.createExprMacroTable(),
-                          NullHandlingConfig.LEGACY_CONFIG
+                          CalciteTests.createExprMacroTable()
                       )
                   ))
                   .context(TIMESERIES_CONTEXT_DEFAULT)
@@ -4407,8 +4404,7 @@ public class CalciteQueryTest
         false,
         null,
         false,
-        true,
-        NullHandlingConfig.LEGACY_CONFIG
+        true
     );
 
     testQuery(
@@ -4461,8 +4457,7 @@ public class CalciteQueryTest
         false,
         null,
         false,
-        true,
-        NullHandlingConfig.LEGACY_CONFIG
+        true
     );
 
     testQuery(
@@ -5517,8 +5512,7 @@ public class CalciteQueryTest
         operatorTable,
         macroTable,
         plannerConfig,
-        CalciteTests.getJsonMapper(),
-        NullHandlingConfig.LEGACY_CONFIG
+        CalciteTests.getJsonMapper()
     );
 
     viewManager.createView(

@@ -62,12 +62,6 @@ public class TestHelper
             return 0;
           }
 
-          @Override
-          public boolean useDefaultValuesForNull()
-          {
-            return true;
-          }
-
         }
     );
     INDEX_MERGER_V9 = new IndexMergerV9(jsonMapper, INDEX_IO);
@@ -90,7 +84,6 @@ public class TestHelper
         new InjectableValues.Std()
             .addValue(ExprMacroTable.class.getName(), TestExprMacroTable.INSTANCE)
             .addValue(ObjectMapper.class.getName(), mapper)
-            .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     return mapper;
@@ -103,7 +96,6 @@ public class TestHelper
         new InjectableValues.Std()
             .addValue(ExprMacroTable.class.getName(), TestExprMacroTable.INSTANCE)
             .addValue(ObjectMapper.class.getName(), mapper)
-            .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
     );
     return mapper;
   }

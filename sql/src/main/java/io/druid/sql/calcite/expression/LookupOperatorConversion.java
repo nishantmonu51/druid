@@ -24,7 +24,6 @@ import io.druid.java.util.common.StringUtils;
 import io.druid.math.expr.Expr;
 import io.druid.query.lookup.LookupReferencesManager;
 import io.druid.query.lookup.RegisteredLookupExtractionFn;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.sql.calcite.planner.PlannerContext;
 import io.druid.sql.calcite.table.RowSignature;
 import org.apache.calcite.rex.RexNode;
@@ -80,8 +79,7 @@ public class LookupOperatorConversion implements SqlOperatorConversion
                     false,
                     null,
                     false,
-                    true,
-                    NullHandlingConfig.LEGACY_CONFIG
+                    true
                 )
             );
           } else {

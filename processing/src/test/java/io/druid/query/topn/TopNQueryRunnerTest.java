@@ -91,7 +91,6 @@ import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.ordering.StringComparators;
 import io.druid.query.spec.MultipleIntervalSegmentSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.column.Column;
 import io.druid.segment.column.ValueType;
@@ -290,7 +289,7 @@ public class TopNQueryRunnerTest
                     Lists.newArrayList(
                         new DoubleMaxAggregatorFactory("maxIndex", "index"),
                         new DoubleMinAggregatorFactory("minIndex", "index"),
-                        new DoubleFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG)
+                        new DoubleFirstAggregatorFactory("first", "index")
                     )
                 )
             )
@@ -831,8 +830,8 @@ public class TopNQueryRunnerTest
         .intervals(QueryRunnerTestHelper.fullOnInterval)
         .aggregators(
             Arrays.<AggregatorFactory>asList(
-                new LongFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG),
-                new LongLastAggregatorFactory("last", "index", NullHandlingConfig.LEGACY_CONFIG)
+                new LongFirstAggregatorFactory("first", "index"),
+                new LongLastAggregatorFactory("last", "index")
             )
         )
         .build();
@@ -942,8 +941,8 @@ public class TopNQueryRunnerTest
         .intervals(QueryRunnerTestHelper.fullOnInterval)
         .aggregators(
             Arrays.<AggregatorFactory>asList(
-                new LongFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG),
-                new LongLastAggregatorFactory("last", "index", NullHandlingConfig.LEGACY_CONFIG)
+                new LongFirstAggregatorFactory("first", "index"),
+                new LongLastAggregatorFactory("last", "index")
             )
         )
         .context(ImmutableMap.<String, Object>of("chunkPeriod", "P1D"))
@@ -1056,8 +1055,8 @@ public class TopNQueryRunnerTest
         .intervals(QueryRunnerTestHelper.fullOnInterval)
         .aggregators(
             Arrays.<AggregatorFactory>asList(
-                new FloatFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG),
-                new FloatLastAggregatorFactory("last", "index", NullHandlingConfig.LEGACY_CONFIG)
+                new FloatFirstAggregatorFactory("first", "index"),
+                new FloatLastAggregatorFactory("last", "index")
             )
         )
         .build();
@@ -1167,8 +1166,8 @@ public class TopNQueryRunnerTest
         .intervals(QueryRunnerTestHelper.fullOnInterval)
         .aggregators(
             Arrays.<AggregatorFactory>asList(
-                new FloatFirstAggregatorFactory("first", "indexFloat", NullHandlingConfig.LEGACY_CONFIG),
-                new FloatLastAggregatorFactory("last", "indexFloat", NullHandlingConfig.LEGACY_CONFIG)
+                new FloatFirstAggregatorFactory("first", "indexFloat"),
+                new FloatLastAggregatorFactory("last", "indexFloat")
             )
         )
         .build();
@@ -2451,7 +2450,7 @@ public class TopNQueryRunnerTest
     query = query.withAggregatorSpecs(
         Arrays.asList(
             QueryRunnerTestHelper.rowsCount,
-            new DoubleSumAggregatorFactory("index", null, "-index + 100", ExprMacroTable.nil(), NullHandlingConfig.LEGACY_CONFIG)
+            new DoubleSumAggregatorFactory("index", null, "-index + 100", ExprMacroTable.nil())
         )
     );
 
@@ -2580,8 +2579,7 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), false, "MISSING", true,
-                    false,
-                    NullHandlingConfig.LEGACY_CONFIG
+                    false
                 )
             )
         )
@@ -2645,8 +2643,7 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), false, "MISSING", false,
-                    false,
-                    NullHandlingConfig.LEGACY_CONFIG
+                    false
                 )
             )
         )
@@ -2711,8 +2708,7 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), true, null, true,
-                    false,
-                    NullHandlingConfig.LEGACY_CONFIG
+                    false
                 )
             )
         )
@@ -2779,8 +2775,7 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), true, null, false,
-                    false,
-                    NullHandlingConfig.LEGACY_CONFIG
+                    false
                 )
             )
         )
@@ -2846,8 +2841,7 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), true, null, true,
-                    false,
-                    NullHandlingConfig.LEGACY_CONFIG
+                    false
                 )
             )
         )
@@ -2913,8 +2907,7 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), true, null, false,
-                    false,
-                    NullHandlingConfig.LEGACY_CONFIG
+                    false
                 )
             )
         )
@@ -2981,8 +2974,7 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), true, null, true,
-                    false,
-                    NullHandlingConfig.LEGACY_CONFIG
+                    false
                 )
             )
         )
@@ -4212,9 +4204,7 @@ public class TopNQueryRunnerTest
     Map<String, String> extractionMap = new HashMap<>();
     extractionMap.put("spot", "spot0");
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false,
-                                                                   NullHandlingConfig.LEGACY_CONFIG
-    );
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false);
 
     TopNQuery query = new TopNQueryBuilder().dataSource(QueryRunnerTestHelper.dataSource)
                                             .granularity(QueryRunnerTestHelper.allGran)
@@ -4264,8 +4254,7 @@ public class TopNQueryRunnerTest
     extractionMap.put("", "NULL");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false,
-                                                                   NullHandlingConfig.LEGACY_CONFIG
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false
     );
     DimFilter extractionFilter = new ExtractionDimFilter("null_column", "NULL", lookupExtractionFn, null);
     TopNQueryBuilder topNQueryBuilder = new TopNQueryBuilder()
@@ -4339,8 +4328,7 @@ public class TopNQueryRunnerTest
     extractionMap.put(null, "NULL");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, "NULL", true, true,
-                                                                   NullHandlingConfig.LEGACY_CONFIG
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, "NULL", true, true
     );
     DimFilter extractionFilter = new ExtractionDimFilter("null_column", "NULL", lookupExtractionFn, null);
     TopNQueryBuilder topNQueryBuilder = new TopNQueryBuilder()

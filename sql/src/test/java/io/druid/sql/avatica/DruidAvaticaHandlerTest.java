@@ -34,7 +34,6 @@ import io.druid.java.util.common.DateTimes;
 import io.druid.java.util.common.Pair;
 import io.druid.java.util.common.StringUtils;
 import io.druid.math.expr.ExprMacroTable;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.server.DruidNode;
 import io.druid.server.initialization.ServerConfig;
 import io.druid.sql.calcite.planner.Calcites;
@@ -128,8 +127,7 @@ public class DruidAvaticaHandlerTest
             operatorTable,
             macroTable,
             plannerConfig,
-            CalciteTests.getJsonMapper(),
-            NullHandlingConfig.LEGACY_CONFIG
+            CalciteTests.getJsonMapper()
         ),
         AVATICA_CONFIG
     );
@@ -569,8 +567,7 @@ public class DruidAvaticaHandlerTest
             operatorTable,
             macroTable,
             plannerConfig,
-            CalciteTests.getJsonMapper(),
-            NullHandlingConfig.LEGACY_CONFIG
+            CalciteTests.getJsonMapper()
         ),
         smallFrameConfig
     )

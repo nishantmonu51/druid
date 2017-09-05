@@ -25,7 +25,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import io.druid.java.util.common.StringUtils;
 import io.druid.query.extraction.ExtractionFn;
-import io.druid.segment.NullHandlingConfig;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
@@ -41,7 +40,7 @@ public class RegisteredLookupExtractionFn implements ExtractionFn
   private final String replaceMissingValueWith;
   private final boolean injective;
   private final boolean optimize;
-  private final NullHandlingConfig nullHandlingConfig;
+
 
   @JsonCreator
   public RegisteredLookupExtractionFn(
@@ -50,8 +49,7 @@ public class RegisteredLookupExtractionFn implements ExtractionFn
       @JsonProperty("retainMissingValue") final boolean retainMissingValue,
       @Nullable @JsonProperty("replaceMissingValueWith") final String replaceMissingValueWith,
       @JsonProperty("injective") final boolean injective,
-      @JsonProperty("optimize") Boolean optimize,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
+      @JsonProperty("optimize") Boolean optimize
   )
   {
     Preconditions.checkArgument(lookup != null, "`lookup` required");
@@ -61,7 +59,6 @@ public class RegisteredLookupExtractionFn implements ExtractionFn
     this.injective = injective;
     this.optimize = optimize == null ? true : optimize;
     this.lookup = lookup;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @JsonProperty("lookup")
@@ -153,8 +150,7 @@ public class RegisteredLookupExtractionFn implements ExtractionFn
               isRetainMissingValue(),
               getReplaceMissingValueWith(),
               isInjective(),
-              isOptimize(),
-              nullHandlingConfig
+              isOptimize()
           );
         }
       }

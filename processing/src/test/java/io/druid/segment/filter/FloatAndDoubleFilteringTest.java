@@ -51,7 +51,6 @@ import io.druid.query.lookup.LookupExtractor;
 import io.druid.query.ordering.StringComparators;
 import io.druid.query.search.search.ContainsSearchQuerySpec;
 import io.druid.segment.IndexBuilder;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import io.druid.segment.incremental.IncrementalIndexSchema;
 import org.junit.AfterClass;
@@ -302,7 +301,7 @@ public class FloatAndDoubleFilteringTest extends BaseFilterTest
     stringMap.put("5.0", "Friday");
     stringMap.put("6.0", "Saturday");
     LookupExtractor mapExtractor = new MapLookupExtractor(stringMap, false);
-    LookupExtractionFn exfn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true, NullHandlingConfig.LEGACY_CONFIG);
+    LookupExtractionFn exfn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true);
 
     assertFilterMatches(
         new SelectorDimFilter(columnName, "Monday", exfn),

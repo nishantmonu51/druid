@@ -19,7 +19,6 @@
 
 package io.druid.query.aggregation.distinctcount;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
@@ -35,7 +34,7 @@ import io.druid.query.aggregation.AggregateCombiner;
 import io.druid.query.dimension.DefaultDimensionSpec;
 import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.DimensionSelector;
-import io.druid.segment.NullHandlingConfig;
+import io.druid.segment.NullHandlingHelper;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -50,22 +49,19 @@ public class DistinctCountAggregatorFactory extends AggregatorFactory
   private final String name;
   private final String fieldName;
   private final BitMapFactory bitMapFactory;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public DistinctCountAggregatorFactory(
       @JsonProperty("name") String name,
       @JsonProperty("fieldName") String fieldName,
-      @JsonProperty("bitmapFactory") BitMapFactory bitMapFactory,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
-      )
+      @JsonProperty("bitmapFactory") BitMapFactory bitMapFactory
+  )
   {
     Preconditions.checkNotNull(name);
     Preconditions.checkNotNull(fieldName);
     this.name = name;
     this.fieldName = fieldName;
     this.bitMapFactory = bitMapFactory == null ? DEFAULT_BITMAP_FACTORY : bitMapFactory;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -75,7 +71,7 @@ public class DistinctCountAggregatorFactory extends AggregatorFactory
     if (selector == null) {
       return new EmptyDistinctCountAggregator();
     } else {
-      return nullHandlingConfig.getNullFilteringAggregator(new DistinctCountAggregator(
+      return NullHandlingHelper.getNullFilteringAggregator(new DistinctCountAggregator(
           selector,
           bitMapFactory.makeEmptyMutableBitmap()
       ), selector);
@@ -89,7 +85,7 @@ public class DistinctCountAggregatorFactory extends AggregatorFactory
     if (selector == null) {
       return EmptyDistinctCountBufferAggregator.instance();
     } else {
-      return nullHandlingConfig.getNullFilteringAggregator(new DistinctCountBufferAggregator(selector), selector);
+      return NullHandlingHelper.getNullFilteringAggregator(new DistinctCountBufferAggregator(selector), selector);
     }
   }
 
@@ -142,7 +138,7 @@ public class DistinctCountAggregatorFactory extends AggregatorFactory
   @Override
   public List<AggregatorFactory> getRequiredColumns()
   {
-    return Arrays.<AggregatorFactory>asList(new DistinctCountAggregatorFactory(fieldName, fieldName, bitMapFactory, nullHandlingConfig));
+    return Arrays.<AggregatorFactory>asList(new DistinctCountAggregatorFactory(fieldName, fieldName, bitMapFactory));
   }
 
   @Override

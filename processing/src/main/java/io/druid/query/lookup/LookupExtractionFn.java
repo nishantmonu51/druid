@@ -20,7 +20,6 @@
 package io.druid.query.lookup;
 
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Function;
@@ -29,7 +28,6 @@ import com.google.common.base.Throwables;
 import io.druid.java.util.common.StringUtils;
 import io.druid.query.extraction.ExtractionCacheHelper;
 import io.druid.query.extraction.FunctionalExtraction;
-import io.druid.segment.NullHandlingConfig;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
@@ -50,8 +48,7 @@ public class LookupExtractionFn extends FunctionalExtraction
       @JsonProperty("retainMissingValue") final boolean retainMissingValue,
       @Nullable @JsonProperty("replaceMissingValueWith") final String replaceMissingValueWith,
       @JsonProperty("injective") final boolean injective,
-      @JsonProperty("optimize") Boolean optimize,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
+      @JsonProperty("optimize") Boolean optimize
   )
   {
     super(
@@ -67,8 +64,7 @@ public class LookupExtractionFn extends FunctionalExtraction
         },
         retainMissingValue,
         replaceMissingValueWith,
-        injective,
-        nullHandlingConfig
+        injective
     );
     this.lookup = lookup;
     this.optimize = optimize == null ? true : optimize;

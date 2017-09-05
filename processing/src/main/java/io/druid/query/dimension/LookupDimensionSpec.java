@@ -31,7 +31,7 @@ import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.lookup.LookupExtractor;
 import io.druid.query.lookup.LookupReferencesManager;
 import io.druid.segment.DimensionSelector;
-import io.druid.segment.NullHandlingConfig;
+import io.druid.segment.NullHandlingHelper;
 import io.druid.segment.column.ValueType;
 
 import javax.annotation.Nullable;
@@ -64,7 +64,7 @@ public class LookupDimensionSpec implements DimensionSpec
 
   private final LookupReferencesManager lookupReferencesManager;
 
-  private final NullHandlingConfig nullHandlingConfig;
+
 
   @JsonCreator
   public LookupDimensionSpec(
@@ -75,13 +75,12 @@ public class LookupDimensionSpec implements DimensionSpec
       @JsonProperty("replaceMissingValueWith") String replaceMissingValueWith,
       @JsonProperty("name") String name,
       @JacksonInject LookupReferencesManager lookupReferencesManager,
-      @JsonProperty("optimize") Boolean optimize,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
+      @JsonProperty("optimize") Boolean optimize
   )
   {
     this.retainMissingValue = retainMissingValue;
     this.optimize = optimize == null ? true : optimize;
-    this.replaceMissingValueWith = nullHandlingConfig.emptyToNull(replaceMissingValueWith);
+    this.replaceMissingValueWith = NullHandlingHelper.defaultToNull(replaceMissingValueWith);
     this.dimension = Preconditions.checkNotNull(dimension, "dimension can not be Null");
     this.outputName = Preconditions.checkNotNull(outputName, "outputName can not be Null");
     this.lookupReferencesManager = lookupReferencesManager;
@@ -98,7 +97,6 @@ public class LookupDimensionSpec implements DimensionSpec
           "The system is not configured to allow for lookups, please read about configuring a lookup manager in the docs"
       );
     }
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -152,8 +150,7 @@ public class LookupDimensionSpec implements DimensionSpec
         retainMissingValue,
         replaceMissingValueWith,
         lookupExtractor.isOneToOne(),
-        optimize,
-        nullHandlingConfig
+        optimize
     );
   }
 

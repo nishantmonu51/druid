@@ -28,7 +28,6 @@ import io.druid.math.expr.ExprEval;
 import io.druid.math.expr.Parser;
 import io.druid.query.extraction.RegexDimExtractionFn;
 import io.druid.query.extraction.TimeFormatExtractionFn;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.ValueType;
 import io.druid.sql.calcite.planner.Calcites;
 import io.druid.sql.calcite.planner.PlannerConfig;
@@ -63,8 +62,7 @@ public class ExpressionsTest
       CalciteTests.createOperatorTable(),
       CalciteTests.createExprMacroTable(),
       new PlannerConfig(),
-      ImmutableMap.of(),
-      NullHandlingConfig.LEGACY_CONFIG
+      ImmutableMap.of()
   );
   private final RowSignature rowSignature = RowSignature
       .builder()

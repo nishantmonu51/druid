@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableMap;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.java.util.common.jackson.JacksonUtils;
 import io.druid.query.extraction.MapLookupExtractor;
-import io.druid.segment.NullHandlingConfig;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -59,8 +58,7 @@ public class RegisteredLookupExtractionFnTest
         true,
         null,
         true,
-        false,
-        NullHandlingConfig.LEGACY_CONFIG
+        false
     );
     EasyMock.verify(manager);
     for (String orig : Arrays.asList("", "foo", "bat")) {
@@ -85,8 +83,7 @@ public class RegisteredLookupExtractionFnTest
           true,
           null,
           true,
-          false,
-          NullHandlingConfig.LEGACY_CONFIG
+          false
       ).apply("foo");
     }
     finally {
@@ -104,8 +101,7 @@ public class RegisteredLookupExtractionFnTest
         true,
         null,
         true,
-        false,
-        NullHandlingConfig.LEGACY_CONFIG
+        false
     );
   }
 
@@ -123,8 +119,7 @@ public class RegisteredLookupExtractionFnTest
         true,
         null,
         true,
-        false,
-        NullHandlingConfig.LEGACY_CONFIG
+        false
     );
     EasyMock.verify(manager);
 
@@ -149,8 +144,7 @@ public class RegisteredLookupExtractionFnTest
         false,
         "something",
         true,
-        false,
-        NullHandlingConfig.LEGACY_CONFIG
+        false
     );
     Assert.assertEquals(
         fn,
@@ -160,8 +154,7 @@ public class RegisteredLookupExtractionFnTest
             false,
             "something",
             true,
-            false,
-            NullHandlingConfig.LEGACY_CONFIG
+            false
         )
     );
     Assert.assertNotEquals(
@@ -172,8 +165,7 @@ public class RegisteredLookupExtractionFnTest
             true,
             null,
             true,
-            false,
-            NullHandlingConfig.LEGACY_CONFIG
+            false
         )
     );
 
@@ -185,8 +177,7 @@ public class RegisteredLookupExtractionFnTest
             false,
             "something else",
             true,
-            false,
-            NullHandlingConfig.LEGACY_CONFIG
+            false
         )
     );
 
@@ -199,8 +190,7 @@ public class RegisteredLookupExtractionFnTest
             false,
             "something",
             false,
-            false,
-            NullHandlingConfig.LEGACY_CONFIG
+            false
         )
     );
 
@@ -212,8 +202,7 @@ public class RegisteredLookupExtractionFnTest
             false,
             "something",
             true,
-            true,
-            NullHandlingConfig.LEGACY_CONFIG
+            true
         )
     );
 
@@ -226,8 +215,7 @@ public class RegisteredLookupExtractionFnTest
             false,
             null,
             true,
-            false,
-            NullHandlingConfig.LEGACY_CONFIG
+            false
         )
     );
     EasyMock.verify(manager);

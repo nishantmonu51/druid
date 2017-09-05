@@ -39,7 +39,6 @@ import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.lookup.LookupExtractor;
 import io.druid.segment.IndexBuilder;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -189,9 +188,7 @@ public class SelectorFilterTest extends BaseFilterTest
         "abc", "UNKNOWN"
     );
     LookupExtractor mapExtractor = new MapLookupExtractor(stringMap, false);
-    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true,
-                                                         NullHandlingConfig.LEGACY_CONFIG
-    );
+    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true);
 
     assertFilterMatches(new SelectorDimFilter("dim0", "HELLO", lookupFn), ImmutableList.of("1"));
     assertFilterMatches(new SelectorDimFilter("dim0", "UNKNOWN", lookupFn), ImmutableList.of("0", "2", "3", "4", "5"));
@@ -212,17 +209,14 @@ public class SelectorFilterTest extends BaseFilterTest
         "2", "5"
     );
     LookupExtractor mapExtractor2 = new MapLookupExtractor(stringMap2, false);
-    LookupExtractionFn lookupFn2 = new LookupExtractionFn(mapExtractor2, true, null, false, true,
-                                                          NullHandlingConfig.LEGACY_CONFIG
-    );
+    LookupExtractionFn lookupFn2 = new LookupExtractionFn(mapExtractor2, true, null, false, true);
     assertFilterMatches(new SelectorDimFilter("dim0", "5", lookupFn2), ImmutableList.of("2", "5"));
 
     final Map<String, String> stringMap3 = ImmutableMap.of(
         //"1", null
     );
     LookupExtractor mapExtractor3 = new MapLookupExtractor(stringMap3, false);
-    LookupExtractionFn lookupFn3 = new LookupExtractionFn(mapExtractor3, false, null, false, true,
-                                                          NullHandlingConfig.LEGACY_CONFIG
+    LookupExtractionFn lookupFn3 = new LookupExtractionFn(mapExtractor3, false, null, false, true
     );
     assertFilterMatches(new SelectorDimFilter("dim0", null, lookupFn3), ImmutableList.of("0", "1", "2", "3", "4", "5"));
 
@@ -230,24 +224,21 @@ public class SelectorFilterTest extends BaseFilterTest
         "9", "4"
     );
     LookupExtractor mapExtractor4 = new MapLookupExtractor(stringMap4, false);
-    LookupExtractionFn lookupFn4 = new LookupExtractionFn(mapExtractor4, true, null, false, true,
-                                                          NullHandlingConfig.LEGACY_CONFIG
+    LookupExtractionFn lookupFn4 = new LookupExtractionFn(mapExtractor4, true, null, false, true
     );
 
     final Map<String, String> stringMap5 = ImmutableMap.of(
         "5", "44"
     );
     LookupExtractor mapExtractor5 = new MapLookupExtractor(stringMap5, false);
-    LookupExtractionFn lookupFn5 = new LookupExtractionFn(mapExtractor5, true, null, false, true,
-                                                          NullHandlingConfig.LEGACY_CONFIG
+    LookupExtractionFn lookupFn5 = new LookupExtractionFn(mapExtractor5, true, null, false, true
     );
 
     final Map<String, String> stringMap6 = ImmutableMap.of(
         "5", "5"
     );
     LookupExtractor mapExtractor6 = new MapLookupExtractor(stringMap6, false);
-    LookupExtractionFn lookupFn6 = new LookupExtractionFn(mapExtractor6, true, null, false, true,
-                                                          NullHandlingConfig.LEGACY_CONFIG
+    LookupExtractionFn lookupFn6 = new LookupExtractionFn(mapExtractor6, true, null, false, true
     );
 
     // optimize() tests, check that filter was converted to the proper form

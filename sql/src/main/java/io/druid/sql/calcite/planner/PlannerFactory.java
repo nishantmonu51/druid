@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import io.druid.guice.annotations.Json;
 import io.druid.math.expr.ExprMacroTable;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.server.QueryLifecycleFactory;
 import io.druid.sql.calcite.rel.QueryMaker;
 import io.druid.sql.calcite.schema.DruidSchema;
@@ -57,7 +56,6 @@ public class PlannerFactory
   private final ExprMacroTable macroTable;
   private final PlannerConfig plannerConfig;
   private final ObjectMapper jsonMapper;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
   public PlannerFactory(
@@ -66,8 +64,7 @@ public class PlannerFactory
       final DruidOperatorTable operatorTable,
       final ExprMacroTable macroTable,
       final PlannerConfig plannerConfig,
-      final @Json ObjectMapper jsonMapper,
-      final NullHandlingConfig nullHandlingConfig
+      final @Json ObjectMapper jsonMapper
       )
   {
     this.druidSchema = druidSchema;
@@ -76,13 +73,12 @@ public class PlannerFactory
     this.macroTable = macroTable;
     this.plannerConfig = plannerConfig;
     this.jsonMapper = jsonMapper;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   public DruidPlanner createPlanner(final Map<String, Object> queryContext)
   {
     final SchemaPlus rootSchema = Calcites.createRootSchema(druidSchema);
-    final PlannerContext plannerContext = PlannerContext.create(operatorTable, macroTable, plannerConfig, queryContext, nullHandlingConfig);
+    final PlannerContext plannerContext = PlannerContext.create(operatorTable, macroTable, plannerConfig, queryContext);
     final QueryMaker queryMaker = new QueryMaker(queryLifecycleFactory, plannerContext, jsonMapper);
     final FrameworkConfig frameworkConfig = Frameworks
         .newConfigBuilder()

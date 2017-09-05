@@ -38,7 +38,6 @@ import io.druid.query.filter.ColumnComparisonDimFilter;
 import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.lookup.LookupExtractor;
 import io.druid.segment.IndexBuilder;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -141,8 +140,7 @@ public class ColumnComparisonFilterTest extends BaseFilterTest
         "a", "7"
     );
     LookupExtractor mapExtractor = new MapLookupExtractor(stringMap, false);
-    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, true, null, false, true,
-                                                         NullHandlingConfig.LEGACY_CONFIG
+    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, true, null, false, true
     );
 
     assertFilterMatches(new ColumnComparisonDimFilter(ImmutableList.<DimensionSpec>of(

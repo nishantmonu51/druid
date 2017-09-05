@@ -19,7 +19,6 @@
 
 package io.druid.query.aggregation.first;
 
-import com.fasterxml.jackson.databind.InjectableValues;
 import io.druid.collections.SerializablePair;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.java.util.common.Pair;
@@ -28,7 +27,6 @@ import io.druid.query.aggregation.TestDoubleColumnSelectorImpl;
 import io.druid.query.aggregation.TestLongColumnSelector;
 import io.druid.query.aggregation.TestObjectColumnSelector;
 import io.druid.segment.ColumnSelectorFactory;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -58,7 +56,7 @@ public class DoubleFirstAggregationTest
   @Before
   public void setup()
   {
-    doubleFirstAggFactory = new DoubleFirstAggregatorFactory("billy", "nilly", NullHandlingConfig.LEGACY_CONFIG);
+    doubleFirstAggFactory = new DoubleFirstAggregatorFactory("billy", "nilly");
     combiningAggFactory = (DoubleFirstAggregatorFactory) doubleFirstAggFactory.getCombiningFactory();
     timeSelector = new TestLongColumnSelector(times);
     valueSelector = new TestDoubleColumnSelectorImpl(doubleValues);
@@ -171,10 +169,6 @@ public class DoubleFirstAggregationTest
   public void testSerde() throws Exception
   {
     DefaultObjectMapper mapper = new DefaultObjectMapper();
-    mapper.setInjectableValues(
-      new InjectableValues.Std()
-          .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
-    );
     String doubleSpecJson = "{\"type\":\"doubleFirst\",\"name\":\"billy\",\"fieldName\":\"nilly\"}";
     Assert.assertEquals(doubleFirstAggFactory, mapper.readValue(doubleSpecJson, AggregatorFactory.class));
   }

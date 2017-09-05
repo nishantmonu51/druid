@@ -34,7 +34,6 @@ import io.druid.query.dimension.ExtractionDimensionSpec;
 import io.druid.query.extraction.MapLookupExtractor;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.lookup.LookupExtractionFn;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import org.joda.time.Interval;
 import org.joda.time.Period;
@@ -75,8 +74,7 @@ public class DefaultGroupByQueryMetricsTest
                             ),
                             false
                         ), false, null, true,
-                        false,
-                        NullHandlingConfig.LEGACY_CONFIG
+                        false
                     )
                 )
             )

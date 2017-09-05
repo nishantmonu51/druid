@@ -32,7 +32,6 @@ import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.timeseries.TimeseriesQuery;
 import io.druid.query.timeseries.TimeseriesQueryEngine;
 import io.druid.query.timeseries.TimeseriesResultValue;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.incremental.IncrementalIndex;
 import io.druid.segment.incremental.IncrementalIndexSchema;
@@ -94,7 +93,7 @@ public class DistinctCountTimeseriesQueryTest
                                   .aggregators(
                                       Lists.newArrayList(
                                           QueryRunnerTestHelper.rowsCount,
-                                          new DistinctCountAggregatorFactory("UV", visitor_id, null, NullHandlingConfig.LEGACY_CONFIG)
+                                          new DistinctCountAggregatorFactory("UV", visitor_id, null)
                                       )
                                   )
                                   .build();

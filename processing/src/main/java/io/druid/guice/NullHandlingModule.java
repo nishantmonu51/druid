@@ -21,16 +21,8 @@ package io.druid.guice;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
-import com.google.inject.Provides;
-import io.druid.java.util.common.config.Config;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.NullHandlingHelper;
 import io.druid.segment.NullValueHandlingConfig;
-import org.skife.config.ConfigurationObjectFactory;
-
-import javax.validation.Validation;
-import javax.validation.Validator;
-import java.util.Properties;
 
 /**
  */

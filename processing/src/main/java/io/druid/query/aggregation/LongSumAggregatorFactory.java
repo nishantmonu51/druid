@@ -29,7 +29,7 @@ import io.druid.math.expr.ExprMacroTable;
 import io.druid.math.expr.Parser;
 import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.LongColumnSelector;
-import io.druid.segment.NullHandlingConfig;
+import io.druid.segment.NullHandlingHelper;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -46,15 +46,14 @@ public class LongSumAggregatorFactory extends AggregatorFactory
   private final String fieldName;
   private final String expression;
   private final ExprMacroTable macroTable;
-  private final NullHandlingConfig nullHandlingConfig;
+
 
   @JsonCreator
   public LongSumAggregatorFactory(
       @JsonProperty("name") String name,
       @JsonProperty("fieldName") String fieldName,
       @JsonProperty("expression") String expression,
-      @JacksonInject ExprMacroTable macroTable,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
+      @JacksonInject ExprMacroTable macroTable
       )
   {
     Preconditions.checkNotNull(name, "Must have a valid, non-null aggregator name");
@@ -67,26 +66,25 @@ public class LongSumAggregatorFactory extends AggregatorFactory
     this.fieldName = fieldName;
     this.expression = expression;
     this.macroTable = macroTable;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   public LongSumAggregatorFactory(String name, String fieldName)
   {
-    this(name, fieldName, null, ExprMacroTable.nil(),NullHandlingConfig.LEGACY_CONFIG);
+    this(name, fieldName, null, ExprMacroTable.nil());
   }
 
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
     LongColumnSelector longColumnSelector = getLongColumnSelector(metricFactory);
-    return nullHandlingConfig.getNullableAggregator(new LongSumAggregator(longColumnSelector), longColumnSelector);
+    return NullHandlingHelper.getNullableAggregator(new LongSumAggregator(longColumnSelector), longColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
     LongColumnSelector longColumnSelector = getLongColumnSelector(metricFactory);
-    return nullHandlingConfig.getNullableAggregator(new LongSumBufferAggregator(longColumnSelector), longColumnSelector);
+    return NullHandlingHelper.getNullableAggregator(new LongSumBufferAggregator(longColumnSelector), longColumnSelector);
   }
 
   private LongColumnSelector getLongColumnSelector(ColumnSelectorFactory metricFactory)
@@ -109,13 +107,13 @@ public class LongSumAggregatorFactory extends AggregatorFactory
   @Override
   public AggregateCombiner makeAggregateCombiner()
   {
-    return nullHandlingConfig.getNullableCombiner(new LongSumAggregateCombiner());
+    return NullHandlingHelper.getNullableCombiner(new LongSumAggregateCombiner());
   }
 
   @Override
   public AggregatorFactory getCombiningFactory()
   {
-    return new LongSumAggregatorFactory(name, name, null, macroTable, nullHandlingConfig);
+    return new LongSumAggregatorFactory(name, name, null, macroTable);
   }
 
   @Override
@@ -131,7 +129,7 @@ public class LongSumAggregatorFactory extends AggregatorFactory
   @Override
   public List<AggregatorFactory> getRequiredColumns()
   {
-    return Arrays.<AggregatorFactory>asList(new LongSumAggregatorFactory(fieldName, fieldName, expression, macroTable, nullHandlingConfig));
+    return Arrays.<AggregatorFactory>asList(new LongSumAggregatorFactory(fieldName, fieldName, expression, macroTable));
   }
 
   @Override

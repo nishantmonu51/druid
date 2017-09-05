@@ -26,7 +26,7 @@ import io.druid.java.util.common.StringUtils;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.DoubleColumnSelector;
-import io.druid.segment.NullHandlingConfig;
+import io.druid.segment.NullHandlingHelper;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -37,38 +37,34 @@ import java.util.Objects;
  */
 public class DoubleSumAggregatorFactory extends SimpleDoubleAggregatorFactory
 {
-  private final NullHandlingConfig nullHandlingConfig;
-
   @JsonCreator
   public DoubleSumAggregatorFactory(
       @JsonProperty("name") String name,
       @JsonProperty("fieldName") String fieldName,
       @JsonProperty("expression") String expression,
-      @JacksonInject ExprMacroTable macroTable,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
+      @JacksonInject ExprMacroTable macroTable
   )
   {
     super(macroTable, fieldName, name, expression);
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   public DoubleSumAggregatorFactory(String name, String fieldName)
   {
-    this(name, fieldName, null, ExprMacroTable.nil(), NullHandlingConfig.LEGACY_CONFIG);
+    this(name, fieldName, null, ExprMacroTable.nil());
   }
 
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
     DoubleColumnSelector doubleColumnSelector = getDoubleColumnSelector(metricFactory, 0.0);
-    return nullHandlingConfig.getNullableAggregator(new DoubleSumAggregator(doubleColumnSelector), doubleColumnSelector);
+    return NullHandlingHelper.getNullableAggregator(new DoubleSumAggregator(doubleColumnSelector), doubleColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
     DoubleColumnSelector doubleColumnSelector = getDoubleColumnSelector(metricFactory, 0.0);
-    return nullHandlingConfig.getNullableAggregator(new DoubleSumBufferAggregator(doubleColumnSelector),doubleColumnSelector);
+    return NullHandlingHelper.getNullableAggregator(new DoubleSumBufferAggregator(doubleColumnSelector),doubleColumnSelector);
   }
 
   @Override
@@ -80,19 +76,19 @@ public class DoubleSumAggregatorFactory extends SimpleDoubleAggregatorFactory
   @Override
   public AggregateCombiner makeAggregateCombiner()
   {
-    return nullHandlingConfig.getNullableCombiner(new DoubleSumAggregateCombiner());
+    return NullHandlingHelper.getNullableCombiner(new DoubleSumAggregateCombiner());
   }
 
   @Override
   public AggregatorFactory getCombiningFactory()
   {
-    return new DoubleSumAggregatorFactory(name, name, null, macroTable, nullHandlingConfig);
+    return new DoubleSumAggregatorFactory(name, name, null, macroTable);
   }
 
   @Override
   public List<AggregatorFactory> getRequiredColumns()
   {
-    return Arrays.asList(new DoubleSumAggregatorFactory(fieldName, fieldName, expression, macroTable, nullHandlingConfig));
+    return Arrays.asList(new DoubleSumAggregatorFactory(fieldName, fieldName, expression, macroTable));
   }
 
   @Override

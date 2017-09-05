@@ -28,7 +28,6 @@ import io.druid.client.DruidServerConfig;
 import io.druid.discovery.DataNodeService;
 import io.druid.guice.annotations.Self;
 import io.druid.query.DruidProcessingConfig;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.NullHandlingHelper;
 import io.druid.segment.column.ColumnConfig;
 import io.druid.segment.loading.SegmentLoaderConfig;
@@ -49,8 +48,6 @@ public class StorageNodeModule implements Module
 
     binder.bind(NodeTypeConfig.class).toProvider(Providers.<NodeTypeConfig>of(null));
     binder.bind(ColumnConfig.class).to(DruidProcessingConfig.class);
-    binder.bind(NullHandlingConfig.class).to(DruidProcessingConfig.class);
-    binder.requestStaticInjection(NullHandlingHelper.class);
   }
 
   @Provides

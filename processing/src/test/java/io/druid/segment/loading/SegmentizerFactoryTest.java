@@ -50,11 +50,6 @@ public class SegmentizerFactoryTest
         return 777;
       }
 
-      @Override
-      public boolean useDefaultValuesForNull()
-      {
-        return true;
-      }
     });
     mapper.setInjectableValues(
         new InjectableValues.Std().addValue(

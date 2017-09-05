@@ -19,9 +19,7 @@
 
 package io.druid.segment.column;
 
-import io.druid.segment.NullHandlingConfig;
-
-public interface ColumnConfig extends NullHandlingConfig
+public interface ColumnConfig
 {
   public int columnCacheSizeBytes();
 }

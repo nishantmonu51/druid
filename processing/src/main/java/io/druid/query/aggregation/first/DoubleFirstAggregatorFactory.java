@@ -19,7 +19,6 @@
 
 package io.druid.query.aggregation.first;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
@@ -37,7 +36,7 @@ import io.druid.query.aggregation.AggregateCombiner;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.DoubleColumnSelector;
-import io.druid.segment.NullHandlingConfig;
+import io.druid.segment.NullHandlingHelper;
 import io.druid.segment.ObjectColumnSelector;
 import io.druid.segment.column.Column;
 
@@ -62,13 +61,12 @@ public class DoubleFirstAggregatorFactory extends AggregatorFactory
 
   private final String fieldName;
   private final String name;
-  private final NullHandlingConfig nullHandlingConfig;
+
 
   @JsonCreator
   public DoubleFirstAggregatorFactory(
       @JsonProperty("name") String name,
-      @JsonProperty("fieldName") final String fieldName,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
+      @JsonProperty("fieldName") final String fieldName
       )
   {
     Preconditions.checkNotNull(name, "Must have a valid, non-null aggregator name");
@@ -76,7 +74,6 @@ public class DoubleFirstAggregatorFactory extends AggregatorFactory
 
     this.name = name;
     this.fieldName = fieldName;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -84,7 +81,7 @@ public class DoubleFirstAggregatorFactory extends AggregatorFactory
   {
 
     DoubleColumnSelector doubleColumnSelector = metricFactory.makeDoubleColumnSelector(fieldName);
-    return nullHandlingConfig.getNullableAggregator(new DoubleFirstAggregator(
+    return NullHandlingHelper.getNullableAggregator(new DoubleFirstAggregator(
         name,
         metricFactory.makeLongColumnSelector(Column.TIME_COLUMN_NAME),
         doubleColumnSelector
@@ -95,7 +92,7 @@ public class DoubleFirstAggregatorFactory extends AggregatorFactory
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
     DoubleColumnSelector doubleColumnSelector = metricFactory.makeDoubleColumnSelector(fieldName);
-    return nullHandlingConfig.getNullableAggregator(new DoubleFirstBufferAggregator(
+    return NullHandlingHelper.getNullableAggregator(new DoubleFirstBufferAggregator(
         metricFactory.makeLongColumnSelector(Column.TIME_COLUMN_NAME),
         doubleColumnSelector
     ), doubleColumnSelector);
@@ -122,13 +119,13 @@ public class DoubleFirstAggregatorFactory extends AggregatorFactory
   @Override
   public AggregatorFactory getCombiningFactory()
   {
-    return new DoubleFirstAggregatorFactory(name, name, nullHandlingConfig)
+    return new DoubleFirstAggregatorFactory(name, name)
     {
       @Override
       public Aggregator factorize(ColumnSelectorFactory metricFactory)
       {
         final ObjectColumnSelector selector = metricFactory.makeObjectColumnSelector(name);
-        return nullHandlingConfig.getNullableAggregator(new DoubleFirstAggregator(name, null, null)
+        return NullHandlingHelper.getNullableAggregator(new DoubleFirstAggregator(name, null, null)
         {
           @Override
           public void aggregate()
@@ -146,7 +143,7 @@ public class DoubleFirstAggregatorFactory extends AggregatorFactory
       public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
       {
         final ObjectColumnSelector selector = metricFactory.makeObjectColumnSelector(name);
-        return nullHandlingConfig.getNullableAggregator(new DoubleFirstBufferAggregator(null, null)
+        return NullHandlingHelper.getNullableAggregator(new DoubleFirstBufferAggregator(null, null)
         {
           @Override
           public void aggregate(ByteBuffer buf, int position)
@@ -182,7 +179,7 @@ public class DoubleFirstAggregatorFactory extends AggregatorFactory
   @Override
   public List<AggregatorFactory> getRequiredColumns()
   {
-    return Arrays.<AggregatorFactory>asList(new DoubleFirstAggregatorFactory(fieldName, fieldName, nullHandlingConfig));
+    return Arrays.<AggregatorFactory>asList(new DoubleFirstAggregatorFactory(fieldName, fieldName));
   }
 
   @Override

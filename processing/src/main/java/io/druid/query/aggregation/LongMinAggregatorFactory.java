@@ -31,8 +31,7 @@ import io.druid.math.expr.Parser;
 import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.ColumnValueSelector;
 import io.druid.segment.LongColumnSelector;
-import io.druid.segment.NullHandlingConfig;
-import io.druid.segment.column.ColumnConfig;
+import io.druid.segment.NullHandlingHelper;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -50,15 +49,14 @@ public class LongMinAggregatorFactory extends AggregatorFactory
   private final String fieldName;
   private final String expression;
   private final ExprMacroTable macroTable;
-  private final NullHandlingConfig nullHandlingConfig;
+
 
   @JsonCreator
   public LongMinAggregatorFactory(
       @JsonProperty("name") String name,
       @JsonProperty("fieldName") final String fieldName,
       @JsonProperty("expression") String expression,
-      @JacksonInject ExprMacroTable macroTable,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
+      @JacksonInject ExprMacroTable macroTable
       )
   {
     Preconditions.checkNotNull(name, "Must have a valid, non-null aggregator name");
@@ -71,34 +69,26 @@ public class LongMinAggregatorFactory extends AggregatorFactory
     this.fieldName = fieldName;
     this.expression = expression;
     this.macroTable = macroTable;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @VisibleForTesting
   public LongMinAggregatorFactory(String name, String fieldName)
   {
-    this(name, fieldName, null, ExprMacroTable.nil(), new NullHandlingConfig()
-    {
-      @Override
-      public boolean useDefaultValuesForNull()
-      {
-        return true;
-      }
-    });
+    this(name, fieldName, null, ExprMacroTable.nil());
   }
 
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
     LongColumnSelector longColumnSelector = getLongColumnSelector(metricFactory);
-    return nullHandlingConfig.getNullableAggregator(new LongMinAggregator(longColumnSelector), longColumnSelector);
+    return NullHandlingHelper.getNullableAggregator(new LongMinAggregator(longColumnSelector), longColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
     LongColumnSelector longColumnSelector = getLongColumnSelector(metricFactory);
-    return nullHandlingConfig.getNullableAggregator(new LongMinBufferAggregator(longColumnSelector), longColumnSelector);
+    return NullHandlingHelper.getNullableAggregator(new LongMinBufferAggregator(longColumnSelector), longColumnSelector);
   }
 
   private LongColumnSelector getLongColumnSelector(ColumnSelectorFactory metricFactory)
@@ -121,7 +111,7 @@ public class LongMinAggregatorFactory extends AggregatorFactory
   @Override
   public AggregateCombiner makeAggregateCombiner()
   {
-    return nullHandlingConfig.getNullableCombiner(new LongAggregateCombiner()
+    return NullHandlingHelper.getNullableCombiner(new LongAggregateCombiner()
     {
       private long min;
 
@@ -148,7 +138,7 @@ public class LongMinAggregatorFactory extends AggregatorFactory
   @Override
   public AggregatorFactory getCombiningFactory()
   {
-    return new LongMinAggregatorFactory(name, name, null, macroTable, nullHandlingConfig);
+    return new LongMinAggregatorFactory(name, name, null, macroTable);
   }
 
   @Override
@@ -164,7 +154,7 @@ public class LongMinAggregatorFactory extends AggregatorFactory
   @Override
   public List<AggregatorFactory> getRequiredColumns()
   {
-    return Arrays.<AggregatorFactory>asList(new LongMinAggregatorFactory(fieldName, fieldName, expression, macroTable, nullHandlingConfig));
+    return Arrays.<AggregatorFactory>asList(new LongMinAggregatorFactory(fieldName, fieldName, expression, macroTable));
   }
 
   @Override

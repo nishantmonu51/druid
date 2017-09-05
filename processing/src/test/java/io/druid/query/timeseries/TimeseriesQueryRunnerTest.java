@@ -59,7 +59,6 @@ import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.ordering.StringComparators;
 import io.druid.query.spec.MultipleIntervalSegmentSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.column.ValueType;
 import io.druid.segment.virtual.ExpressionVirtualColumn;
@@ -140,7 +139,7 @@ public class TimeseriesQueryRunnerTest
                                       Arrays.asList(
                                           QueryRunnerTestHelper.rowsCount,
                                           QueryRunnerTestHelper.indexDoubleSum,
-                                          new DoubleFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG)
+                                          new DoubleFirstAggregatorFactory("first", "index")
 
                                       )
                                   )
@@ -1834,8 +1833,8 @@ public class TimeseriesQueryRunnerTest
                                   .intervals(QueryRunnerTestHelper.fullOnInterval)
                                   .aggregators(
                                       ImmutableList.of(
-                                          new DoubleFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG),
-                                          new DoubleLastAggregatorFactory("last", "index", NullHandlingConfig.LEGACY_CONFIG)
+                                          new DoubleFirstAggregatorFactory("first", "index"),
+                                          new DoubleLastAggregatorFactory("last", "index")
                                       )
                                   )
                                   .descending(descending)
@@ -2522,8 +2521,7 @@ public class TimeseriesQueryRunnerTest
     extractionMap.put("spot", "upfront");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, true, null, true, true,
-                                                                   NullHandlingConfig.LEGACY_CONFIG
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, true, null, true, true
     );
     TimeseriesQuery query = Druids.newTimeseriesQueryBuilder()
                                   .dataSource(QueryRunnerTestHelper.dataSource)

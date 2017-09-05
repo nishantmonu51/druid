@@ -137,12 +137,6 @@ public class SelectBenchmark
         new ColumnConfig()
         {
           @Override
-          public boolean useDefaultValuesForNull()
-          {
-            return true;
-          }
-
-          @Override
           public int columnCacheSizeBytes()
           {
             return 0;

@@ -26,8 +26,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.druid.jackson.JacksonModule;
-import io.druid.segment.NullHandlingConfig;
-import io.druid.segment.NullHandlingHelper;
 
 import java.util.Arrays;
 import java.util.Collection;
