@@ -20,7 +20,6 @@
 package io.druid.query.search.search;
 
 import io.druid.query.dimension.DimensionSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import it.unimi.dsi.fastutil.objects.Object2IntRBTreeMap;
 
@@ -32,15 +31,13 @@ public abstract class SearchQueryExecutor
   protected final SearchQuerySpec searchQuerySpec;
   protected final Segment segment;
   protected final List<DimensionSpec> dimsToSearch;
-  protected final NullHandlingConfig nullHandlingConfig;
 
-  public SearchQueryExecutor(SearchQuery query, Segment segment, List<DimensionSpec> dimensionSpecs, NullHandlingConfig nullHandlingConfig)
+  public SearchQueryExecutor(SearchQuery query, Segment segment, List<DimensionSpec> dimensionSpecs)
   {
     this.query = query;
     this.segment = segment;
     this.searchQuerySpec = query.getQuery();
     this.dimsToSearch = dimensionSpecs;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   public abstract Object2IntRBTreeMap<SearchHit> execute(int limit);

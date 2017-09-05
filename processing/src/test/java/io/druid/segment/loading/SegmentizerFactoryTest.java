@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.jackson.SegmentizerModule;
 import io.druid.segment.IndexIO;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.ColumnConfig;
 import org.junit.Assert;
 import org.junit.Test;
@@ -56,14 +55,14 @@ public class SegmentizerFactoryTest
       {
         return true;
       }
-    }, NullHandlingConfig.LEGACY_CONFIG);
+    });
     mapper.setInjectableValues(
         new InjectableValues.Std().addValue(
             IndexIO.class,
             indexIO
         )
     );
-    mapper.writeValue(fos, new MMappedQueryableSegmentizerFactory(indexIO, NullHandlingConfig.LEGACY_CONFIG));
+    mapper.writeValue(fos, new MMappedQueryableSegmentizerFactory(indexIO));
     fos.close();
 
     SegmentizerFactory factory = mapper.readValue(factoryFile, SegmentizerFactory.class);

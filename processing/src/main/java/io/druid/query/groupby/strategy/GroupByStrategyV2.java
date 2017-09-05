@@ -63,7 +63,6 @@ import io.druid.query.groupby.epinephelinae.GroupByMergingQueryRunnerV2;
 import io.druid.query.groupby.epinephelinae.GroupByQueryEngineV2;
 import io.druid.query.groupby.epinephelinae.GroupByRowProcessor;
 import io.druid.query.groupby.resource.GroupByQueryResource;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -86,7 +85,6 @@ public class GroupByStrategyV2 implements GroupByStrategy
   private final BlockingPool<ByteBuffer> mergeBufferPool;
   private final ObjectMapper spillMapper;
   private final QueryWatcher queryWatcher;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
   public GroupByStrategyV2(
@@ -95,8 +93,7 @@ public class GroupByStrategyV2 implements GroupByStrategy
       @Global NonBlockingPool<ByteBuffer> bufferPool,
       @Merging BlockingPool<ByteBuffer> mergeBufferPool,
       @Smile ObjectMapper spillMapper,
-      QueryWatcher queryWatcher,
-      NullHandlingConfig nullHandlingConfig
+      QueryWatcher queryWatcher
   )
   {
     this.processingConfig = processingConfig;
@@ -105,7 +102,6 @@ public class GroupByStrategyV2 implements GroupByStrategy
     this.mergeBufferPool = mergeBufferPool;
     this.spillMapper = spillMapper;
     this.queryWatcher = queryWatcher;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   /**
@@ -317,8 +313,7 @@ public class GroupByStrategyV2 implements GroupByStrategy
         configSupplier.get(),
         resource,
         spillMapper,
-        processingConfig.getTmpDir(),
-        nullHandlingConfig
+        processingConfig.getTmpDir()
     );
     return mergeResults(new QueryRunner<Row>()
     {
@@ -344,8 +339,7 @@ public class GroupByStrategyV2 implements GroupByStrategy
         processingConfig.getNumThreads(),
         mergeBufferPool,
         spillMapper,
-        processingConfig.getTmpDir(),
-        nullHandlingConfig
+        processingConfig.getTmpDir()
     );
   }
 

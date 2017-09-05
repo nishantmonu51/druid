@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableMap;
 import io.druid.data.input.MapBasedRow;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.query.filter.SelectorDimFilter;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.ValueType;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -49,9 +48,7 @@ public class DimFilterHavingSpecTest
   @Test
   public void testSimple()
   {
-    final DimFilterHavingSpec havingSpec = new DimFilterHavingSpec(new SelectorDimFilter("foo", "bar", null,
-                                                                                         NullHandlingConfig.LEGACY_CONFIG
-    ));
+    final DimFilterHavingSpec havingSpec = new DimFilterHavingSpec(new SelectorDimFilter("foo", "bar", null));
     havingSpec.setRowSignature(null);
 
     Assert.assertTrue(havingSpec.eval(new MapBasedRow(0, ImmutableMap.<String, Object>of("foo", "bar"))));
@@ -61,9 +58,7 @@ public class DimFilterHavingSpecTest
   @Test
   public void testRowSignature()
   {
-    final DimFilterHavingSpec havingSpec = new DimFilterHavingSpec(new SelectorDimFilter("foo", "1", null,
-                                                                                         NullHandlingConfig.LEGACY_CONFIG
-    ));
+    final DimFilterHavingSpec havingSpec = new DimFilterHavingSpec(new SelectorDimFilter("foo", "1", null));
     havingSpec.setRowSignature(ImmutableMap.of("foo", ValueType.LONG));
 
     Assert.assertTrue(havingSpec.eval(new MapBasedRow(0, ImmutableMap.<String, Object>of("foo", 1L))));
@@ -75,9 +70,7 @@ public class DimFilterHavingSpecTest
   public void testConcurrentUsage() throws Exception
   {
     final ExecutorService exec = Executors.newFixedThreadPool(2);
-    final DimFilterHavingSpec havingSpec = new DimFilterHavingSpec(new SelectorDimFilter("foo", "1", null,
-                                                                                         NullHandlingConfig.LEGACY_CONFIG
-    ));
+    final DimFilterHavingSpec havingSpec = new DimFilterHavingSpec(new SelectorDimFilter("foo", "1", null));
     final List<Future<?>> futures = new ArrayList<>();
 
     for (int i = 0; i < 2; i++) {
@@ -121,9 +114,7 @@ public class DimFilterHavingSpecTest
   @Test
   public void testSerde() throws Exception
   {
-    final DimFilterHavingSpec havingSpec = new DimFilterHavingSpec(new SelectorDimFilter("foo", "1", null,
-                                                                                         NullHandlingConfig.LEGACY_CONFIG
-    ));
+    final DimFilterHavingSpec havingSpec = new DimFilterHavingSpec(new SelectorDimFilter("foo", "1", null));
     final ObjectMapper objectMapper = new DefaultObjectMapper();
     Assert.assertEquals(
         havingSpec,

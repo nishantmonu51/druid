@@ -27,7 +27,6 @@ import com.google.common.collect.Range;
 import io.druid.java.util.common.ISE;
 import io.druid.query.filter.BoundDimFilter;
 import io.druid.query.ordering.StringComparators;
-import io.druid.segment.NullHandlingConfig;
 import org.joda.time.Interval;
 
 import java.util.List;
@@ -54,8 +53,7 @@ public class Bounds
           false,
           null,
           bound.getExtractionFn(),
-          bound.getOrdering(),
-          NullHandlingConfig.LEGACY_CONFIG
+          bound.getOrdering()
       );
     } else {
       // bound.getLower() != null
@@ -67,8 +65,7 @@ public class Bounds
           !bound.isLowerStrict(),
           null,
           bound.getExtractionFn(),
-          bound.getOrdering(),
-          NullHandlingConfig.LEGACY_CONFIG
+          bound.getOrdering()
       );
     }
   }
@@ -117,8 +114,7 @@ public class Bounds
         range.hasUpperBound() && range.upperBoundType() == BoundType.OPEN,
         null,
         boundRefKey.getExtractionFn(),
-        boundRefKey.getComparator(),
-        NullHandlingConfig.LEGACY_CONFIG
+        boundRefKey.getComparator()
     );
   }
 
@@ -132,8 +128,7 @@ public class Bounds
         false,
         null,
         boundRefKey.getExtractionFn(),
-        boundRefKey.getComparator(),
-        NullHandlingConfig.LEGACY_CONFIG
+        boundRefKey.getComparator()
     );
   }
 
@@ -147,8 +142,7 @@ public class Bounds
         false,
         null,
         boundRefKey.getExtractionFn(),
-        boundRefKey.getComparator(),
-        NullHandlingConfig.LEGACY_CONFIG
+        boundRefKey.getComparator()
     );
   }
 
@@ -162,8 +156,7 @@ public class Bounds
         false,
         null,
         boundRefKey.getExtractionFn(),
-        boundRefKey.getComparator(),
-        NullHandlingConfig.LEGACY_CONFIG
+        boundRefKey.getComparator()
     );
   }
 
@@ -177,8 +170,7 @@ public class Bounds
         true,
         null,
         boundRefKey.getExtractionFn(),
-        boundRefKey.getComparator(),
-        NullHandlingConfig.LEGACY_CONFIG
+        boundRefKey.getComparator()
     );
   }
 
@@ -192,8 +184,7 @@ public class Bounds
         false,
         null,
         boundRefKey.getExtractionFn(),
-        boundRefKey.getComparator(),
-        NullHandlingConfig.LEGACY_CONFIG
+        boundRefKey.getComparator()
     );
   }
 
@@ -212,8 +203,7 @@ public class Bounds
         true,
         null,
         boundRefKey.getExtractionFn(),
-        boundRefKey.getComparator(),
-        NullHandlingConfig.LEGACY_CONFIG
+        boundRefKey.getComparator()
     );
   }
 }

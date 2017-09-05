@@ -29,7 +29,6 @@ import io.druid.java.util.common.Intervals;
 import io.druid.java.util.common.granularity.Granularities;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeTuningConfig;
 import io.druid.segment.indexing.granularity.UniformGranularitySpec;
@@ -82,7 +81,7 @@ public class SinkTest
         tuningConfig.getShardSpec(),
         version,
         tuningConfig.getMaxRowsInMemory(),
-        tuningConfig.isReportParseExceptions(), NullHandlingConfig.LEGACY_CONFIG
+        tuningConfig.isReportParseExceptions()
     );
 
     sink.add(

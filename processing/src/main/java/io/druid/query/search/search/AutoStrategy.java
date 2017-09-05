@@ -23,7 +23,6 @@ import com.metamx.emitter.EmittingLogger;
 import io.druid.query.dimension.DimensionSpec;
 import io.druid.query.filter.BitmapIndexSelector;
 import io.druid.segment.ColumnSelectorBitmapIndexSelector;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.Segment;
 import io.druid.segment.VirtualColumns;
@@ -49,7 +48,7 @@ public class AutoStrategy extends SearchStrategy
   }
 
   @Override
-  public List<SearchQueryExecutor> getExecutionPlan(SearchQuery query, Segment segment, NullHandlingConfig nullHandlingConfig)
+  public List<SearchQueryExecutor> getExecutionPlan(SearchQuery query, Segment segment)
   {
     final QueryableIndex index = segment.asQueryableIndex();
 
@@ -57,8 +56,7 @@ public class AutoStrategy extends SearchStrategy
       final BitmapIndexSelector selector = new ColumnSelectorBitmapIndexSelector(
           index.getBitmapFactoryForDimensions(),
           VirtualColumns.EMPTY,
-          index,
-          nullHandlingConfig
+          index
       );
 
       // Index-only plan is used only when any filter is not specified or the filter supports bitmap indexes.
@@ -93,22 +91,22 @@ public class AutoStrategy extends SearchStrategy
 
         if (useIndexStrategyCost < cursorOnlyStrategyCost) {
           log.debug("Use-index execution strategy is selected, query id [%s]", query.getId());
-          return UseIndexesStrategy.of(query).getExecutionPlan(query, segment, nullHandlingConfig);
+          return UseIndexesStrategy.of(query).getExecutionPlan(query, segment);
         } else {
           log.debug("Cursor-only execution strategy is selected, query id [%s]", query.getId());
-          return CursorOnlyStrategy.of(query).getExecutionPlan(query, segment, nullHandlingConfig);
+          return CursorOnlyStrategy.of(query).getExecutionPlan(query, segment);
         }
       } else {
         log.debug(
             "Filter doesn't support bitmap index. Fall back to cursor-only execution strategy, query id [%s]",
             query.getId()
         );
-        return CursorOnlyStrategy.of(query).getExecutionPlan(query, segment, nullHandlingConfig);
+        return CursorOnlyStrategy.of(query).getExecutionPlan(query, segment);
       }
 
     } else {
       log.debug("Index doesn't exist. Fall back to cursor-only execution strategy, query id [%s]", query.getId());
-      return CursorOnlyStrategy.of(query).getExecutionPlan(query, segment, nullHandlingConfig);
+      return CursorOnlyStrategy.of(query).getExecutionPlan(query, segment);
     }
   }
 

@@ -39,7 +39,6 @@ import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.DoubleSumAggregatorFactory;
 import io.druid.segment.IndexSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.data.CompressedObjectStrategy;
 import io.druid.segment.data.CompressionFactory;
 import io.druid.segment.data.RoaringBitmapSerdeFactory;
@@ -191,7 +190,7 @@ public class TaskSerdeTest
             new IndexIOConfig(new LocalFirehoseFactory(new File("lol"), "rofl", null), true),
             new IndexTuningConfig(10000, 10, null, 9999, null, indexSpec, 3, true, true, false, null, null)
         ),
-        null, NullHandlingConfig.LEGACY_CONFIG
+        null
     );
 
     final String json = jsonMapper.writeValueAsString(task);
@@ -253,7 +252,7 @@ public class TaskSerdeTest
             new IndexIOConfig(new LocalFirehoseFactory(new File("lol"), "rofl", null), true),
             new IndexTuningConfig(10000, 10, null, null, null, indexSpec, 3, true, true, false, null, null)
         ),
-        null, NullHandlingConfig.LEGACY_CONFIG
+        null
     );
 
     for (final Module jacksonModule : new FirehoseModule().getJacksonModules()) {
@@ -504,7 +503,7 @@ public class TaskSerdeTest
                 null
             )
         ),
-        null, NullHandlingConfig.LEGACY_CONFIG
+        null
     );
 
     final String json = jsonMapper.writeValueAsString(task);

@@ -22,9 +22,6 @@ package io.druid.query.search.search;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Ordering;
-
-import java.util.Objects;
 
 /**
  */
@@ -42,7 +39,7 @@ public class SearchHit implements Comparable<SearchHit>
   )
   {
     this.dimension = Preconditions.checkNotNull(dimension);
-    this.value = value;
+    this.value = Preconditions.checkNotNull(value);
     this.count = count;
   }
 
@@ -74,7 +71,7 @@ public class SearchHit implements Comparable<SearchHit>
   {
     int retVal = dimension.compareTo(o.dimension);
     if (retVal == 0) {
-      retVal = Objects.compare(value, o.value, Ordering.natural().nullsFirst());
+      retVal = value.compareTo(o.value);
     }
     return retVal;
   }

@@ -56,7 +56,6 @@ import io.druid.query.topn.TopNQueryRunnerFactory;
 import io.druid.query.topn.TopNResultValue;
 import io.druid.segment.IncrementalIndexSegment;
 import io.druid.segment.IndexSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.Segment;
@@ -169,8 +168,8 @@ public class MultiValuedDimensionTest
 
     Sequence<Row> result = helper.runQueryOnSegmentsObjs(
         ImmutableList.<Segment>of(
-            new QueryableIndexSegment("sid1", queryableIndex, NullHandlingConfig.LEGACY_CONFIG),
-            new IncrementalIndexSegment(incrementalIndex, "sid2", NullHandlingConfig.LEGACY_CONFIG)
+            new QueryableIndexSegment("sid1", queryableIndex),
+            new IncrementalIndexSegment(incrementalIndex, "sid2")
         ),
         query
     );
@@ -207,14 +206,14 @@ public class MultiValuedDimensionTest
             )
         )
         .setDimFilter(
-            new SelectorDimFilter("tags", "t3", null, NullHandlingConfig.LEGACY_CONFIG)
+            new SelectorDimFilter("tags", "t3", null)
         )
         .build();
 
     Sequence<Row> result = helper.runQueryOnSegmentsObjs(
         ImmutableList.<Segment>of(
-            new QueryableIndexSegment("sid1", queryableIndex, NullHandlingConfig.LEGACY_CONFIG),
-            new IncrementalIndexSegment(incrementalIndex, "sid2", NullHandlingConfig.LEGACY_CONFIG)
+            new QueryableIndexSegment("sid1", queryableIndex),
+            new IncrementalIndexSegment(incrementalIndex, "sid2")
         ),
         query
     );
@@ -255,14 +254,14 @@ public class MultiValuedDimensionTest
             )
         )
         .setDimFilter(
-            new SelectorDimFilter("tags", "t3", null, NullHandlingConfig.LEGACY_CONFIG)
+            new SelectorDimFilter("tags", "t3", null)
         )
         .build();
 
     Sequence<Row> result = helper.runQueryOnSegmentsObjs(
         ImmutableList.<Segment>of(
-            new QueryableIndexSegment("sid1", queryableIndex, NullHandlingConfig.LEGACY_CONFIG),
-            new IncrementalIndexSegment(incrementalIndex, "sid2", NullHandlingConfig.LEGACY_CONFIG)
+            new QueryableIndexSegment("sid1", queryableIndex),
+            new IncrementalIndexSegment(incrementalIndex, "sid2")
         ),
         query
     );
@@ -295,7 +294,7 @@ public class MultiValuedDimensionTest
                     }
             ))
         .threshold(5)
-        .filters(new SelectorDimFilter("tags", "t3", null, NullHandlingConfig.LEGACY_CONFIG)).build();
+        .filters(new SelectorDimFilter("tags", "t3", null)).build();
 
     QueryRunnerFactory factory = new TopNQueryRunnerFactory(
         TestQueryRunners.getPool(),
@@ -307,7 +306,7 @@ public class MultiValuedDimensionTest
     );
     QueryRunner<Result<TopNResultValue>> runner = QueryRunnerTestHelper.makeQueryRunner(
         factory,
-        new QueryableIndexSegment("sid1", queryableIndex, NullHandlingConfig.LEGACY_CONFIG),
+        new QueryableIndexSegment("sid1", queryableIndex),
         null
     );
     Map<String, Object> context = Maps.newHashMap();

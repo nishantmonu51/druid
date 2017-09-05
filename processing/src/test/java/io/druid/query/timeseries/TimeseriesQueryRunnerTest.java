@@ -1370,7 +1370,7 @@ public class TimeseriesQueryRunnerTest
                                               "total_market",
                                               "billyblank"
                                           ),
-                                          null, NullHandlingConfig.LEGACY_CONFIG
+                                          null
                                       )
                                   )
                                   .intervals(QueryRunnerTestHelper.firstToThird)
@@ -1604,9 +1604,7 @@ public class TimeseriesQueryRunnerTest
     TimeseriesQuery query = Druids.newTimeseriesQueryBuilder()
                                   .dataSource(QueryRunnerTestHelper.dataSource)
                                   .granularity(QueryRunnerTestHelper.dayGran)
-                                  .filters(new NotDimFilter(new SelectorDimFilter("bobby", "sally", null,
-                                                                                  NullHandlingConfig.LEGACY_CONFIG
-                                  )))
+                                  .filters(new NotDimFilter(new SelectorDimFilter("bobby", "sally", null)))
                                   .intervals(QueryRunnerTestHelper.firstToThird)
                                   .aggregators(aggregatorFactoryList)
                                   .postAggregators(Collections.<PostAggregator>singletonList(QueryRunnerTestHelper
@@ -2448,7 +2446,7 @@ public class TimeseriesQueryRunnerTest
                                                   null,
                                                   null,
                                                   null,
-                                                  StringComparators.LEXICOGRAPHIC, NullHandlingConfig.LEGACY_CONFIG
+                                                  StringComparators.LEXICOGRAPHIC
                                               ),
                                               new BoundDimFilter(
                                                   QueryRunnerTestHelper.marketDimension,
@@ -2458,7 +2456,7 @@ public class TimeseriesQueryRunnerTest
                                                   true,
                                                   null,
                                                   null,
-                                                  StringComparators.LEXICOGRAPHIC, NullHandlingConfig.LEGACY_CONFIG
+                                                  StringComparators.LEXICOGRAPHIC
                                               ),
                                               (DimFilter) new BoundDimFilter(
                                                   QueryRunnerTestHelper.marketDimension,
@@ -2468,7 +2466,7 @@ public class TimeseriesQueryRunnerTest
                                                   null,
                                                   null,
                                                   null,
-                                                  StringComparators.LEXICOGRAPHIC, NullHandlingConfig.LEGACY_CONFIG
+                                                  StringComparators.LEXICOGRAPHIC
                                               )
                                           )
                                       )
@@ -2531,9 +2529,7 @@ public class TimeseriesQueryRunnerTest
                                   .dataSource(QueryRunnerTestHelper.dataSource)
                                   .granularity(QueryRunnerTestHelper.dayGran)
                                   .filters(
-                                      new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "upfront", lookupExtractionFn,
-                                                            NullHandlingConfig.LEGACY_CONFIG
-                                      )
+                                      new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "upfront", lookupExtractionFn)
                                   )
                                   .intervals(QueryRunnerTestHelper.firstToThird)
                                   .aggregators(

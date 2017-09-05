@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMerger;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeTuningConfig;
 import io.druid.segment.loading.DataSegmentPusher;
@@ -37,22 +36,19 @@ public class DefaultOfflineAppenderatorFactory implements AppenderatorFactory
   private final ObjectMapper objectMapper;
   private final IndexIO indexIO;
   private final IndexMerger indexMerger;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public DefaultOfflineAppenderatorFactory(
       @JacksonInject DataSegmentPusher dataSegmentPusher,
       @JacksonInject ObjectMapper objectMapper,
       @JacksonInject IndexIO indexIO,
-      @JacksonInject IndexMerger indexMerger,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
-      )
+      @JacksonInject IndexMerger indexMerger
+  )
   {
     this.dataSegmentPusher = dataSegmentPusher;
     this.objectMapper = objectMapper;
     this.indexIO = indexIO;
     this.indexMerger = indexMerger;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -60,6 +56,6 @@ public class DefaultOfflineAppenderatorFactory implements AppenderatorFactory
       DataSchema schema, RealtimeTuningConfig config, FireDepartmentMetrics metrics
   )
   {
-    return Appenderators.createOffline(schema, config, metrics, dataSegmentPusher, objectMapper, indexIO, indexMerger, nullHandlingConfig);
+    return Appenderators.createOffline(schema, config, metrics, dataSegmentPusher, objectMapper, indexIO, indexMerger);
   }
 }

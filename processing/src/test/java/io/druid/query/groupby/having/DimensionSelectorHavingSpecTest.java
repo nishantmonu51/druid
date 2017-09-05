@@ -27,7 +27,6 @@ import io.druid.data.input.Row;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.query.extraction.ExtractionFn;
 import io.druid.query.extraction.RegexDimExtractionFn;
-import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -53,7 +52,7 @@ public class DimensionSelectorHavingSpecTest
   @Test
   public void testDimSelectorHavingClauseSerde() throws Exception
   {
-    HavingSpec dimHavingSpec = new DimensionSelectorHavingSpec("dim", "v", null, NullHandlingConfig.LEGACY_CONFIG);
+    HavingSpec dimHavingSpec = new DimensionSelectorHavingSpec("dim", "v", null);
 
     Map<String, Object> dimSelectMap = ImmutableMap.<String, Object>of(
         "type", "dimSelector",
@@ -72,28 +71,20 @@ public class DimensionSelectorHavingSpecTest
     ExtractionFn extractionFn2 = new RegexDimExtractionFn(",(.*)", false, "");
     ExtractionFn extractionFn3 = new RegexDimExtractionFn("^([^,]*),", false, "");
 
-    HavingSpec dimHavingSpec1 = new DimensionSelectorHavingSpec("dim", "v", extractionFn1,
-                                                                NullHandlingConfig.LEGACY_CONFIG
-    );
-    HavingSpec dimHavingSpec2 = new DimensionSelectorHavingSpec("dim", "v", extractionFn3,
-                                                                NullHandlingConfig.LEGACY_CONFIG
-    );
-    HavingSpec dimHavingSpec3 = new DimensionSelectorHavingSpec("dim1", "v", null, NullHandlingConfig.LEGACY_CONFIG);
-    HavingSpec dimHavingSpec4 = new DimensionSelectorHavingSpec("dim2", "v", null, NullHandlingConfig.LEGACY_CONFIG);
-    HavingSpec dimHavingSpec5 = new DimensionSelectorHavingSpec("dim", "v1", null, NullHandlingConfig.LEGACY_CONFIG);
-    HavingSpec dimHavingSpec6 = new DimensionSelectorHavingSpec("dim", "v2", null, NullHandlingConfig.LEGACY_CONFIG);
-    HavingSpec dimHavingSpec7 = new DimensionSelectorHavingSpec("dim", null, null, NullHandlingConfig.LEGACY_CONFIG);
-    HavingSpec dimHavingSpec8 = new DimensionSelectorHavingSpec("dim", null, null, NullHandlingConfig.LEGACY_CONFIG);
-    HavingSpec dimHavingSpec9 = new DimensionSelectorHavingSpec("dim1", null, null, NullHandlingConfig.LEGACY_CONFIG);
-    HavingSpec dimHavingSpec10 = new DimensionSelectorHavingSpec("dim2", null, null, NullHandlingConfig.LEGACY_CONFIG);
-    HavingSpec dimHavingSpec11 = new DimensionSelectorHavingSpec("dim1", "v", null, NullHandlingConfig.LEGACY_CONFIG);
-    HavingSpec dimHavingSpec12 = new DimensionSelectorHavingSpec("dim2", null, null, NullHandlingConfig.LEGACY_CONFIG);
-    HavingSpec dimHavingSpec13 = new DimensionSelectorHavingSpec("dim", "value", extractionFn1,
-                                                                 NullHandlingConfig.LEGACY_CONFIG
-    );
-    HavingSpec dimHavingSpec14 = new DimensionSelectorHavingSpec("dim", "value", extractionFn2,
-                                                                 NullHandlingConfig.LEGACY_CONFIG
-    );
+    HavingSpec dimHavingSpec1 = new DimensionSelectorHavingSpec("dim", "v", extractionFn1);
+    HavingSpec dimHavingSpec2 = new DimensionSelectorHavingSpec("dim", "v", extractionFn3);
+    HavingSpec dimHavingSpec3 = new DimensionSelectorHavingSpec("dim1", "v", null);
+    HavingSpec dimHavingSpec4 = new DimensionSelectorHavingSpec("dim2", "v", null);
+    HavingSpec dimHavingSpec5 = new DimensionSelectorHavingSpec("dim", "v1", null);
+    HavingSpec dimHavingSpec6 = new DimensionSelectorHavingSpec("dim", "v2", null);
+    HavingSpec dimHavingSpec7 = new DimensionSelectorHavingSpec("dim", null, null);
+    HavingSpec dimHavingSpec8 = new DimensionSelectorHavingSpec("dim", null, null);
+    HavingSpec dimHavingSpec9 = new DimensionSelectorHavingSpec("dim1", null, null);
+    HavingSpec dimHavingSpec10 = new DimensionSelectorHavingSpec("dim2", null, null);
+    HavingSpec dimHavingSpec11 = new DimensionSelectorHavingSpec("dim1", "v", null);
+    HavingSpec dimHavingSpec12 = new DimensionSelectorHavingSpec("dim2", null, null);
+    HavingSpec dimHavingSpec13 = new DimensionSelectorHavingSpec("dim", "value", extractionFn1);
+    HavingSpec dimHavingSpec14 = new DimensionSelectorHavingSpec("dim", "value", extractionFn2);
 
     assertEquals(dimHavingSpec1, dimHavingSpec2);
     assertNotEquals(dimHavingSpec3, dimHavingSpec4);
@@ -113,44 +104,38 @@ public class DimensionSelectorHavingSpecTest
                                  "dimension='gender'," +
                                  " value='m'," +
                                  " extractionFn=regex(/^([^,]*),/, 1)}";
-    Assert.assertEquals(expected, new DimensionSelectorHavingSpec("gender", "m", extractionFn,
-                                                                  NullHandlingConfig.LEGACY_CONFIG
-    ).toString());
+    Assert.assertEquals(expected, new DimensionSelectorHavingSpec("gender", "m", extractionFn).toString());
     
     expected = "DimensionSelectorHavingSpec{" +
                                  "dimension='gender'," +
                                  " value='m'," +
                                  " extractionFn=Identity}";
     
-    Assert.assertEquals(expected, new DimensionSelectorHavingSpec("gender", "m", null,
-                                                                  NullHandlingConfig.LEGACY_CONFIG
-    ).toString());
+    Assert.assertEquals(expected, new DimensionSelectorHavingSpec("gender", "m", null).toString());
   }
 
   @Test(expected = NullPointerException.class)
   public void testNullDimension()
   {
-    new DimensionSelectorHavingSpec(null, "value", null, NullHandlingConfig.LEGACY_CONFIG);
+    new DimensionSelectorHavingSpec(null, "value", null);
   }
 
   @Test
   public void testDimensionFilterSpec()
   {
-    DimensionSelectorHavingSpec spec = new DimensionSelectorHavingSpec("dimension", "v", null,
-                                                                       NullHandlingConfig.LEGACY_CONFIG
-    );
+    DimensionSelectorHavingSpec spec = new DimensionSelectorHavingSpec("dimension", "v", null);
     assertTrue(spec.eval(getTestRow("v")));
     assertTrue(spec.eval(getTestRow(ImmutableList.of("v", "v1"))));
     assertFalse(spec.eval(getTestRow(ImmutableList.of())));
     assertFalse(spec.eval(getTestRow("v1")));
 
-    spec = new DimensionSelectorHavingSpec("dimension", null, null, NullHandlingConfig.LEGACY_CONFIG);
+    spec = new DimensionSelectorHavingSpec("dimension", null, null);
     assertTrue(spec.eval(getTestRow(ImmutableList.of())));
     assertTrue(spec.eval(getTestRow(ImmutableList.of(""))));
     assertFalse(spec.eval(getTestRow(ImmutableList.of("v"))));
     assertFalse(spec.eval(getTestRow(ImmutableList.of("v", "v1"))));
 
-    spec = new DimensionSelectorHavingSpec("dimension", "", null, NullHandlingConfig.LEGACY_CONFIG);
+    spec = new DimensionSelectorHavingSpec("dimension", "", null);
     assertTrue(spec.eval(getTestRow(ImmutableList.of())));
     assertTrue(spec.eval(getTestRow(ImmutableList.of(""))));
     assertTrue(spec.eval(getTestRow(ImmutableList.of("v", "v1", ""))));
@@ -158,14 +143,14 @@ public class DimensionSelectorHavingSpecTest
     assertFalse(spec.eval(getTestRow(ImmutableList.of("v", "v1"))));
 
     ExtractionFn extractionFn = new RegexDimExtractionFn("^([^,]*),", true, "default");
-    spec = new DimensionSelectorHavingSpec("dimension", "v", extractionFn, NullHandlingConfig.LEGACY_CONFIG);
+    spec = new DimensionSelectorHavingSpec("dimension", "v", extractionFn);
     assertTrue(spec.eval(getTestRow(ImmutableList.of("v,v1", "v2,v3"))));
     assertFalse(spec.eval(getTestRow(ImmutableList.of("v1,v4"))));
     assertFalse(spec.eval(getTestRow(ImmutableList.of("v"))));
     assertFalse(spec.eval(getTestRow(ImmutableList.of("v1", "default"))));
     assertTrue(spec.eval(getTestRow(ImmutableList.of("v,default", "none"))));
     
-    spec = new DimensionSelectorHavingSpec("dimension", "default", extractionFn, NullHandlingConfig.LEGACY_CONFIG);
+    spec = new DimensionSelectorHavingSpec("dimension", "default", extractionFn);
     assertTrue(spec.eval(getTestRow(ImmutableList.of("v1,v2", "none")))); 
 
   }

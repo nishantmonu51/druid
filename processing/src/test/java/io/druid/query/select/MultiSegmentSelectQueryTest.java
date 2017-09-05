@@ -42,7 +42,6 @@ import io.druid.query.UnionQueryRunner;
 import io.druid.query.dimension.DefaultDimensionSpec;
 import io.druid.query.ordering.StringComparators;
 import io.druid.segment.IncrementalIndexSegment;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.TestIndex;
 import io.druid.segment.incremental.IncrementalIndex;
@@ -145,9 +144,9 @@ public class MultiSegmentSelectQueryTest
     IncrementalIndex index1 = TestIndex.loadIncrementalIndex(newIndex("2011-01-13T00:00:00.000Z"), v_0113);
     IncrementalIndex index2 = TestIndex.loadIncrementalIndex(newIndex("2011-01-12T04:00:00.000Z"), v_override);
 
-    segment0 = new IncrementalIndexSegment(index0, makeIdentifier(index0, "v1"), NullHandlingConfig.LEGACY_CONFIG);
-    segment1 = new IncrementalIndexSegment(index1, makeIdentifier(index1, "v1"), NullHandlingConfig.LEGACY_CONFIG);
-    segment_override = new IncrementalIndexSegment(index2, makeIdentifier(index2, "v2"), NullHandlingConfig.LEGACY_CONFIG);
+    segment0 = new IncrementalIndexSegment(index0, makeIdentifier(index0, "v1"));
+    segment1 = new IncrementalIndexSegment(index1, makeIdentifier(index1, "v1"));
+    segment_override = new IncrementalIndexSegment(index2, makeIdentifier(index2, "v2"));
 
     VersionedIntervalTimeline<String, Segment> timeline = new VersionedIntervalTimeline(StringComparators.LEXICOGRAPHIC);
     timeline.add(index0.getInterval(), "v1", new SingleElementPartitionChunk(segment0));

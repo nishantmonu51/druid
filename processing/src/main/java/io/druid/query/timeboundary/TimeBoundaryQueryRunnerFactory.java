@@ -39,7 +39,6 @@ import io.druid.query.QueryWatcher;
 import io.druid.query.Result;
 import io.druid.segment.Cursor;
 import io.druid.segment.LongColumnSelector;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.StorageAdapter;
 import io.druid.segment.VirtualColumns;
@@ -60,20 +59,17 @@ public class TimeBoundaryQueryRunnerFactory
 {
   private static final TimeBoundaryQueryQueryToolChest toolChest = new TimeBoundaryQueryQueryToolChest();
   private final QueryWatcher queryWatcher;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
-  public TimeBoundaryQueryRunnerFactory(QueryWatcher queryWatcher,
-                                        NullHandlingConfig nullHandlingConfig)
+  public TimeBoundaryQueryRunnerFactory(QueryWatcher queryWatcher)
   {
     this.queryWatcher = queryWatcher;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
   public QueryRunner<Result<TimeBoundaryResultValue>> createRunner(final Segment segment)
   {
-    return new TimeBoundaryQueryRunner(segment, nullHandlingConfig);
+    return new TimeBoundaryQueryRunner(segment);
   }
 
   @Override
@@ -95,7 +91,7 @@ public class TimeBoundaryQueryRunnerFactory
     private final StorageAdapter adapter;
     private final Function<Cursor, Result<DateTime>> skipToFirstMatching;
 
-    public TimeBoundaryQueryRunner(Segment segment, NullHandlingConfig nullHandlingConfig)
+    public TimeBoundaryQueryRunner(Segment segment)
     {
       this.adapter = segment.asStorageAdapter();
       this.skipToFirstMatching = new Function<Cursor, Result<DateTime>>()

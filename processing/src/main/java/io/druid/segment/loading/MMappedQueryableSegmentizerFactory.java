@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JacksonInject;
 import com.google.common.base.Preconditions;
 import io.druid.java.util.common.logger.Logger;
 import io.druid.segment.IndexIO;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.Segment;
 import io.druid.timeline.DataSegment;
@@ -35,22 +34,20 @@ import java.io.IOException;
  */
 public class MMappedQueryableSegmentizerFactory implements SegmentizerFactory
 {
-  private final IndexIO indexIO;
-  private final NullHandlingConfig nullHandlingConfig;
+  private static final Logger log = new Logger(MMappedQueryableSegmentizerFactory.class);
 
-  public MMappedQueryableSegmentizerFactory(@JacksonInject IndexIO indexIO,
-                                            @JacksonInject NullHandlingConfig nullHandlingConfig)
+  private final IndexIO indexIO;
+
+  public MMappedQueryableSegmentizerFactory(@JacksonInject IndexIO indexIO)
   {
     this.indexIO = Preconditions.checkNotNull(indexIO, "Null IndexIO");
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
   public Segment factorize(DataSegment dataSegment, File parentDir) throws SegmentLoadingException
   {
     try {
-      return new QueryableIndexSegment(dataSegment.getIdentifier(), indexIO.loadIndex(parentDir),
-                                       nullHandlingConfig);
+      return new QueryableIndexSegment(dataSegment.getIdentifier(), indexIO.loadIndex(parentDir));
     }
     catch (IOException e) {
       throw new SegmentLoadingException(e, "%s", e.getMessage());

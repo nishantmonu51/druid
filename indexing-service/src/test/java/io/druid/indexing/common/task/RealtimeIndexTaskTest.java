@@ -97,7 +97,6 @@ import io.druid.query.timeseries.TimeseriesQueryEngine;
 import io.druid.query.timeseries.TimeseriesQueryQueryToolChest;
 import io.druid.query.timeseries.TimeseriesQueryRunnerFactory;
 import io.druid.query.timeseries.TimeseriesResultValue;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeIOConfig;
 import io.druid.segment.indexing.RealtimeTuningConfig;
@@ -908,7 +907,7 @@ public class RealtimeIndexTaskTest
         taskId,
         null,
         new FireDepartment(dataSchema, realtimeIOConfig, realtimeTuningConfig),
-        null, NullHandlingConfig.LEGACY_CONFIG
+        null
     )
     {
       @Override
@@ -1048,7 +1047,7 @@ public class RealtimeIndexTaskTest
                   {
                     return Lists.newArrayList();
                   }
-                }, testUtils.getTestObjectMapper(), NullHandlingConfig.LEGACY_CONFIG
+                }, testUtils.getTestObjectMapper()
             )
         ),
         testUtils.getTestObjectMapper(),

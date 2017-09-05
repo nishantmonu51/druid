@@ -50,7 +50,6 @@ import io.druid.query.topn.TopNQueryEngine;
 import io.druid.query.topn.TopNResultValue;
 import io.druid.segment.Cursor;
 import io.druid.segment.DimensionSelector;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import io.druid.segment.VirtualColumns;
 import io.druid.segment.data.IndexedInts;
@@ -141,7 +140,7 @@ public class IncrementalIndexStorageAdapterTest
                     .addDimension("sally")
                     .addAggregator(new LongSumAggregatorFactory("cnt", "cnt"))
                     .build(),
-        new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG)
+        new IncrementalIndexStorageAdapter(index)
     );
 
     final ArrayList<Row> results = Sequences.toList(rows, Lists.<Row>newArrayList());
@@ -200,7 +199,7 @@ public class IncrementalIndexStorageAdapterTest
                         )
                     )
                     .build(),
-        new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG)
+        new IncrementalIndexStorageAdapter(index)
     );
 
     final ArrayList<Row> results = Sequences.toList(rows, Lists.<Row>newArrayList());
@@ -264,7 +263,7 @@ public class IncrementalIndexStorageAdapterTest
         )
     );
 
-    IncrementalIndexStorageAdapter adapter = new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG);
+    IncrementalIndexStorageAdapter adapter = new IncrementalIndexStorageAdapter(index);
 
     for (boolean descending : Arrays.asList(false, true)) {
       Sequence<Cursor> cursorSequence = adapter.makeCursors(
@@ -346,7 +345,7 @@ public class IncrementalIndexStorageAdapterTest
                                       )
                                   )
                                   .build(),
-            new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG),
+            new IncrementalIndexStorageAdapter(index),
             null
         ),
         Lists.<Result<TopNResultValue>>newLinkedList()
@@ -387,7 +386,7 @@ public class IncrementalIndexStorageAdapterTest
                     .addAggregator(new LongSumAggregatorFactory("cnt", "cnt"))
                     .setDimFilter(DimFilters.dimEquals("sally", (String) null))
                     .build(),
-        new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG)
+        new IncrementalIndexStorageAdapter(index)
     );
 
     final ArrayList<Row> results = Sequences.toList(rows, Lists.<Row>newArrayList());
@@ -414,7 +413,7 @@ public class IncrementalIndexStorageAdapterTest
       );
     }
 
-    final StorageAdapter sa = new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG);
+    final StorageAdapter sa = new IncrementalIndexStorageAdapter(index);
 
     Sequence<Cursor> cursors = sa.makeCursors(
         null,
@@ -494,7 +493,7 @@ public class IncrementalIndexStorageAdapterTest
       );
     }
 
-    final StorageAdapter sa = new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG);
+    final StorageAdapter sa = new IncrementalIndexStorageAdapter(index);
 
     Sequence<Cursor> cursors = sa.makeCursors(
         null,

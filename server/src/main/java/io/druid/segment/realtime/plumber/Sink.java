@@ -31,7 +31,6 @@ import io.druid.data.input.InputRow;
 import io.druid.java.util.common.IAE;
 import io.druid.java.util.common.ISE;
 import io.druid.query.aggregation.AggregatorFactory;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.column.ColumnCapabilitiesImpl;
 import io.druid.segment.incremental.IncrementalIndex;
@@ -68,7 +67,6 @@ public class Sink implements Iterable<FireHydrant>
   private final AtomicInteger numRowsExcludingCurrIndex = new AtomicInteger();
   private volatile FireHydrant currHydrant;
   private volatile boolean writable = true;
-  private final NullHandlingConfig nullHandlingConfig;
 
   public Sink(
       Interval interval,
@@ -76,8 +74,7 @@ public class Sink implements Iterable<FireHydrant>
       ShardSpec shardSpec,
       String version,
       int maxRowsInMemory,
-      boolean reportParseExceptions,
-      NullHandlingConfig nullHandlingConfig
+      boolean reportParseExceptions
   )
   {
     this.schema = schema;
@@ -86,7 +83,6 @@ public class Sink implements Iterable<FireHydrant>
     this.version = version;
     this.maxRowsInMemory = maxRowsInMemory;
     this.reportParseExceptions = reportParseExceptions;
-    this.nullHandlingConfig = nullHandlingConfig;
 
     makeNewCurrIndex(interval.getStartMillis(), schema);
   }
@@ -98,8 +94,7 @@ public class Sink implements Iterable<FireHydrant>
       String version,
       int maxRowsInMemory,
       boolean reportParseExceptions,
-      List<FireHydrant> hydrants,
-      NullHandlingConfig nullHandlingConfig
+      List<FireHydrant> hydrants
   )
   {
     this.schema = schema;
@@ -119,7 +114,7 @@ public class Sink implements Iterable<FireHydrant>
       numRowsExcludingCurrIndex.addAndGet(hydrant.getSegment().asQueryableIndex().getNumRows());
     }
     this.hydrants.addAll(hydrants);
-    this.nullHandlingConfig = nullHandlingConfig;
+
     makeNewCurrIndex(interval.getStartMillis(), schema);
   }
 
@@ -290,7 +285,7 @@ public class Sink implements Iterable<FireHydrant>
             newIndex.loadDimensionIterable(dimOrder, oldCapabilities);
           }
         }
-        currHydrant = new FireHydrant(newIndex, newCount, getSegment().getIdentifier(), nullHandlingConfig);
+        currHydrant = new FireHydrant(newIndex, newCount, getSegment().getIdentifier());
         if (old != null) {
           numRowsExcludingCurrIndex.addAndGet(old.getIndex().size());
         }

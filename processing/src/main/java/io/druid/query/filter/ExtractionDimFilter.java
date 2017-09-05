@@ -19,14 +19,12 @@
 
 package io.druid.query.filter;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.RangeSet;
 import io.druid.java.util.common.StringUtils;
 import io.druid.query.extraction.ExtractionFn;
-import io.druid.segment.NullHandlingConfig;
 
 import java.nio.ByteBuffer;
 
@@ -39,7 +37,6 @@ public class ExtractionDimFilter implements DimFilter
   private final String dimension;
   private final String value;
   private final ExtractionFn extractionFn;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public ExtractionDimFilter(
@@ -47,8 +44,7 @@ public class ExtractionDimFilter implements DimFilter
       @JsonProperty("value") String value,
       @JsonProperty("extractionFn") ExtractionFn extractionFn,
       // for backwards compatibility
-      @Deprecated @JsonProperty("dimExtractionFn") ExtractionFn dimExtractionFn,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
+      @Deprecated @JsonProperty("dimExtractionFn") ExtractionFn dimExtractionFn
   )
   {
     Preconditions.checkArgument(dimension != null, "dimension must not be null");
@@ -60,7 +56,6 @@ public class ExtractionDimFilter implements DimFilter
     this.dimension = dimension;
     this.value = value;
     this.extractionFn = extractionFn != null ? extractionFn : dimExtractionFn;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @JsonProperty
@@ -100,13 +95,13 @@ public class ExtractionDimFilter implements DimFilter
   @Override
   public DimFilter optimize()
   {
-    return new SelectorDimFilter(dimension, value, extractionFn, nullHandlingConfig).optimize();
+    return new SelectorDimFilter(dimension, value, extractionFn).optimize();
   }
 
   @Override
   public Filter toFilter()
   {
-    return new SelectorDimFilter(dimension, value, extractionFn, nullHandlingConfig).toFilter();
+    return new SelectorDimFilter(dimension, value, extractionFn).toFilter();
   }
 
   @Override

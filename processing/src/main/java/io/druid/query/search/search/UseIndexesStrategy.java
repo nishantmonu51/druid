@@ -34,7 +34,6 @@ import io.druid.query.filter.BitmapIndexSelector;
 import io.druid.query.filter.Filter;
 import io.druid.query.search.search.CursorOnlyStrategy.CursorBasedExecutor;
 import io.druid.segment.ColumnSelectorBitmapIndexSelector;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.Segment;
 import io.druid.segment.StorageAdapter;
@@ -66,7 +65,7 @@ public class UseIndexesStrategy extends SearchStrategy
   }
 
   @Override
-  public List<SearchQueryExecutor> getExecutionPlan(SearchQuery query, Segment segment, NullHandlingConfig nullHandlingConfig)
+  public List<SearchQueryExecutor> getExecutionPlan(SearchQuery query, Segment segment)
   {
     final ImmutableList.Builder<SearchQueryExecutor> builder = ImmutableList.builder();
     final QueryableIndex index = segment.asQueryableIndex();
@@ -83,8 +82,7 @@ public class UseIndexesStrategy extends SearchStrategy
         final BitmapIndexSelector selector = new ColumnSelectorBitmapIndexSelector(
             index.getBitmapFactoryForDimensions(),
             VirtualColumns.EMPTY,
-            index,
-            nullHandlingConfig
+            index
         );
 
         // Index-only plan is used only when any filter is not specified or the filter supports bitmap indexes.
@@ -94,7 +92,7 @@ public class UseIndexesStrategy extends SearchStrategy
         // from the non-bitmap-support filter, and then use it to compute the filtered result by intersecting bitmaps.
         if (filter == null || filter.supportsBitmapIndex(selector)) {
           final ImmutableBitmap timeFilteredBitmap = makeTimeFilteredBitmap(index, segment, filter, interval);
-          builder.add(new IndexOnlyExecutor(query, segment, timeFilteredBitmap, bitmapSuppDims, nullHandlingConfig));
+          builder.add(new IndexOnlyExecutor(query, segment, timeFilteredBitmap, bitmapSuppDims));
         } else {
           // Fall back to cursor-based execution strategy
           nonBitmapSuppDims.addAll(bitmapSuppDims);
@@ -102,10 +100,10 @@ public class UseIndexesStrategy extends SearchStrategy
       }
 
       if (nonBitmapSuppDims.size() > 0) {
-        builder.add(new CursorBasedExecutor(query, segment, filter, interval, nonBitmapSuppDims, nullHandlingConfig));
+        builder.add(new CursorBasedExecutor(query, segment, filter, interval, nonBitmapSuppDims));
       }
     } else {
-      builder.add(new CursorBasedExecutor(query, segment, filter, interval, searchDims, nullHandlingConfig));
+      builder.add(new CursorBasedExecutor(query, segment, filter, interval, searchDims));
     }
 
     return builder.build();
@@ -158,9 +156,7 @@ public class UseIndexesStrategy extends SearchStrategy
       final BitmapIndexSelector selector = new ColumnSelectorBitmapIndexSelector(
           index.getBitmapFactoryForDimensions(),
           VirtualColumns.EMPTY,
-          index,
-          // Time column is never null, safe to use LEGACY_CONFIG
-          NullHandlingConfig.LEGACY_CONFIG
+          index
       );
       Preconditions.checkArgument(filter.supportsBitmapIndex(selector), "filter[%s] should support bitmap", filter);
       baseFilter = filter.getBitmapIndex(selector);
@@ -231,11 +227,10 @@ public class UseIndexesStrategy extends SearchStrategy
     public IndexOnlyExecutor(
         SearchQuery query, Segment segment,
         ImmutableBitmap timeFilteredBitmap,
-        List<DimensionSpec> dimensionSpecs,
-        NullHandlingConfig nullHandlingConfig
+        List<DimensionSpec> dimensionSpecs
     )
     {
-      super(query, segment, dimensionSpecs, nullHandlingConfig);
+      super(query, segment, dimensionSpecs);
       this.timeFilteredBitmap = timeFilteredBitmap;
     }
 
@@ -263,7 +258,7 @@ public class UseIndexesStrategy extends SearchStrategy
 
         ExtractionFn extractionFn = dimension.getExtractionFn();
         if (extractionFn == null) {
-          extractionFn = new IdentityExtractionFn(nullHandlingConfig);
+          extractionFn = IdentityExtractionFn.getInstance();
         }
         for (int i = 0; i < bitmapIndex.getCardinality(); ++i) {
           // TODO: fixme

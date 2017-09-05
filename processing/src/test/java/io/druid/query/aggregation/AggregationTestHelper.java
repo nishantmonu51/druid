@@ -72,7 +72,6 @@ import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMerger;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.Segment;
@@ -157,12 +156,12 @@ public class AggregationTestHelper
           {
             return 0;
           }
-        }, NullHandlingConfig.LEGACY_CONFIG
+        }
     );
 
     return new AggregationTestHelper(
         mapper,
-        new IndexMergerV9(mapper, indexIO, NullHandlingConfig.LEGACY_CONFIG),
+        new IndexMergerV9(mapper, indexIO),
         indexIO,
         factory.getToolchest(),
         factory,
@@ -220,12 +219,12 @@ public class AggregationTestHelper
             return 0;
           }
 
-        }, NullHandlingConfig.LEGACY_CONFIG
+        }
     );
 
     return new AggregationTestHelper(
         mapper,
-        new IndexMergerV9(mapper, indexIO, NullHandlingConfig.LEGACY_CONFIG),
+        new IndexMergerV9(mapper, indexIO),
         indexIO,
         toolchest,
         factory,
@@ -266,12 +265,12 @@ public class AggregationTestHelper
           {
             return 0;
           }
-        }, NullHandlingConfig.LEGACY_CONFIG
+        }
     );
 
     return new AggregationTestHelper(
         mapper,
-        new IndexMergerV9(mapper, indexIO, NullHandlingConfig.LEGACY_CONFIG),
+        new IndexMergerV9(mapper, indexIO),
         indexIO,
         toolchest,
         factory,
@@ -323,12 +322,12 @@ public class AggregationTestHelper
           {
             return 0;
           }
-        }, NullHandlingConfig.LEGACY_CONFIG
+        }
     );
 
     return new AggregationTestHelper(
         mapper,
-        new IndexMergerV9(mapper, indexIO, NullHandlingConfig.LEGACY_CONFIG),
+        new IndexMergerV9(mapper, indexIO),
         indexIO,
         toolchest,
         factory,
@@ -522,7 +521,7 @@ public class AggregationTestHelper
           public Segment apply(File segmentDir)
           {
             try {
-              return new QueryableIndexSegment("", indexIO.loadIndex(segmentDir), NullHandlingConfig.LEGACY_CONFIG);
+              return new QueryableIndexSegment("", indexIO.loadIndex(segmentDir));
             }
             catch (IOException ex) {
               throw Throwables.propagate(ex);

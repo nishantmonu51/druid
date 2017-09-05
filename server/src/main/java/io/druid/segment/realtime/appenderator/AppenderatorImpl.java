@@ -59,7 +59,6 @@ import io.druid.query.SegmentDescriptor;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMerger;
 import io.druid.segment.IndexSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.Segment;
@@ -127,7 +126,6 @@ public class AppenderatorImpl implements Appenderator
   private volatile long nextFlush;
   private volatile FileLock basePersistDirLock = null;
   private volatile FileChannel basePersistDirLockChannel = null;
-  private final NullHandlingConfig nullHandlingConfig;
 
   public AppenderatorImpl(
       DataSchema schema,
@@ -142,8 +140,7 @@ public class AppenderatorImpl implements Appenderator
       IndexIO indexIO,
       IndexMerger indexMerger,
       Cache cache,
-      CacheConfig cacheConfig,
-      NullHandlingConfig nullHandlingConfig
+      CacheConfig cacheConfig
   )
   {
     this.schema = Preconditions.checkNotNull(schema, "schema");
@@ -165,7 +162,6 @@ public class AppenderatorImpl implements Appenderator
         Preconditions.checkNotNull(cache, "cache"),
         cacheConfig
     );
-    this.nullHandlingConfig = nullHandlingConfig;
 
     log.info("Created Appenderator for dataSource[%s].", schema.getDataSource());
   }
@@ -277,8 +273,7 @@ public class AppenderatorImpl implements Appenderator
           identifier.getShardSpec(),
           identifier.getVersion(),
           tuningConfig.getMaxRowsInMemory(),
-          tuningConfig.isReportParseExceptions(),
-          nullHandlingConfig
+          tuningConfig.isReportParseExceptions()
       );
 
       try {
@@ -820,8 +815,7 @@ public class AppenderatorImpl implements Appenderator
                 new FireHydrant(
                     new QueryableIndexSegment(
                         identifier.getIdentifierAsString(),
-                        indexIO.loadIndex(hydrantDir),
-                        nullHandlingConfig
+                        indexIO.loadIndex(hydrantDir)
                     ),
                     hydrantNumber
                 )
@@ -841,8 +835,7 @@ public class AppenderatorImpl implements Appenderator
             identifier.getVersion(),
             tuningConfig.getMaxRowsInMemory(),
             tuningConfig.isReportParseExceptions(),
-            hydrants,
-            nullHandlingConfig
+            hydrants
         );
         sinks.put(identifier, currSink);
         sinkTimeline.add(
@@ -1048,8 +1041,7 @@ public class AppenderatorImpl implements Appenderator
         indexToPersist.swapSegment(
             new QueryableIndexSegment(
                 indexToPersist.getSegment().getIdentifier(),
-                indexIO.loadIndex(persistedFile),
-                nullHandlingConfig
+                indexIO.loadIndex(persistedFile)
             )
         );
         return numRows;

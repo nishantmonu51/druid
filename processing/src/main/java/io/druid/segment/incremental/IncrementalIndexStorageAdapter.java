@@ -34,7 +34,6 @@ import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.Cursor;
 import io.druid.segment.DimensionIndexer;
 import io.druid.segment.Metadata;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import io.druid.segment.VirtualColumns;
 import io.druid.segment.column.Column;
@@ -53,15 +52,10 @@ import java.util.Iterator;
 public class IncrementalIndexStorageAdapter implements StorageAdapter
 {
   private final IncrementalIndex<?> index;
-  private final NullHandlingConfig nullHandlingConfig;
 
-  public IncrementalIndexStorageAdapter(
-      IncrementalIndex<?> index,
-      NullHandlingConfig nullHandlingConfig
-  )
+  public IncrementalIndexStorageAdapter(IncrementalIndex<?> index)
   {
     this.index = index;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override

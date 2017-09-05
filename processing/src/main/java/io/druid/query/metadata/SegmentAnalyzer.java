@@ -37,7 +37,6 @@ import io.druid.query.metadata.metadata.ColumnAnalysis;
 import io.druid.query.metadata.metadata.SegmentMetadataQuery;
 import io.druid.segment.Cursor;
 import io.druid.segment.DimensionSelector;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.Segment;
 import io.druid.segment.StorageAdapter;
@@ -80,12 +79,12 @@ public class SegmentAnalyzer
     this.analysisTypes = analysisTypes;
   }
 
-  public long numRows(StorageAdapter storageAdapter)
+  public long numRows(Segment segment)
   {
-    return Preconditions.checkNotNull(storageAdapter, "storageAdapter").getNumRows();
+    return Preconditions.checkNotNull(segment, "segment").asStorageAdapter().getNumRows();
   }
 
-  public Map<String, ColumnAnalysis> analyze(Segment segment, NullHandlingConfig nullHandlingConfig)
+  public Map<String, ColumnAnalysis> analyze(Segment segment)
   {
     Preconditions.checkNotNull(segment, "segment");
 

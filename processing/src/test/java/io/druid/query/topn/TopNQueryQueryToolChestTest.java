@@ -44,7 +44,6 @@ import io.druid.query.aggregation.post.FieldAccessPostAggregator;
 import io.druid.query.dimension.DefaultDimensionSpec;
 import io.druid.query.spec.MultipleIntervalSegmentSpec;
 import io.druid.segment.IncrementalIndexSegment;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.TestIndex;
 import io.druid.segment.VirtualColumns;
@@ -181,7 +180,7 @@ public class TopNQueryQueryToolChestTest
     );
     QueryRunner<Result<TopNResultValue>> runner = QueryRunnerTestHelper.makeQueryRunner(
         factory,
-        new IncrementalIndexSegment(TestIndex.getIncrementalTestIndex(), segmentId, NullHandlingConfig.LEGACY_CONFIG),
+        new IncrementalIndexSegment(TestIndex.getIncrementalTestIndex(), segmentId),
         null
     );
 

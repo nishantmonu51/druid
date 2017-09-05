@@ -28,7 +28,6 @@ import io.druid.indexing.common.task.Task;
 import io.druid.indexing.common.task.TaskResource;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.query.aggregation.AggregatorFactory;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeIOConfig;
 import io.druid.segment.indexing.RealtimeTuningConfig;
@@ -76,7 +75,7 @@ public class TaskAnnouncementTest
             ),
             null
         ),
-        null, NullHandlingConfig.LEGACY_CONFIG
+        null
     );
     final TaskStatus status = TaskStatus.running(task.getId());
     final TaskAnnouncement announcement = TaskAnnouncement.create(task, status, TaskLocation.unknown());

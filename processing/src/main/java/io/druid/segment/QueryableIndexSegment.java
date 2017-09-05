@@ -29,17 +29,11 @@ public class QueryableIndexSegment extends AbstractSegment
 {
   private final QueryableIndex index;
   private final String identifier;
-  private final NullHandlingConfig nullHandlingConfig;
 
-  public QueryableIndexSegment(
-      final String segmentIdentifier,
-      QueryableIndex index,
-      NullHandlingConfig nullHandlingConfig
-  )
+  public QueryableIndexSegment(final String segmentIdentifier, QueryableIndex index)
   {
     this.index = index;
     identifier = segmentIdentifier;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -63,7 +57,7 @@ public class QueryableIndexSegment extends AbstractSegment
   @Override
   public StorageAdapter asStorageAdapter()
   {
-    return new QueryableIndexStorageAdapter(index, nullHandlingConfig);
+    return new QueryableIndexStorageAdapter(index);
   }
 
   @Override

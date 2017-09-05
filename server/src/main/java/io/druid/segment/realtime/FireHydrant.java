@@ -24,7 +24,6 @@ import com.google.common.base.Throwables;
 import io.druid.java.util.common.ISE;
 import io.druid.java.util.common.Pair;
 import io.druid.segment.IncrementalIndexSegment;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.ReferenceCountingSegment;
 import io.druid.segment.Segment;
 import io.druid.segment.incremental.IncrementalIndex;
@@ -45,12 +44,11 @@ public class FireHydrant
   public FireHydrant(
       IncrementalIndex index,
       int count,
-      String segmentIdentifier,
-      NullHandlingConfig nullHandlingConfig
+      String segmentIdentifier
   )
   {
     this.index = index;
-    this.adapter = new ReferenceCountingSegment(new IncrementalIndexSegment(index, segmentIdentifier, nullHandlingConfig));
+    this.adapter = new ReferenceCountingSegment(new IncrementalIndexSegment(index, segmentIdentifier));
     this.count = count;
   }
 

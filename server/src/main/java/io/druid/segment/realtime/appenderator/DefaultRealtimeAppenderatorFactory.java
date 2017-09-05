@@ -29,7 +29,6 @@ import io.druid.guice.annotations.Processing;
 import io.druid.query.QueryRunnerFactoryConglomerate;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMerger;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeTuningConfig;
 import io.druid.segment.loading.DataSegmentPusher;
@@ -53,7 +52,6 @@ DefaultRealtimeAppenderatorFactory implements AppenderatorFactory
   private final IndexMerger indexMerger;
   private final Cache cache;
   private final CacheConfig cacheConfig;
-  private final NullHandlingConfig nullHandlingConfig;
 
   public DefaultRealtimeAppenderatorFactory(
       @JacksonInject ServiceEmitter emitter,
@@ -65,9 +63,8 @@ DefaultRealtimeAppenderatorFactory implements AppenderatorFactory
       @JacksonInject IndexIO indexIO,
       @JacksonInject IndexMerger indexMerger,
       @JacksonInject Cache cache,
-      @JacksonInject CacheConfig cacheConfig,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
-      )
+      @JacksonInject CacheConfig cacheConfig
+  )
   {
     this.emitter = emitter;
     this.conglomerate = conglomerate;
@@ -79,7 +76,6 @@ DefaultRealtimeAppenderatorFactory implements AppenderatorFactory
     this.indexMerger = indexMerger;
     this.cache = cache;
     this.cacheConfig = cacheConfig;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -108,8 +104,7 @@ DefaultRealtimeAppenderatorFactory implements AppenderatorFactory
         emitter,
         queryExecutorService,
         cache,
-        cacheConfig,
-        nullHandlingConfig
+        cacheConfig
     );
   }
 

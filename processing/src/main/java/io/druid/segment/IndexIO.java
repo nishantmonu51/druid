@@ -96,10 +96,9 @@ public class IndexIO
   private static final SerializerUtils serializerUtils = new SerializerUtils();
 
   private final ObjectMapper mapper;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
-  public IndexIO(ObjectMapper mapper, ColumnConfig columnConfig, NullHandlingConfig nullHandlingConfig)
+  public IndexIO(ObjectMapper mapper, ColumnConfig columnConfig)
   {
     this.mapper = Preconditions.checkNotNull(mapper, "null ObjectMapper");
     Preconditions.checkNotNull(columnConfig, "null ColumnConfig");
@@ -110,7 +109,6 @@ public class IndexIO
     }
     indexLoadersBuilder.put((int) V9_VERSION, new V9IndexLoader(columnConfig));
     indexLoaders = indexLoadersBuilder.build();
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   public void validateTwoSegments(File dir1, File dir2) throws IOException
@@ -236,7 +234,7 @@ public class IndexIO
     final int version = SegmentUtils.getVersionFromDir(toConvert);
     boolean current = version == CURRENT_VERSION_ID;
     if (!current || forceIfCurrent) {
-      new IndexMergerV9(mapper, this, nullHandlingConfig).convert(toConvert, converted, indexSpec);
+      new IndexMergerV9(mapper, this).convert(toConvert, converted, indexSpec);
       if (validate) {
         validateTwoSegments(toConvert, converted);
       }

@@ -43,7 +43,6 @@ import io.druid.query.SegmentDescriptor;
 import io.druid.query.TableDataSource;
 import io.druid.query.spec.SpecificSegmentQueryRunner;
 import io.druid.query.spec.SpecificSegmentSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.Segment;
@@ -76,9 +75,7 @@ public class SpecificSegmentsQuerySegmentWalker implements QuerySegmentWalker, C
       final QueryableIndex index
   )
   {
-    final Segment segment = new QueryableIndexSegment(descriptor.getIdentifier(), index,
-                                                      NullHandlingConfig.LEGACY_CONFIG
-    );
+    final Segment segment = new QueryableIndexSegment(descriptor.getIdentifier(), index);
     if (!timelines.containsKey(descriptor.getDataSource())) {
       timelines.put(descriptor.getDataSource(), new VersionedIntervalTimeline<String, Segment>(Ordering.natural()));
     }

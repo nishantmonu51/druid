@@ -23,7 +23,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import io.druid.segment.NullHandlingConfig;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +33,7 @@ public class DimFilters
 {
   public static SelectorDimFilter dimEquals(String dimension, String value)
   {
-    return new SelectorDimFilter(dimension, value, null, NullHandlingConfig.LEGACY_CONFIG);
+    return new SelectorDimFilter(dimension, value, null);
   }
 
   public static AndDimFilter and(DimFilter... filters)

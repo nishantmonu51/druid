@@ -25,12 +25,11 @@ public class NullableDoubleAggregateCombiner extends DoubleAggregateCombiner
 {
   private boolean isNull;
 
-  private final DoubleAggregateCombiner delegate;
+  private DoubleAggregateCombiner delegate;
 
   public NullableDoubleAggregateCombiner(DoubleAggregateCombiner delegate)
   {
     this.delegate = delegate;
-    this.isNull = true;
   }
 
   @Override
@@ -45,8 +44,8 @@ public class NullableDoubleAggregateCombiner extends DoubleAggregateCombiner
   {
     if (isNull && !selector.isNull()) {
       isNull = false;
+      delegate.fold(selector);
     }
-    delegate.fold(selector);
   }
 
   @Override

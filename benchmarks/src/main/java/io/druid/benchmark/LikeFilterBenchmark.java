@@ -33,7 +33,6 @@ import io.druid.query.filter.LikeDimFilter;
 import io.druid.query.filter.RegexDimFilter;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.ordering.StringComparators;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.BitmapIndex;
 import io.druid.segment.data.BitmapSerdeFactory;
 import io.druid.segment.data.GenericIndexed;
@@ -70,8 +69,7 @@ public class LikeFilterBenchmark
   private static final Filter SELECTOR_EQUALS = new SelectorDimFilter(
       "foo",
       "1000000",
-      null,
-      NullHandlingConfig.LEGACY_CONFIG
+      null
   ).toFilter();
 
   private static final Filter LIKE_EQUALS = new LikeDimFilter(
@@ -89,8 +87,7 @@ public class LikeFilterBenchmark
       false,
       null,
       null,
-      StringComparators.LEXICOGRAPHIC,
-      NullHandlingConfig.LEGACY_CONFIG
+      StringComparators.LEXICOGRAPHIC
   ).toFilter();
 
   private static final Filter REGEX_PREFIX = new RegexDimFilter(

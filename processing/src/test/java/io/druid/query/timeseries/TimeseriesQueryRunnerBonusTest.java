@@ -38,7 +38,6 @@ import io.druid.query.Result;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.segment.IncrementalIndexSegment;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.incremental.IncrementalIndex;
 import io.druid.segment.incremental.IncrementalIndexSchema;
@@ -124,7 +123,7 @@ public class TimeseriesQueryRunnerBonusTest
 
     final QueryRunner<Result<TimeseriesResultValue>> runner = makeQueryRunner(
         factory,
-        new IncrementalIndexSegment(index, null, NullHandlingConfig.LEGACY_CONFIG)
+        new IncrementalIndexSegment(index, null)
     );
 
     TimeseriesQuery query = Druids.newTimeseriesQueryBuilder()

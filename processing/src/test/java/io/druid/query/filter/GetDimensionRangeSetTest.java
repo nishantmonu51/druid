@@ -28,7 +28,6 @@ import io.druid.js.JavaScriptConfig;
 import io.druid.query.extraction.IdentityExtractionFn;
 import io.druid.query.ordering.StringComparators;
 import io.druid.query.search.search.ContainsSearchQuerySpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,36 +38,25 @@ import java.util.List;
 public class GetDimensionRangeSetTest
 {
 
-  private final DimFilter selector1 = new SelectorDimFilter("dim1", "a", null, NullHandlingConfig.LEGACY_CONFIG);
-  private final DimFilter selector2 = new SelectorDimFilter("dim1", "z", null, NullHandlingConfig.LEGACY_CONFIG);
-  private final DimFilter selector3 = new SelectorDimFilter("dim2", "c", null, NullHandlingConfig.LEGACY_CONFIG);
-  private final DimFilter selector4 = new SelectorDimFilter("dimWorld", "find", new IdentityExtractionFn(NullHandlingConfig.LEGACY_CONFIG),
-                                                            NullHandlingConfig.LEGACY_CONFIG);
-  private final DimFilter selector5 = new SelectorDimFilter("dim1", null, null, NullHandlingConfig.LEGACY_CONFIG);
-  private final DimFilter in1 = new InDimFilter("dim1", ImmutableList.of("testing", "this", "filter", "tillend"), null,
-                                                NullHandlingConfig.LEGACY_CONFIG
-  );
-  private final DimFilter in2 = new InDimFilter("dim2", ImmutableList.of("again"), null,
-                                                NullHandlingConfig.LEGACY_CONFIG
-  );
-  private final DimFilter in3 = new InDimFilter("dim1", Arrays.asList("null", null), null,
-                                                NullHandlingConfig.LEGACY_CONFIG
-  );
+  private final DimFilter selector1 = new SelectorDimFilter("dim1", "a", null);
+  private final DimFilter selector2 = new SelectorDimFilter("dim1", "z", null);
+  private final DimFilter selector3 = new SelectorDimFilter("dim2", "c", null);
+  private final DimFilter selector4 = new SelectorDimFilter("dimWorld", "find", IdentityExtractionFn.getInstance());
+  private final DimFilter selector5 = new SelectorDimFilter("dim1", null, null);
+  private final DimFilter in1 = new InDimFilter("dim1", ImmutableList.of("testing", "this", "filter", "tillend"), null);
+  private final DimFilter in2 = new InDimFilter("dim2", ImmutableList.of("again"), null);
+  private final DimFilter in3 = new InDimFilter("dim1", Arrays.asList("null", null), null);
   private final DimFilter bound1 = new BoundDimFilter("dim1", "from", "to", false, false, false, null,
-                                                      StringComparators.LEXICOGRAPHIC,
-                                                      NullHandlingConfig.LEGACY_CONFIG
+                                                      StringComparators.LEXICOGRAPHIC
   );
   private final DimFilter bound2 = new BoundDimFilter("dim1", null, "tillend", false, false, false, null,
-                                                      StringComparators.LEXICOGRAPHIC,
-                                                      NullHandlingConfig.LEGACY_CONFIG
+                                                      StringComparators.LEXICOGRAPHIC
   );
   private final DimFilter bound3 = new BoundDimFilter("dim1", "notincluded", null, true, false, false, null,
-                                                      StringComparators.LEXICOGRAPHIC,
-                                                      NullHandlingConfig.LEGACY_CONFIG
+                                                      StringComparators.LEXICOGRAPHIC
   );
   private final DimFilter bound4 = new BoundDimFilter("dim2", "again", "exclusive", true, true, false, null,
-                                                      StringComparators.LEXICOGRAPHIC,
-                                                      NullHandlingConfig.LEGACY_CONFIG
+                                                      StringComparators.LEXICOGRAPHIC
   );
   private final DimFilter other1 = new RegexDimFilter("someDim", "pattern", null);
   private final DimFilter other2 = new JavaScriptDimFilter("someOtherDim", "function(x) { return x }", null,
@@ -81,7 +69,7 @@ public class GetDimensionRangeSetTest
           Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
           Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
       ),
-      null, NullHandlingConfig.LEGACY_CONFIG
+      null
   );
 
   private final DimFilter interval2 = new IntervalDimFilter(
@@ -90,7 +78,7 @@ public class GetDimensionRangeSetTest
           Intervals.of("1970-01-01T00:00:00.001Z/1970-01-01T00:00:00.004Z"),
           Intervals.of("1975-01-01T00:00:00.001Z/1980-01-01T00:00:00.004Z")
       ),
-      null, NullHandlingConfig.LEGACY_CONFIG
+      null
   );
 
   private static final RangeSet all = rangeSet(ImmutableList.of(Range.<String>all()));

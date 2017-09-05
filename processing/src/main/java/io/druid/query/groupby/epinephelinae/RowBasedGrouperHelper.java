@@ -61,7 +61,6 @@ import io.druid.segment.DimensionSelector;
 import io.druid.segment.DoubleColumnSelector;
 import io.druid.segment.FloatColumnSelector;
 import io.druid.segment.LongColumnSelector;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.ColumnCapabilities;
 import io.druid.segment.column.ValueType;
 import io.druid.segment.data.IndexedInts;
@@ -96,8 +95,7 @@ public class RowBasedGrouperHelper
       final Supplier<ByteBuffer> bufferSupplier,
       final LimitedTemporaryStorage temporaryStorage,
       final ObjectMapper spillMapper,
-      final AggregatorFactory[] aggregatorFactories,
-      final NullHandlingConfig nullHandlingConfig
+      final AggregatorFactory[] aggregatorFactories
   )
   {
     return createGrouperAccumulatorPair(
@@ -113,8 +111,7 @@ public class RowBasedGrouperHelper
         null,
         UNKNOWN_THREAD_PRIORITY,
         false,
-        UNKNOWN_TIMEOUT,
-        nullHandlingConfig
+        UNKNOWN_TIMEOUT
     );
   }
 
@@ -136,8 +133,7 @@ public class RowBasedGrouperHelper
       @Nullable final ListeningExecutorService grouperSorter,
       final int priority,
       final boolean hasQueryTimeout,
-      final long queryTimeoutAt,
-      final NullHandlingConfig nullHandlingConfig
+      final long queryTimeoutAt
   )
   {
     // concurrencyHint >= 1 for concurrent groupers, -1 for single-threaded
@@ -219,8 +215,7 @@ public class RowBasedGrouperHelper
         isInputRaw,
         includeTimestamp,
         columnSelectorFactory,
-        valueTypes,
-        nullHandlingConfig
+        valueTypes
     );
 
     final Accumulator<AggregateResult, Row> accumulator = new Accumulator<AggregateResult, Row>()
@@ -309,8 +304,7 @@ public class RowBasedGrouperHelper
       final boolean isInputRaw,
       final boolean includeTimestamp,
       final ColumnSelectorFactory columnSelectorFactory,
-      final List<ValueType> valueTypes,
-      final NullHandlingConfig nullHandlingConfig
+      final List<ValueType> valueTypes
   )
   {
     final TimestampExtractFunction timestampExtractFn = includeTimestamp ?
@@ -322,45 +316,64 @@ public class RowBasedGrouperHelper
     if (isInputRaw) {
       final Supplier<Comparable>[] inputRawSuppliers = getValueSuppliersForDimensions(
           columnSelectorFactory,
-          query.getDimensions(),
-          nullHandlingConfig
+          query.getDimensions()
       );
 
       if (includeTimestamp) {
-        return (row, key) -> {
-          key[0] = timestampExtractFn.apply(row);
-          for (int i = 1; i < key.length; i++) {
-            final Comparable val = inputRawSuppliers[i - 1].get();
-            key[i] = valueConvertFns[i - 1].apply(val);
+        return new ValueExtractFunction()
+        {
+          @Override
+          public Comparable[] apply(Row row, Comparable[] key)
+          {
+            key[0] = timestampExtractFn.apply(row);
+            for (int i = 1; i < key.length; i++) {
+              final Comparable val = inputRawSuppliers[i - 1].get();
+              key[i] = valueConvertFns[i - 1].apply(val);
+            }
+            return key;
           }
-          return key;
         };
       } else {
-        return (row, key) -> {
-          for (int i = 0; i < key.length; i++) {
-            final Comparable val = inputRawSuppliers[i].get();
-            key[i] = valueConvertFns[i].apply(val);
+        return new ValueExtractFunction()
+        {
+          @Override
+          public Comparable[] apply(Row row, Comparable[] key)
+          {
+            for (int i = 0; i < key.length; i++) {
+              final Comparable val = inputRawSuppliers[i].get();
+              key[i] = valueConvertFns[i].apply(val);
+            }
+            return key;
           }
-          return key;
         };
       }
     } else {
       if (includeTimestamp) {
-        return (row, key) -> {
-          key[0] = timestampExtractFn.apply(row);
-          for (int i = 1; i < key.length; i++) {
-            final Comparable val = (Comparable) row.getRaw(query.getDimensions().get(i - 1).getOutputName());
-            key[i] = valueConvertFns[i - 1].apply(val);
+        return new ValueExtractFunction()
+        {
+          @Override
+          public Comparable[] apply(Row row, Comparable[] key)
+          {
+            key[0] = timestampExtractFn.apply(row);
+            for (int i = 1; i < key.length; i++) {
+              final Comparable val = (Comparable) row.getRaw(query.getDimensions().get(i - 1).getOutputName());
+              key[i] = valueConvertFns[i - 1].apply(val);
+            }
+            return key;
           }
-          return key;
         };
       } else {
-        return (row, key) -> {
-          for (int i = 0; i < key.length; i++) {
-            final Comparable val = (Comparable) row.getRaw(query.getDimensions().get(i).getOutputName());
-            key[i] = valueConvertFns[i].apply(val);
+        return new ValueExtractFunction()
+        {
+          @Override
+          public Comparable[] apply(Row row, Comparable[] key)
+          {
+            for (int i = 0; i < key.length; i++) {
+              final Comparable val = (Comparable) row.getRaw(query.getDimensions().get(i).getOutputName());
+              key[i] = valueConvertFns[i].apply(val);
+            }
+            return key;
           }
-          return key;
         };
       }
     }
@@ -481,22 +494,27 @@ public class RowBasedGrouperHelper
 
   private interface InputRawSupplierColumnSelectorStrategy<ValueSelectorType> extends ColumnSelectorStrategy
   {
-    Supplier<Comparable> makeInputRawSupplier(ValueSelectorType selector, NullHandlingConfig nullHandlingConfig);
+    Supplier<Comparable> makeInputRawSupplier(ValueSelectorType selector);
   }
 
   private static class StringInputRawSupplierColumnSelectorStrategy
       implements InputRawSupplierColumnSelectorStrategy<DimensionSelector>
   {
     @Override
-    public Supplier<Comparable> makeInputRawSupplier(DimensionSelector selector, NullHandlingConfig nullHandlingConfig)
+    public Supplier<Comparable> makeInputRawSupplier(DimensionSelector selector)
     {
-      return () -> {
-        final String value;
-        IndexedInts index = selector.getRow();
-        value = index.size() == 0
-                ? null
-                : selector.lookupName(index.get(0));
-        return nullHandlingConfig.getDefaultOrNull(value);
+      return new Supplier<Comparable>()
+      {
+        @Override
+        public Comparable get()
+        {
+          final String value;
+          IndexedInts index = selector.getRow();
+          value = index.size() == 0
+                  ? ""
+                  : selector.lookupName(index.get(0));
+          return value;
+        }
       };
     }
   }
@@ -514,26 +532,13 @@ public class RowBasedGrouperHelper
         case STRING:
           return new StringInputRawSupplierColumnSelectorStrategy();
         case LONG:
-          return (InputRawSupplierColumnSelectorStrategy<LongColumnSelector>) (columnSelector, nullHandlingConfig) -> {
-            if(!nullHandlingConfig.useDefaultValuesForNull() && columnSelector.isNull()) {
-              return null;
-            }
-            return columnSelector::getLong;
-          };
+          return (InputRawSupplierColumnSelectorStrategy<LongColumnSelector>) columnSelector -> columnSelector::getLong;
         case FLOAT:
-          return (InputRawSupplierColumnSelectorStrategy<FloatColumnSelector>) (columnSelector, nullHandlingConfig) -> {
-            if(!nullHandlingConfig.useDefaultValuesForNull() && columnSelector.isNull()) {
-              return null;
-            }
-            return columnSelector::getFloat;
-          };
+          return (InputRawSupplierColumnSelectorStrategy<FloatColumnSelector>)
+              columnSelector -> columnSelector::getFloat;
         case DOUBLE:
-          return (InputRawSupplierColumnSelectorStrategy<DoubleColumnSelector>) (columnSelector, nullHandlingConfig) -> {
-            if(!nullHandlingConfig.useDefaultValuesForNull() && columnSelector.isNull()) {
-              return null;
-            }
-            return columnSelector::getDouble;
-          };
+          return (InputRawSupplierColumnSelectorStrategy<DoubleColumnSelector>)
+              columnSelector -> columnSelector::getDouble;
         default:
           throw new IAE("Cannot create query type helper from invalid type [%s]", type);
       }
@@ -543,8 +548,7 @@ public class RowBasedGrouperHelper
   @SuppressWarnings("unchecked")
   private static Supplier<Comparable>[] getValueSuppliersForDimensions(
       final ColumnSelectorFactory columnSelectorFactory,
-      final List<DimensionSpec> dimensions,
-      NullHandlingConfig nullHandlingConfig
+      final List<DimensionSpec> dimensions
   )
   {
     final Supplier[] inputRawSuppliers = new Supplier[dimensions.size()];
@@ -557,7 +561,7 @@ public class RowBasedGrouperHelper
     for (int i = 0; i < selectorPluses.length; i++) {
       final ColumnSelectorPlus<InputRawSupplierColumnSelectorStrategy> selectorPlus = selectorPluses[i];
       final InputRawSupplierColumnSelectorStrategy strategy = selectorPlus.getColumnSelectorStrategy();
-      inputRawSuppliers[i] = strategy.makeInputRawSupplier(selectorPlus.getSelector(), nullHandlingConfig);
+      inputRawSuppliers[i] = strategy.makeInputRawSupplier(selectorPlus.getSelector());
     }
 
     return inputRawSuppliers;

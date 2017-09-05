@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import io.druid.java.util.common.Intervals;
 import io.druid.query.filter.IntervalDimFilter;
 import io.druid.query.filter.NotDimFilter;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class FiltrationTest
             new IntervalDimFilter(
                 Column.TIME_COLUMN_NAME,
                 ImmutableList.of(Intervals.of("2000/2001"), Intervals.of("2002/2003")),
-                null, NullHandlingConfig.LEGACY_CONFIG
+                null
             )
         ),
         null
@@ -54,7 +53,7 @@ public class FiltrationTest
             new IntervalDimFilter(
                 Column.TIME_COLUMN_NAME,
                 ImmutableList.of(Intervals.of("2000/2001"), Intervals.of("2002/2003")),
-                null, NullHandlingConfig.LEGACY_CONFIG
+                null
             )
         ),
         filtration.getDimFilter()

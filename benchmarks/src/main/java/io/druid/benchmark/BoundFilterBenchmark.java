@@ -31,7 +31,6 @@ import io.druid.extendedset.intset.ConciseSetUtils;
 import io.druid.query.filter.BitmapIndexSelector;
 import io.druid.query.filter.BoundDimFilter;
 import io.druid.query.ordering.StringComparators;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.BitmapIndex;
 import io.druid.segment.data.BitmapSerdeFactory;
 import io.druid.segment.data.GenericIndexed;
@@ -74,8 +73,7 @@ public class BoundFilterBenchmark
           false,
           false,
           null,
-          StringComparators.LEXICOGRAPHIC,
-          NullHandlingConfig.LEGACY_CONFIG
+          StringComparators.LEXICOGRAPHIC
       )
   );
 
@@ -88,8 +86,7 @@ public class BoundFilterBenchmark
           false,
           false,
           null,
-          StringComparators.LEXICOGRAPHIC,
-          NullHandlingConfig.LEGACY_CONFIG
+          StringComparators.LEXICOGRAPHIC
       )
   );
 
@@ -102,8 +99,7 @@ public class BoundFilterBenchmark
           false,
           false,
           null,
-          StringComparators.LEXICOGRAPHIC,
-          NullHandlingConfig.LEGACY_CONFIG
+          StringComparators.LEXICOGRAPHIC
       )
   );
 
@@ -116,8 +112,7 @@ public class BoundFilterBenchmark
           false,
           true,
           null,
-          StringComparators.ALPHANUMERIC,
-          NullHandlingConfig.LEGACY_CONFIG
+          StringComparators.ALPHANUMERIC
       )
   );
 
@@ -130,8 +125,7 @@ public class BoundFilterBenchmark
           false,
           true,
           null,
-          StringComparators.ALPHANUMERIC,
-          NullHandlingConfig.LEGACY_CONFIG
+          StringComparators.ALPHANUMERIC
       )
   );
 
@@ -144,8 +138,7 @@ public class BoundFilterBenchmark
           false,
           true,
           null,
-          StringComparators.ALPHANUMERIC,
-          NullHandlingConfig.LEGACY_CONFIG
+          StringComparators.ALPHANUMERIC
       )
   );
 

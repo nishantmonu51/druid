@@ -19,7 +19,6 @@
 
 package io.druid.indexing.common.task;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -51,7 +50,6 @@ import io.druid.query.QueryRunner;
 import io.druid.query.QueryRunnerFactory;
 import io.druid.query.QueryRunnerFactoryConglomerate;
 import io.druid.query.QueryToolChest;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeIOConfig;
 import io.druid.segment.indexing.RealtimeTuningConfig;
@@ -143,16 +141,12 @@ public class RealtimeIndexTask extends AbstractTask
   @JsonIgnore
   private volatile QueryRunnerFactoryConglomerate queryRunnerFactoryConglomerate = null;
 
-  @JsonIgnore
-  private final NullHandlingConfig nullHandlingConfig;
-
   @JsonCreator
   public RealtimeIndexTask(
       @JsonProperty("id") String id,
       @JsonProperty("resource") TaskResource taskResource,
       @JsonProperty("spec") FireDepartment fireDepartment,
-      @JsonProperty("context") Map<String, Object> context,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
+      @JsonProperty("context") Map<String, Object> context
   )
   {
     super(
@@ -163,7 +157,6 @@ public class RealtimeIndexTask extends AbstractTask
         context
     );
     this.spec = fireDepartment;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -329,7 +322,7 @@ public class RealtimeIndexTask extends AbstractTask
         toolbox.getIndexIO(),
         toolbox.getCache(),
         toolbox.getCacheConfig(),
-        toolbox.getObjectMapper(),nullHandlingConfig
+        toolbox.getObjectMapper()
     );
 
     this.plumber = plumberSchool.findPlumber(dataSchema, tuningConfig, metrics);

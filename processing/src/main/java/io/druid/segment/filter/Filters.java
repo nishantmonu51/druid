@@ -45,7 +45,6 @@ import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.DimensionHandlerUtils;
 import io.druid.segment.IntIteratorUtils;
 import io.druid.segment.LongColumnSelector;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.BitmapIndex;
 import io.druid.segment.column.Column;
 import io.druid.segment.column.ColumnCapabilities;

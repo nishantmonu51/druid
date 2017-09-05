@@ -31,7 +31,6 @@ import io.druid.jackson.DefaultObjectMapper;
 import io.druid.java.util.common.granularity.Granularities;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.segment.IndexSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeIOConfig;
 import io.druid.segment.indexing.RealtimeTuningConfig;
@@ -185,7 +184,7 @@ public class DruidJsonValidatorTest
                 null
             )
         ),
-        null, NullHandlingConfig.LEGACY_CONFIG
+        null
     );
 
     File tmp = temporaryFolder.newFile("test_task.json");

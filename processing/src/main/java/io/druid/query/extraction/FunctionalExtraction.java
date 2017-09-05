@@ -56,7 +56,7 @@ public abstract class FunctionalExtraction extends DimExtractionFn
   {
     this.retainMissingValue = retainMissingValue;
     this.nullHandlingConfig = nullHandlingConfig;
-    this.replaceMissingValueWith = nullHandlingConfig.defaultToNull(replaceMissingValueWith);
+    this.replaceMissingValueWith = nullHandlingConfig.emptyToNull(replaceMissingValueWith);
     Preconditions.checkArgument(
         !(this.retainMissingValue && !nullHandlingConfig.isNullOrDefault(this.replaceMissingValueWith)),
         "Cannot specify a [replaceMissingValueWith] and set [retainMissingValue] to true"

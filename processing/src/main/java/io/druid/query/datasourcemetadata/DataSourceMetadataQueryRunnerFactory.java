@@ -31,7 +31,6 @@ import io.druid.query.QueryRunnerFactory;
 import io.druid.query.QueryToolChest;
 import io.druid.query.QueryWatcher;
 import io.druid.query.Result;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.StorageAdapter;
 
@@ -46,24 +45,21 @@ public class DataSourceMetadataQueryRunnerFactory
 {
   private final DataSourceQueryQueryToolChest toolChest;
   private final QueryWatcher queryWatcher;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
   public DataSourceMetadataQueryRunnerFactory(
       DataSourceQueryQueryToolChest toolChest,
-      QueryWatcher queryWatcher,
-      NullHandlingConfig nullHandlingConfig
+      QueryWatcher queryWatcher
   )
   {
     this.toolChest = toolChest;
     this.queryWatcher = queryWatcher;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
   public QueryRunner<Result<DataSourceMetadataResultValue>> createRunner(final Segment segment)
   {
-    return new DataSourceMetadataQueryRunner(segment, nullHandlingConfig);
+    return new DataSourceMetadataQueryRunner(segment);
   }
 
   @Override
@@ -86,7 +82,7 @@ public class DataSourceMetadataQueryRunnerFactory
   {
     private final StorageAdapter adapter;
 
-    public DataSourceMetadataQueryRunner(Segment segment, NullHandlingConfig nullHandlingConfig)
+    public DataSourceMetadataQueryRunner(Segment segment)
     {
       this.adapter = segment.asStorageAdapter();
     }

@@ -28,7 +28,6 @@ import com.google.common.collect.Lists;
 import com.metamx.emitter.EmittingLogger;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.java.util.common.Intervals;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.server.metrics.NoopServiceEmitter;
 import io.druid.timeline.DataSegment;
@@ -79,7 +78,7 @@ public class SegmentLoaderLocalCacheManagerTest
     manager = new SegmentLoaderLocalCacheManager(
         TestHelper.getTestIndexIO(),
         new SegmentLoaderConfig().withLocations(locations),
-        jsonMapper, NullHandlingConfig.LEGACY_CONFIG
+        jsonMapper
     );
   }
 
@@ -153,7 +152,7 @@ public class SegmentLoaderLocalCacheManagerTest
     manager = new SegmentLoaderLocalCacheManager(
         TestHelper.getTestIndexIO(),
         new SegmentLoaderConfig().withLocations(locations),
-        jsonMapper, NullHandlingConfig.LEGACY_CONFIG
+        jsonMapper
     );
     final File segmentSrcFolder = tmpFolder.newFolder("segmentSrcFolder");
     final DataSegment segmentToDownload = dataSegmentWithInterval("2014-10-20T00:00:00Z/P1D").withLoadSpec(
@@ -206,7 +205,7 @@ public class SegmentLoaderLocalCacheManagerTest
     manager = new SegmentLoaderLocalCacheManager(
         TestHelper.getTestIndexIO(),
         new SegmentLoaderConfig().withLocations(locations),
-        jsonMapper, NullHandlingConfig.LEGACY_CONFIG
+        jsonMapper
     );
     final File segmentSrcFolder = tmpFolder.newFolder("segmentSrcFolder");
     final DataSegment segmentToDownload = dataSegmentWithInterval("2014-10-20T00:00:00Z/P1D").withLoadSpec(
@@ -261,7 +260,7 @@ public class SegmentLoaderLocalCacheManagerTest
     manager = new SegmentLoaderLocalCacheManager(
         TestHelper.getTestIndexIO(),
         new SegmentLoaderConfig().withLocations(locations),
-        jsonMapper, NullHandlingConfig.LEGACY_CONFIG
+        jsonMapper
     );
     final File segmentSrcFolder = tmpFolder.newFolder("segmentSrcFolder");
     final DataSegment segmentToDownload = dataSegmentWithInterval("2014-10-20T00:00:00Z/P1D").withLoadSpec(
@@ -315,7 +314,7 @@ public class SegmentLoaderLocalCacheManagerTest
     manager = new SegmentLoaderLocalCacheManager(
         TestHelper.getTestIndexIO(),
         new SegmentLoaderConfig().withLocations(locations),
-        jsonMapper, NullHandlingConfig.LEGACY_CONFIG
+        jsonMapper
     );
     final File segmentSrcFolder = tmpFolder.newFolder("segmentSrcFolder");
     final DataSegment segmentToDownload = dataSegmentWithInterval("2014-10-20T00:00:00Z/P1D").withLoadSpec(

@@ -25,12 +25,11 @@ public class NullableLongAggregateCombiner extends LongAggregateCombiner
 {
   private boolean isNull;
 
-  private final LongAggregateCombiner delegate;
+  private LongAggregateCombiner delegate;
 
   public NullableLongAggregateCombiner(LongAggregateCombiner delegate)
   {
     this.delegate = delegate;
-    this.isNull = true;
   }
 
   @Override

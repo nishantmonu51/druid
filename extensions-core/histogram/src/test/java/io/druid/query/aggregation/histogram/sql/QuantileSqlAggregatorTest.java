@@ -204,11 +204,11 @@ public class QuantileSqlAggregatorTest
                     new ApproximateHistogramAggregatorFactory("a4:agg", "a4:v", null, null, null, null),
                     new FilteredAggregatorFactory(
                         new ApproximateHistogramAggregatorFactory("a5:agg", "m1", null, null, null, null),
-                        new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG)
+                        new SelectorDimFilter("dim1", "abc", null)
                     ),
                     new FilteredAggregatorFactory(
                         new ApproximateHistogramAggregatorFactory("a6:agg", "m1", null, null, null, null),
-                        new NotDimFilter(new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG))
+                        new NotDimFilter(new SelectorDimFilter("dim1", "abc", null))
                     ),
                     new ApproximateHistogramAggregatorFactory("a8:agg", "cnt", null, null, null, null)
                 ))
@@ -267,11 +267,11 @@ public class QuantileSqlAggregatorTest
                     new ApproximateHistogramFoldingAggregatorFactory("a2:agg", "hist_m1", 200, null, null, null),
                     new FilteredAggregatorFactory(
                         new ApproximateHistogramFoldingAggregatorFactory("a4:agg", "hist_m1", null, null, null, null),
-                        new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG)
+                        new SelectorDimFilter("dim1", "abc", null)
                     ),
                     new FilteredAggregatorFactory(
                         new ApproximateHistogramFoldingAggregatorFactory("a5:agg", "hist_m1", null, null, null, null),
-                        new NotDimFilter(new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG))
+                        new NotDimFilter(new SelectorDimFilter("dim1", "abc", null))
                     )
                 ))
                 .postAggregators(ImmutableList.<PostAggregator>of(

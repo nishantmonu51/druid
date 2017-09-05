@@ -20,6 +20,7 @@
 package io.druid.query.search.search;
 
 import com.google.common.collect.ImmutableList;
+import io.druid.java.util.common.guava.Accumulator;
 import io.druid.java.util.common.guava.Sequence;
 import io.druid.query.ColumnSelectorPlus;
 import io.druid.query.dimension.DimensionSpec;
@@ -28,7 +29,6 @@ import io.druid.query.search.SearchQueryRunner;
 import io.druid.query.search.SearchQueryRunner.SearchColumnSelectorStrategy;
 import io.druid.segment.Cursor;
 import io.druid.segment.DimensionHandlerUtils;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.StorageAdapter;
 import io.druid.segment.VirtualColumns;
@@ -53,7 +53,7 @@ public class CursorOnlyStrategy extends SearchStrategy
   }
 
   @Override
-  public List<SearchQueryExecutor> getExecutionPlan(SearchQuery query, Segment segment, NullHandlingConfig nullHandlingConfig)
+  public List<SearchQueryExecutor> getExecutionPlan(SearchQuery query, Segment segment)
   {
     final StorageAdapter adapter = segment.asStorageAdapter();
     final List<DimensionSpec> dimensionSpecs = getDimsToSearch(adapter.getAvailableDimensions(), query.getDimensions());
@@ -62,8 +62,7 @@ public class CursorOnlyStrategy extends SearchStrategy
         segment,
         filter,
         interval,
-        dimensionSpecs,
-        nullHandlingConfig
+        dimensionSpecs
     ));
   }
 
@@ -77,11 +76,10 @@ public class CursorOnlyStrategy extends SearchStrategy
         SearchQuery query,
         Segment segment,
         Filter filter,
-        Interval interval, List<DimensionSpec> dimensionSpecs,
-        NullHandlingConfig nullHandlingConfig
+        Interval interval, List<DimensionSpec> dimensionSpecs
     )
     {
-      super(query, segment, dimensionSpecs, nullHandlingConfig);
+      super(query, segment, dimensionSpecs);
 
       this.filter = filter;
       this.interval = interval;
@@ -106,39 +104,43 @@ public class CursorOnlyStrategy extends SearchStrategy
 
       cursors.accumulate(
           retVal,
-          (set, cursor) -> {
-            if (set.size() >= limit) {
-              return set;
-            }
-
-            final List<ColumnSelectorPlus<SearchColumnSelectorStrategy>> selectorPlusList = Arrays.asList(
-                DimensionHandlerUtils.createColumnSelectorPluses(
-                    SearchQueryRunner.SEARCH_COLUMN_SELECTOR_STRATEGY_FACTORY,
-                    dimsToSearch,
-                    cursor.getColumnSelectorFactory()
-                )
-            );
-
-            while (!cursor.isDone()) {
-              for (ColumnSelectorPlus<SearchColumnSelectorStrategy> selectorPlus : selectorPlusList) {
-                selectorPlus.getColumnSelectorStrategy().updateSearchResultSet(
-                    selectorPlus.getOutputName(),
-                    selectorPlus.getSelector(),
-                    searchQuerySpec,
-                    limit,
-                    set,
-                    nullHandlingConfig
-                );
-
-                if (set.size() >= limit) {
-                  return set;
-                }
+          new Accumulator<Object2IntRBTreeMap<SearchHit>, Cursor>()
+          {
+            @Override
+            public Object2IntRBTreeMap<SearchHit> accumulate(Object2IntRBTreeMap<SearchHit> set, Cursor cursor)
+            {
+              if (set.size() >= limit) {
+                return set;
               }
 
-              cursor.advance();
-            }
+              final List<ColumnSelectorPlus<SearchColumnSelectorStrategy>> selectorPlusList = Arrays.asList(
+                  DimensionHandlerUtils.createColumnSelectorPluses(
+                      SearchQueryRunner.SEARCH_COLUMN_SELECTOR_STRATEGY_FACTORY,
+                      dimsToSearch,
+                      cursor.getColumnSelectorFactory()
+                  )
+              );
 
-            return set;
+              while (!cursor.isDone()) {
+                for (ColumnSelectorPlus<SearchColumnSelectorStrategy> selectorPlus : selectorPlusList) {
+                  selectorPlus.getColumnSelectorStrategy().updateSearchResultSet(
+                      selectorPlus.getOutputName(),
+                      selectorPlus.getSelector(),
+                      searchQuerySpec,
+                      limit,
+                      set
+                  );
+
+                  if (set.size() >= limit) {
+                    return set;
+                  }
+                }
+
+                cursor.advance();
+              }
+
+              return set;
+            }
           }
       );
 

@@ -121,7 +121,7 @@ public class DistinctCountGroupByQueryTest
             )
         )
         .build();
-    final Segment incrementalIndexSegment = new IncrementalIndexSegment(index, null, NullHandlingConfig.LEGACY_CONFIG);
+    final Segment incrementalIndexSegment = new IncrementalIndexSegment(index, null);
 
     Iterable<Row> results = GroupByQueryRunnerTestHelper.runQuery(
         factory,

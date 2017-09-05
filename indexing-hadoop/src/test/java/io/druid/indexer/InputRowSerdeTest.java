@@ -26,7 +26,6 @@ import io.druid.data.input.MapBasedInputRow;
 import io.druid.hll.HyperLogLogCollector;
 import io.druid.jackson.AggregatorsModule;
 import io.druid.java.util.common.parsers.ParseException;
-import io.druid.math.expr.ExprMacroTable;
 import io.druid.query.aggregation.Aggregator;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.DoubleSumAggregator;
@@ -34,7 +33,6 @@ import io.druid.query.aggregation.DoubleSumAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import io.druid.segment.ColumnSelectorFactory;
-import io.druid.segment.NullHandlingConfig;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
@@ -97,20 +95,6 @@ public class InputRowSerdeTest
 
     AggregatorFactory[] aggregatorFactories = new AggregatorFactory[]{
         new DoubleSumAggregatorFactory("agg_non_existing", "agg_non_existing_in"),
-        new DoubleSumAggregatorFactory(
-            "agg_non_existing_nullable",
-            "agg_non_existing_in",
-            null,
-            ExprMacroTable.nil(),
-            new NullHandlingConfig()
-            {
-              @Override
-              public boolean useDefaultValuesForNull()
-              {
-                return false;
-              }
-            }
-        ),
         new DoubleSumAggregatorFactory("m1out", "m1"),
         new LongSumAggregatorFactory("m2out", "m2"),
         new HyperUniquesAggregatorFactory("m3out", "m3"),
@@ -141,13 +125,11 @@ public class InputRowSerdeTest
     Assert.assertEquals(ImmutableList.of("d2v1", "d2v2"), out.getDimension("d2"));
 
     Assert.assertEquals(0.0f, out.getFloatMetric("agg_non_existing"), 0.00001);
-    Assert.assertNull(out.getFloatMetric("agg_non_existing_nullable"));
-
     Assert.assertEquals(5.0f, out.getFloatMetric("m1out"), 0.00001);
     Assert.assertEquals(100L, out.getLongMetric("m2out").longValue());
     Assert.assertEquals(1, ((HyperLogLogCollector) out.getRaw("m3out")).estimateCardinality(), 0.001);
     Assert.assertEquals(0L, out.getLongMetric("unparseable").longValue());
-    Assert.assertNull(out.getLongMetric("m5"));
+    Assert.assertEquals(null, out.getLongMetric("m5"));
 
 
     EasyMock.verify(mockedAggregator);

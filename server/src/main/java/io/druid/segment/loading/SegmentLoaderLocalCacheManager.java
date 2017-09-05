@@ -27,7 +27,6 @@ import com.metamx.common.ISE;
 import com.metamx.emitter.EmittingLogger;
 import io.druid.guice.annotations.Json;
 import io.druid.segment.IndexIO;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.timeline.DataSegment;
 import org.apache.commons.io.FileUtils;
@@ -52,7 +51,6 @@ public class SegmentLoaderLocalCacheManager implements SegmentLoader
   private final List<StorageLocation> locations;
 
   private final Object lock = new Object();
-  private final NullHandlingConfig nullHandlingConfig;
 
   private static final Comparator<StorageLocation> COMPARATOR = new Comparator<StorageLocation>()
   {
@@ -66,14 +64,12 @@ public class SegmentLoaderLocalCacheManager implements SegmentLoader
   public SegmentLoaderLocalCacheManager(
       IndexIO indexIO,
       SegmentLoaderConfig config,
-      @Json ObjectMapper mapper,
-      NullHandlingConfig nullHandlingConfig
+      @Json ObjectMapper mapper
   )
   {
     this.indexIO = indexIO;
     this.config = config;
     this.jsonMapper = mapper;
-    this.nullHandlingConfig = nullHandlingConfig;
 
     this.locations = Lists.newArrayList();
     for (StorageLocationConfig locationConfig : config.getLocations()) {
@@ -83,7 +79,7 @@ public class SegmentLoaderLocalCacheManager implements SegmentLoader
 
   public SegmentLoaderLocalCacheManager withConfig(SegmentLoaderConfig config)
   {
-    return new SegmentLoaderLocalCacheManager(indexIO, config, jsonMapper, nullHandlingConfig);
+    return new SegmentLoaderLocalCacheManager(indexIO, config, jsonMapper);
   }
 
   @Override
@@ -118,7 +114,7 @@ public class SegmentLoaderLocalCacheManager implements SegmentLoader
         throw new SegmentLoadingException(e, "%s", e.getMessage());
       }
     } else {
-      factory = new MMappedQueryableSegmentizerFactory(indexIO, nullHandlingConfig);
+      factory = new MMappedQueryableSegmentizerFactory(indexIO);
     }
 
     return factory.factorize(segment, segmentFiles);

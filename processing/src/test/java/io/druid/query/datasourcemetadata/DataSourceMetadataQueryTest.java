@@ -42,7 +42,6 @@ import io.druid.query.QueryRunnerTestHelper;
 import io.druid.query.Result;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.segment.IncrementalIndexSegment;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.incremental.IncrementalIndex;
 import io.druid.timeline.LogicalSegment;
 import org.joda.time.DateTime;
@@ -123,8 +122,8 @@ public class DataSourceMetadataQueryTest
     final QueryRunner runner = QueryRunnerTestHelper.makeQueryRunner(
         (QueryRunnerFactory) new DataSourceMetadataQueryRunnerFactory(
             new DataSourceQueryQueryToolChest(DefaultGenericQueryMetricsFactory.instance()),
-            QueryRunnerTestHelper.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
-        ), new IncrementalIndexSegment(rtIndex, "test", NullHandlingConfig.LEGACY_CONFIG),
+            QueryRunnerTestHelper.NOOP_QUERYWATCHER
+        ), new IncrementalIndexSegment(rtIndex, "test"),
         null
     );
     DateTime timestamp = DateTimes.nowUtc();

@@ -70,7 +70,6 @@ import io.druid.java.util.common.IAE;
 import io.druid.java.util.common.ISE;
 import io.druid.java.util.common.StringUtils;
 import io.druid.metadata.EntryExistsException;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.server.metrics.DruidMonitorSchedulerConfig;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -1433,7 +1432,7 @@ public class KafkaSupervisor implements Supervisor
           taskTuningConfig,
           kafkaIOConfig,
           spec.getContext(),
-          null, NullHandlingConfig.LEGACY_CONFIG
+          null
       );
 
       Optional<TaskQueue> taskQueue = taskMaster.getTaskQueue();

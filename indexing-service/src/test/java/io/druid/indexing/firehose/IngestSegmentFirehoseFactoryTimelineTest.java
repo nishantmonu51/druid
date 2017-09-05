@@ -56,7 +56,6 @@ import io.druid.query.filter.NoopDimFilter;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.incremental.IncrementalIndex;
 import io.druid.segment.incremental.IncrementalIndexSchema;
 import io.druid.segment.incremental.IndexSizeExceededException;
@@ -328,7 +327,7 @@ public class IngestSegmentFirehoseFactoryTimelineTest
                     {
                       return Lists.newArrayList();
                     }
-                  }, MAPPER, NullHandlingConfig.LEGACY_CONFIG
+                  }, MAPPER
               )
           ),
           MAPPER,
@@ -358,7 +357,7 @@ public class IngestSegmentFirehoseFactoryTimelineTest
           Arrays.asList(DIMENSIONS),
           Arrays.asList(METRICS),
           injector,
-          INDEX_IO, NullHandlingConfig.LEGACY_CONFIG
+          INDEX_IO
       );
 
       constructors.add(

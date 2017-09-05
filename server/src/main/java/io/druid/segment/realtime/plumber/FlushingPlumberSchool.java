@@ -31,7 +31,6 @@ import io.druid.guice.annotations.Processing;
 import io.druid.query.QueryRunnerFactoryConglomerate;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeTuningConfig;
 import io.druid.segment.realtime.FireDepartmentMetrics;
@@ -59,7 +58,6 @@ public class FlushingPlumberSchool extends RealtimePlumberSchool
   private final Cache cache;
   private final CacheConfig cacheConfig;
   private final ObjectMapper objectMapper;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public FlushingPlumberSchool(
@@ -72,9 +70,8 @@ public class FlushingPlumberSchool extends RealtimePlumberSchool
       @JacksonInject IndexIO indexIO,
       @JacksonInject Cache cache,
       @JacksonInject CacheConfig cacheConfig,
-      @JacksonInject ObjectMapper objectMapper,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
-      )
+      @JacksonInject ObjectMapper objectMapper
+  )
   {
     super(
         emitter,
@@ -88,8 +85,7 @@ public class FlushingPlumberSchool extends RealtimePlumberSchool
         indexIO,
         cache,
         cacheConfig,
-        objectMapper,
-        nullHandlingConfig
+        objectMapper
     );
 
     this.flushDuration = flushDuration == null ? defaultFlushDuration : flushDuration;
@@ -102,7 +98,6 @@ public class FlushingPlumberSchool extends RealtimePlumberSchool
     this.cache = cache;
     this.cacheConfig = cacheConfig;
     this.objectMapper = objectMapper;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -127,8 +122,7 @@ public class FlushingPlumberSchool extends RealtimePlumberSchool
         indexIO,
         cache,
         cacheConfig,
-        objectMapper,
-        nullHandlingConfig
+        objectMapper
     );
   }
 

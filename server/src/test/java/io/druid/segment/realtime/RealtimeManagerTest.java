@@ -64,7 +64,6 @@ import io.druid.query.spec.MultipleIntervalSegmentSpec;
 import io.druid.query.spec.MultipleSpecificSegmentSpec;
 import io.druid.query.spec.SpecificSegmentQueryRunner;
 import io.druid.query.spec.SpecificSegmentSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.incremental.IndexSizeExceededException;
 import io.druid.segment.indexing.DataSchema;
@@ -220,7 +219,7 @@ public class RealtimeManagerTest
         tuningConfig.getShardSpec(),
         DateTimes.nowUtc().toString(),
         tuningConfig.getMaxRowsInMemory(),
-        tuningConfig.isReportParseExceptions(), NullHandlingConfig.LEGACY_CONFIG
+        tuningConfig.isReportParseExceptions()
     ));
 
     realtimeManager = new RealtimeManager(
@@ -240,7 +239,7 @@ public class RealtimeManagerTest
         tuningConfig.getShardSpec(),
         DateTimes.nowUtc().toString(),
         tuningConfig.getMaxRowsInMemory(),
-        tuningConfig.isReportParseExceptions(), NullHandlingConfig.LEGACY_CONFIG
+        tuningConfig.isReportParseExceptions()
     ));
 
     realtimeManager2 = new RealtimeManager(

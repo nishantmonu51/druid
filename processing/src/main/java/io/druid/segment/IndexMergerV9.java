@@ -93,18 +93,15 @@ public class IndexMergerV9 implements IndexMerger
   private static final Logger log = new Logger(IndexMergerV9.class);
   protected final ObjectMapper mapper;
   protected final IndexIO indexIO;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
   public IndexMergerV9(
       ObjectMapper mapper,
-      IndexIO indexIO,
-      NullHandlingConfig nullHandlingConfig
+      IndexIO indexIO
   )
   {
     this.mapper = Preconditions.checkNotNull(mapper, "null ObjectMapper");
     this.indexIO = Preconditions.checkNotNull(indexIO, "null IndexIO");
-    this.nullHandlingConfig = nullHandlingConfig;
 
   }
 
@@ -186,7 +183,7 @@ public class IndexMergerV9 implements IndexMerger
       progress.progress();
       startTime = System.currentTimeMillis();
       try (FileOutputStream fos = new FileOutputStream(new File(outDir, "factory.json"))) {
-        mapper.writeValue(fos, new MMappedQueryableSegmentizerFactory(indexIO, nullHandlingConfig));
+        mapper.writeValue(fos, new MMappedQueryableSegmentizerFactory(indexIO));
       }
       log.info("Completed factory.json in %,d millis", System.currentTimeMillis() - startTime);
 

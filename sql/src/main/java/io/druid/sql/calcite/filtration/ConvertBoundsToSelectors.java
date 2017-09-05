@@ -23,7 +23,6 @@ import io.druid.query.filter.BoundDimFilter;
 import io.druid.query.filter.DimFilter;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.ordering.StringComparator;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.sql.calcite.expression.SimpleExtraction;
 import io.druid.sql.calcite.table.RowSignature;
 
@@ -59,8 +58,7 @@ public class ConvertBoundsToSelectors extends BottomUpTransform
         return new SelectorDimFilter(
             bound.getDimension(),
             bound.getUpper(),
-            bound.getExtractionFn(),
-            bound.getNullHandlingConfig()
+            bound.getExtractionFn()
         );
       } else {
         return filter;

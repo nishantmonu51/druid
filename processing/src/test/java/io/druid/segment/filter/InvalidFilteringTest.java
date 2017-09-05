@@ -36,7 +36,6 @@ import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import io.druid.query.filter.InDimFilter;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.segment.IndexBuilder;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import io.druid.segment.incremental.IncrementalIndexSchema;
 import org.junit.AfterClass;
@@ -116,23 +115,23 @@ public class InvalidFilteringTest extends BaseFilterTest
   {
     // single value matching
     assertFilterMatches(
-        new SelectorDimFilter("hyperion", "a string", null, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("hyperion", "a string", null),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new SelectorDimFilter("hyperion", null, null, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("hyperion", null, null),
         ImmutableList.<String>of("1", "2", "3", "4", "5", "6")
     );
 
     // predicate based matching
     assertFilterMatches(
-        new InDimFilter("hyperion", Arrays.asList("hello", "world"), null, NullHandlingConfig.LEGACY_CONFIG),
+        new InDimFilter("hyperion", Arrays.asList("hello", "world"), null),
         ImmutableList.<String>of()
     );
 
     assertFilterMatches(
-        new InDimFilter("hyperion", Arrays.asList("hello", "world", "", null), null, NullHandlingConfig.LEGACY_CONFIG),
+        new InDimFilter("hyperion", Arrays.asList("hello", "world", "", null), null),
         ImmutableList.<String>of("1", "2", "3", "4", "5", "6")
     );
   }

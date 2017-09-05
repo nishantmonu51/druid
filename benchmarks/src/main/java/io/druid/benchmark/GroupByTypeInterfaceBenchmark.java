@@ -71,7 +71,6 @@ import io.druid.query.spec.QuerySegmentSpec;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.column.ColumnConfig;
@@ -167,9 +166,9 @@ public class GroupByTypeInterfaceBenchmark
           {
             return 0;
           }
-        }, NullHandlingConfig.LEGACY_CONFIG
+        }
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO);
   }
 
   private static final Map<String, Map<String, GroupByQuery>> SCHEMA_QUERY_MAP = new LinkedHashMap<>();
@@ -417,7 +416,7 @@ public class GroupByTypeInterfaceBenchmark
             configSupplier,
             new GroupByQueryEngine(configSupplier, bufferPool),
             QueryBenchmarkUtil.NOOP_QUERYWATCHER,
-            bufferPool, NullHandlingConfig.LEGACY_CONFIG
+            bufferPool
         ),
         new GroupByStrategyV2(
             druidProcessingConfig,
@@ -425,7 +424,7 @@ public class GroupByTypeInterfaceBenchmark
             bufferPool,
             mergePool,
             new ObjectMapper(new SmileFactory()),
-            QueryBenchmarkUtil.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
+            QueryBenchmarkUtil.NOOP_QUERYWATCHER
         )
     );
 
@@ -434,7 +433,7 @@ public class GroupByTypeInterfaceBenchmark
         new GroupByQueryQueryToolChest(
             strategySelector,
             QueryBenchmarkUtil.NoopIntervalChunkingQueryRunnerDecorator()
-        ), NullHandlingConfig.LEGACY_CONFIG
+        )
     );
   }
 
@@ -492,7 +491,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -510,7 +509,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -528,7 +527,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -546,7 +545,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, longFloatQuery);
@@ -564,7 +563,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, longFloatQuery);
@@ -576,7 +575,7 @@ public class GroupByTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -595,7 +594,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -607,7 +606,7 @@ public class GroupByTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -625,7 +624,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -637,7 +636,7 @@ public class GroupByTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -655,7 +654,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -667,7 +666,7 @@ public class GroupByTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, longFloatQuery);
@@ -685,7 +684,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -697,7 +696,7 @@ public class GroupByTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -715,7 +714,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -727,7 +726,7 @@ public class GroupByTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);
@@ -745,7 +744,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -757,7 +756,7 @@ public class GroupByTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -776,7 +775,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -788,7 +787,7 @@ public class GroupByTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -806,7 +805,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -818,7 +817,7 @@ public class GroupByTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, longQuery);
@@ -836,7 +835,7 @@ public class GroupByTypeInterfaceBenchmark
     QueryRunner<Row> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     List<Row> results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, floatQuery);
@@ -848,7 +847,7 @@ public class GroupByTypeInterfaceBenchmark
     runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", queryableIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
+        new QueryableIndexSegment("qIndex", queryableIndexes.get(0))
     );
 
     results = GroupByTypeInterfaceBenchmark.runQuery(factory, runner, stringQuery);

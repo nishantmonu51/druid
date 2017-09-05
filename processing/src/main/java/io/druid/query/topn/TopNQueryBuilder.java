@@ -34,7 +34,6 @@ import io.druid.query.filter.InDimFilter;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.spec.LegacySegmentSpec;
 import io.druid.query.spec.QuerySegmentSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.VirtualColumn;
 import io.druid.segment.VirtualColumns;
 import org.joda.time.Interval;
@@ -285,13 +284,13 @@ public class TopNQueryBuilder
 
   public TopNQueryBuilder filters(String dimensionName, String value)
   {
-    dimFilter = new SelectorDimFilter(dimensionName, value, null, NullHandlingConfig.LEGACY_CONFIG);
+    dimFilter = new SelectorDimFilter(dimensionName, value, null);
     return this;
   }
 
   public TopNQueryBuilder filters(String dimensionName, String value, String... values)
   {
-    dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null, NullHandlingConfig.LEGACY_CONFIG);
+    dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null);
     return this;
   }
 

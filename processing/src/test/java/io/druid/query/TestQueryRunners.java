@@ -34,7 +34,6 @@ import io.druid.query.timeseries.TimeseriesQueryRunnerFactory;
 import io.druid.query.topn.TopNQueryConfig;
 import io.druid.query.topn.TopNQueryQueryToolChest;
 import io.druid.query.topn.TopNQueryRunnerFactory;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 
 import java.nio.ByteBuffer;
@@ -107,7 +106,7 @@ public class TestQueryRunners
             config,
             QueryRunnerTestHelper.NoopIntervalChunkingQueryRunnerDecorator()
         ),
-        QueryRunnerTestHelper.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
+        QueryRunnerTestHelper.NOOP_QUERYWATCHER
     );
     return new FinalizeResultsQueryRunner<T>(
         factory.createRunner(adapter),
@@ -119,7 +118,7 @@ public class TestQueryRunners
       Segment adapter
   )
   {
-    QueryRunnerFactory factory = new TimeBoundaryQueryRunnerFactory(QueryRunnerTestHelper.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG);
+    QueryRunnerFactory factory = new TimeBoundaryQueryRunnerFactory(QueryRunnerTestHelper.NOOP_QUERYWATCHER);
     return new FinalizeResultsQueryRunner<T>(
         factory.createRunner(adapter),
         factory.getToolchest()

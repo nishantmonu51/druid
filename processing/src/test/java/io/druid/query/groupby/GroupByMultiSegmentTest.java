@@ -70,7 +70,6 @@ import io.druid.query.spec.QuerySegmentSpec;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.Segment;
@@ -128,9 +127,9 @@ public class GroupByMultiSegmentTest
             return 0;
           }
 
-        }, NullHandlingConfig.LEGACY_CONFIG
+        }
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO);
   }
 
 
@@ -272,7 +271,7 @@ public class GroupByMultiSegmentTest
             configSupplier,
             new GroupByQueryEngine(configSupplier, bufferPool),
             NOOP_QUERYWATCHER,
-            bufferPool, NullHandlingConfig.LEGACY_CONFIG
+            bufferPool
         ),
         new GroupByStrategyV2(
             druidProcessingConfig,
@@ -280,7 +279,7 @@ public class GroupByMultiSegmentTest
             bufferPool,
             mergePool,
             new ObjectMapper(new SmileFactory()),
-            NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
+            NOOP_QUERYWATCHER
         )
     );
 
@@ -289,7 +288,7 @@ public class GroupByMultiSegmentTest
         new GroupByQueryQueryToolChest(
             strategySelector,
             NoopIntervalChunkingQueryRunnerDecorator()
-        ), NullHandlingConfig.LEGACY_CONFIG
+        )
     );
   }
 
@@ -367,7 +366,7 @@ public class GroupByMultiSegmentTest
       QueryRunner<Row> runner = makeQueryRunner(
           groupByFactory,
           qindex.toString(),
-          new QueryableIndexSegment(qindex.toString(), qindex, NullHandlingConfig.LEGACY_CONFIG)
+          new QueryableIndexSegment(qindex.toString(), qindex)
       );
       runners.add(groupByFactory.getToolchest().preMergeQueryDecoration(runner));
     }

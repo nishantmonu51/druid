@@ -41,7 +41,6 @@ import io.druid.indexing.overlord.ThreadPoolTaskRunner;
 import io.druid.java.util.common.StringUtils;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.loading.SegmentLoaderConfig;
 import io.druid.segment.loading.SegmentLoaderLocalCacheManager;
 import io.druid.segment.loading.StorageLocationConfig;
@@ -181,7 +180,7 @@ public class WorkerTaskMonitorTest
                         return Lists.newArrayList();
                       }
                     },
-                    jsonMapper, NullHandlingConfig.LEGACY_CONFIG
+                    jsonMapper
                 )
             ),
                 jsonMapper,

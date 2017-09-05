@@ -43,7 +43,6 @@ import io.druid.query.ordering.StringComparators;
 import io.druid.query.search.search.ContainsSearchQuerySpec;
 import io.druid.segment.Cursor;
 import io.druid.segment.DimensionSelector;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.VirtualColumns;
 import io.druid.segment.data.IndexedInts;
 import io.druid.segment.incremental.IncrementalIndex;
@@ -140,7 +139,7 @@ public class IncrementalIndexReadBenchmark
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
   public void read(Blackhole blackhole) throws Exception
   {
-    IncrementalIndexStorageAdapter sa = new IncrementalIndexStorageAdapter(incIndex, NullHandlingConfig.LEGACY_CONFIG);
+    IncrementalIndexStorageAdapter sa = new IncrementalIndexStorageAdapter(incIndex);
     Sequence<Cursor> cursors = makeCursors(sa, null);
     Cursor cursor = Sequences.toList(Sequences.limit(cursors, 1), Lists.<Cursor>newArrayList()).get(0);
 
@@ -167,17 +166,15 @@ public class IncrementalIndexReadBenchmark
   {
     DimFilter filter = new OrDimFilter(
         Arrays.asList(
-            new BoundDimFilter("dimSequential", "-1", "-1", true, true, null, null, StringComparators.ALPHANUMERIC,
-                               NullHandlingConfig.LEGACY_CONFIG
-            ),
+            new BoundDimFilter("dimSequential", "-1", "-1", true, true, null, null, StringComparators.ALPHANUMERIC),
             new JavaScriptDimFilter("dimSequential", "function(x) { return false }", null, JavaScriptConfig.getEnabledInstance()),
             new RegexDimFilter("dimSequential", "X", null),
             new SearchQueryDimFilter("dimSequential", new ContainsSearchQuerySpec("X", false), null),
-            new InDimFilter("dimSequential", Collections.singletonList("X"), null, NullHandlingConfig.LEGACY_CONFIG)
+            new InDimFilter("dimSequential", Collections.singletonList("X"), null)
         )
     );
 
-    IncrementalIndexStorageAdapter sa = new IncrementalIndexStorageAdapter(incIndex, NullHandlingConfig.LEGACY_CONFIG);
+    IncrementalIndexStorageAdapter sa = new IncrementalIndexStorageAdapter(incIndex);
     Sequence<Cursor> cursors = makeCursors(sa, filter);
     Cursor cursor = Sequences.toList(Sequences.limit(cursors, 1), Lists.<Cursor>newArrayList()).get(0);
 

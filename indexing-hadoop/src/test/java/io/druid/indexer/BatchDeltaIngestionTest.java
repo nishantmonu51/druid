@@ -42,7 +42,6 @@ import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import io.druid.segment.IndexIO;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexStorageAdapter;
 import io.druid.segment.StorageAdapter;
@@ -319,7 +318,7 @@ public class BatchDeltaIngestionTest
     new LocalDataSegmentPuller().getSegmentFiles(dataSegment, tmpUnzippedSegmentDir);
 
     QueryableIndex index = INDEX_IO.loadIndex(tmpUnzippedSegmentDir);
-    StorageAdapter adapter = new QueryableIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG);
+    StorageAdapter adapter = new QueryableIndexStorageAdapter(index);
 
     Firehose firehose = new IngestSegmentFirehose(
         ImmutableList.of(new WindowedStorageAdapter(adapter, windowedDataSegment.getInterval())),

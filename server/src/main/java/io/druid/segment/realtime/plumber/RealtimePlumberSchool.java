@@ -30,7 +30,6 @@ import io.druid.guice.annotations.Processing;
 import io.druid.query.QueryRunnerFactoryConglomerate;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeTuningConfig;
 import io.druid.segment.loading.DataSegmentPusher;
@@ -56,7 +55,6 @@ public class RealtimePlumberSchool implements PlumberSchool
   private final Cache cache;
   private final CacheConfig cacheConfig;
   private final ObjectMapper objectMapper;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public RealtimePlumberSchool(
@@ -71,9 +69,8 @@ public class RealtimePlumberSchool implements PlumberSchool
       @JacksonInject IndexIO indexIO,
       @JacksonInject Cache cache,
       @JacksonInject CacheConfig cacheConfig,
-      @JacksonInject ObjectMapper objectMapper,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
-      )
+      @JacksonInject ObjectMapper objectMapper
+  )
   {
     this.emitter = emitter;
     this.conglomerate = conglomerate;
@@ -88,7 +85,6 @@ public class RealtimePlumberSchool implements PlumberSchool
     this.cache = cache;
     this.cacheConfig = cacheConfig;
     this.objectMapper = objectMapper;
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -115,8 +111,7 @@ public class RealtimePlumberSchool implements PlumberSchool
         indexIO,
         cache,
         cacheConfig,
-        objectMapper,
-        nullHandlingConfig
+        objectMapper
     );
   }
 

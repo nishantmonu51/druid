@@ -19,7 +19,6 @@
 
 package io.druid.query.filter;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
@@ -30,8 +29,6 @@ import io.druid.java.util.common.Pair;
 import io.druid.java.util.common.StringUtils;
 import io.druid.query.extraction.ExtractionFn;
 import io.druid.query.ordering.StringComparators;
-import io.druid.segment.NullHandlingConfig;
-import io.druid.segment.NullHandlingHelper;
 import org.joda.time.Interval;
 
 import java.nio.ByteBuffer;
@@ -46,14 +43,12 @@ public class IntervalDimFilter implements DimFilter
   private final String dimension;
   private final ExtractionFn extractionFn;
   private final OrDimFilter convertedFilter;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public IntervalDimFilter(
       @JsonProperty("dimension") String dimension,
       @JsonProperty("intervals") List<Interval> intervals,
-      @JsonProperty("extractionFn") ExtractionFn extractionFn,
-      @JacksonInject final NullHandlingConfig nullHandlingConfig
+      @JsonProperty("extractionFn") ExtractionFn extractionFn
   )
   {
     Preconditions.checkNotNull(dimension, "dimension can not be null");
@@ -64,7 +59,6 @@ public class IntervalDimFilter implements DimFilter
     this.extractionFn = extractionFn;
     this.intervalLongs = makeIntervalLongs();
     this.convertedFilter = new OrDimFilter(makeBoundDimFilters());
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @JsonProperty
@@ -182,7 +176,7 @@ public class IntervalDimFilter implements DimFilter
           true,
           null,
           extractionFn,
-          StringComparators.NUMERIC, nullHandlingConfig
+          StringComparators.NUMERIC
       );
       boundDimFilters.add(boundDimFilter);
     }

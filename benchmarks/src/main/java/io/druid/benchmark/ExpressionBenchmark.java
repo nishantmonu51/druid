@@ -163,7 +163,7 @@ public class ExpressionBenchmark
 
   private double compute(final Function<ColumnSelectorFactory, BufferAggregator> aggregatorFactory)
   {
-    final QueryableIndexStorageAdapter adapter = new QueryableIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG);
+    final QueryableIndexStorageAdapter adapter = new QueryableIndexStorageAdapter(index);
 
     final Sequence<Cursor> cursors = adapter.makeCursors(
         null,

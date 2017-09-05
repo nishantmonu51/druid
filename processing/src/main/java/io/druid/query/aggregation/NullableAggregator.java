@@ -31,16 +31,15 @@ public class NullableAggregator implements Aggregator
   {
     this.delegate = delegate;
     this.selector = selector;
-    reset();
   }
 
   @Override
   public void aggregate()
   {
-    if (isNull && !selector.isNull()) {
+    if (isNull || !selector.isNull()) {
       isNull = false;
+      delegate.aggregate();
     }
-    delegate.aggregate();
   }
 
   @Override

@@ -116,10 +116,8 @@ public class MapVirtualColumnTest
 
     return transformToConstructionFeeder(
         Arrays.asList(
-            makeQueryRunner(factory, "index1", new IncrementalIndexSegment(index1, "index1", NullHandlingConfig.LEGACY_CONFIG), "incremental"),
-            makeQueryRunner(factory, "index2", new QueryableIndexSegment("index2", index2,
-                                                                         NullHandlingConfig.LEGACY_CONFIG
-            ), "queryable")
+            makeQueryRunner(factory, "index1", new IncrementalIndexSegment(index1, "index1"), "incremental"),
+            makeQueryRunner(factory, "index2", new QueryableIndexSegment("index2", index2), "queryable")
         )
     );
   }

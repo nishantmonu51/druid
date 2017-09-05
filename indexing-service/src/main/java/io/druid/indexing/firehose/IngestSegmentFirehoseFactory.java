@@ -41,7 +41,6 @@ import io.druid.java.util.common.guava.Comparators;
 import io.druid.java.util.common.parsers.ParseException;
 import io.druid.query.filter.DimFilter;
 import io.druid.segment.IndexIO;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndexStorageAdapter;
 import io.druid.segment.loading.SegmentLoadingException;
 import io.druid.segment.realtime.firehose.IngestSegmentFirehose;
@@ -69,7 +68,6 @@ public class IngestSegmentFirehoseFactory implements FirehoseFactory<InputRowPar
   private final Injector injector;
   private final IndexIO indexIO;
   private TaskToolbox taskToolbox;
-  private NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public IngestSegmentFirehoseFactory(
@@ -79,9 +77,8 @@ public class IngestSegmentFirehoseFactory implements FirehoseFactory<InputRowPar
       @JsonProperty("dimensions") List<String> dimensions,
       @JsonProperty("metrics") List<String> metrics,
       @JacksonInject Injector injector,
-      @JacksonInject IndexIO indexIO,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
-      )
+      @JacksonInject IndexIO indexIO
+  )
   {
     Preconditions.checkNotNull(dataSource, "dataSource");
     Preconditions.checkNotNull(interval, "interval");
@@ -92,7 +89,6 @@ public class IngestSegmentFirehoseFactory implements FirehoseFactory<InputRowPar
     this.metrics = metrics;
     this.injector = injector;
     this.indexIO = Preconditions.checkNotNull(indexIO, "null IndexIO");
-    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @JsonProperty
@@ -268,8 +264,7 @@ public class IngestSegmentFirehoseFactory implements FirehoseFactory<InputRowPar
                                                     segmentFileMap.get(segment),
                                                     "File for segment %s", segment.getIdentifier()
                                                 )
-                                            ),
-                                            nullHandlingConfig
+                                            )
                                         ),
                                         holder.getInterval()
                                     );

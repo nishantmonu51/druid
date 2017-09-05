@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.druid.indexing.common.task.RealtimeIndexTask;
 import io.druid.indexing.common.task.TaskResource;
 import io.druid.query.aggregation.AggregatorFactory;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeIOConfig;
 import io.druid.segment.indexing.RealtimeTuningConfig;
@@ -72,7 +71,7 @@ public class TestRealtimeTask extends RealtimeIndexTask
         }, null
         ), null
         ),
-        null, NullHandlingConfig.LEGACY_CONFIG
+        null
     );
     this.status = status;
   }

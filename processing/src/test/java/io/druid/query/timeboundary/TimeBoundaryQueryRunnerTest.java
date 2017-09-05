@@ -37,7 +37,6 @@ import io.druid.query.Result;
 import io.druid.query.TableDataSource;
 import io.druid.query.ordering.StringComparators;
 import io.druid.segment.IncrementalIndexSegment;
-import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.TestIndex;
 import io.druid.segment.incremental.IncrementalIndex;
@@ -71,14 +70,14 @@ public class TimeBoundaryQueryRunnerTest
   {
     return QueryRunnerTestHelper.transformToConstructionFeeder(
         QueryRunnerTestHelper.makeQueryRunners(
-            new TimeBoundaryQueryRunnerFactory(QueryRunnerTestHelper.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG)
+            new TimeBoundaryQueryRunnerFactory(QueryRunnerTestHelper.NOOP_QUERYWATCHER)
         )
     );
   }
 
   private final QueryRunner runner;
   private static final QueryRunnerFactory factory = new TimeBoundaryQueryRunnerFactory(
-      QueryRunnerTestHelper.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
+      QueryRunnerTestHelper.NOOP_QUERYWATCHER
   );
   private static Segment segment0;
   private static Segment segment1;
@@ -152,8 +151,8 @@ public class TimeBoundaryQueryRunnerTest
     IncrementalIndex index0 = TestIndex.loadIncrementalIndex(newIndex("2011-01-12T00:00:00.000Z"), v_0112);
     IncrementalIndex index1 = TestIndex.loadIncrementalIndex(newIndex("2011-01-14T00:00:00.000Z"), v_0113);
 
-    segment0 = new IncrementalIndexSegment(index0, makeIdentifier(index0, "v1"), NullHandlingConfig.LEGACY_CONFIG);
-    segment1 = new IncrementalIndexSegment(index1, makeIdentifier(index1, "v1"), NullHandlingConfig.LEGACY_CONFIG);
+    segment0 = new IncrementalIndexSegment(index0, makeIdentifier(index0, "v1"));
+    segment1 = new IncrementalIndexSegment(index1, makeIdentifier(index1, "v1"));
 
     VersionedIntervalTimeline<String, Segment> timeline = new VersionedIntervalTimeline(StringComparators.LEXICOGRAPHIC);
     timeline.add(index0.getInterval(), "v1", new SingleElementPartitionChunk(segment0));
