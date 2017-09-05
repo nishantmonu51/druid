@@ -513,7 +513,7 @@ public class RowBasedGrouperHelper
           value = index.size() == 0
                   ? ""
                   : selector.lookupName(index.get(0));
-          return Strings.nullToEmpty(value);
+          return value;
         }
       };
     }

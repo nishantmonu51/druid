@@ -169,7 +169,8 @@ public class TimeFilteringTest extends BaseFilterTest
     stringMap.put("4", "Friday");
     stringMap.put("5", "Saturday");
     LookupExtractor mapExtractor = new MapLookupExtractor(stringMap, false);
-    LookupExtractionFn exfn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true);
+    LookupExtractionFn exfn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true
+    );
 
     assertFilterMatches(
         new SelectorDimFilter(Column.TIME_COLUMN_NAME, "Monday", exfn),

@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Provider;
+import io.druid.segment.NullHandlingHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -98,4 +99,5 @@ public class GuiceInjectorsTest
       this.emitter = emitter;
     }
   }
+
 }

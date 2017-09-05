@@ -41,6 +41,7 @@ import java.util.UUID;
 public class MapLookupExtractionFnSerDeTest
 {
   private static ObjectMapper mapper;
+
   private static final Map<String, String> renames = ImmutableMap.of(
       "foo", "bar",
       "bar", "baz"

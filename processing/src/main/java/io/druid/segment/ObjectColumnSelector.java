@@ -80,4 +80,11 @@ public interface ObjectColumnSelector<T> extends ColumnValueSelector
     }
     return ((Number) value).longValue();
   }
+
+  @Deprecated
+  default boolean isNull()
+  {
+    T value = get();
+    return value == null;
+  }
 }

@@ -48,6 +48,8 @@ public final class DimensionHandlerUtils
   public static final Float ZERO_FLOAT = 0.0f;
   public static final Long ZERO_LONG = 0L;
 
+  public static final Comparable NULL_COMPARATOR = 0L;
+
   private DimensionHandlerUtils() {}
 
   public final static ColumnCapabilities DEFAULT_STRING_CAPABILITIES =
@@ -240,7 +242,7 @@ public final class DimensionHandlerUtils
   public static Long convertObjectToLong(@Nullable Object valObj)
   {
     if (valObj == null) {
-      return ZERO_LONG;
+      return null;
     }
 
     if (valObj instanceof Long) {
@@ -257,7 +259,7 @@ public final class DimensionHandlerUtils
   public static Float convertObjectToFloat(@Nullable Object valObj)
   {
     if (valObj == null) {
-      return ZERO_FLOAT;
+      return null;
     }
 
     if (valObj instanceof Float) {
@@ -274,7 +276,7 @@ public final class DimensionHandlerUtils
   public static Double convertObjectToDouble(@Nullable Object valObj)
   {
     if (valObj == null) {
-      return ZERO_DOUBLE;
+      return null;
     }
 
     if (valObj instanceof Double) {
@@ -282,8 +284,7 @@ public final class DimensionHandlerUtils
     } else if (valObj instanceof Number) {
       return ((Number) valObj).doubleValue();
     } else if (valObj instanceof String) {
-      Double doubleValue = Doubles.tryParse((String) valObj);
-      return doubleValue == null ? ZERO_DOUBLE : doubleValue;
+      return Doubles.tryParse((String) valObj);
     } else {
       throw new ParseException("Unknown type[%s]", valObj.getClass());
     }
@@ -339,4 +340,20 @@ public final class DimensionHandlerUtils
   {
     return number == null ? ZERO_FLOAT : number;
   }
+
+  public static Double convertToDouble(@Nullable Number number)
+  {
+    return number == null ? null : number.doubleValue();
+  }
+
+  public static Long convertToLong(@Nullable Number number)
+  {
+    return number == null ? null : number.longValue();
+  }
+
+  public static Float convertToFloat(@Nullable Number number)
+  {
+    return number == null ? null : number.floatValue();
+  }
+
 }

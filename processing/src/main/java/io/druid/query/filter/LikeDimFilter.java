@@ -151,6 +151,7 @@ public class LikeDimFilter implements DimFilter
 
     public boolean matches(@Nullable final String s)
     {
+      // TODO: fixme
       return pattern.matcher(Strings.nullToEmpty(s)).matches();
     }
 

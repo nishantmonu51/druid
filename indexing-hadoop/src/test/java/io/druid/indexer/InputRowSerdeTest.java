@@ -71,12 +71,21 @@ public class InputRowSerdeTest
   {
     // Prepare the mocks & set close() call count expectation to 1
     final Aggregator mockedAggregator = EasyMock.createMock(DoubleSumAggregator.class);
+    EasyMock.expect(mockedAggregator.isNull()).andReturn(false).times(1);
     EasyMock.expect(mockedAggregator.getDouble()).andReturn(0d).times(1);
     mockedAggregator.aggregate();
     EasyMock.expectLastCall().times(1);
     mockedAggregator.close();
     EasyMock.expectLastCall().times(1);
     EasyMock.replay(mockedAggregator);
+
+    final Aggregator mockedNullAggregator = EasyMock.createMock(DoubleSumAggregator.class);
+    EasyMock.expect(mockedNullAggregator.isNull()).andReturn(true).times(1);
+    mockedNullAggregator.aggregate();
+    EasyMock.expectLastCall().times(1);
+    mockedNullAggregator.close();
+    EasyMock.expectLastCall().times(1);
+    EasyMock.replay(mockedNullAggregator);
 
     InputRow in = new MapBasedInputRow(
         timestamp,
@@ -96,6 +105,13 @@ public class InputRowSerdeTest
           {
             return mockedAggregator;
           }
+        },
+        new DoubleSumAggregatorFactory("mockedNullAggregator", "m5") {
+          @Override
+          public Aggregator factorize(ColumnSelectorFactory metricFactory)
+          {
+            return mockedNullAggregator;
+          }
         }
     };
 
@@ -110,11 +126,14 @@ public class InputRowSerdeTest
 
     Assert.assertEquals(0.0f, out.getFloatMetric("agg_non_existing"), 0.00001);
     Assert.assertEquals(5.0f, out.getFloatMetric("m1out"), 0.00001);
-    Assert.assertEquals(100L, out.getLongMetric("m2out"));
+    Assert.assertEquals(100L, out.getLongMetric("m2out").longValue());
     Assert.assertEquals(1, ((HyperLogLogCollector) out.getRaw("m3out")).estimateCardinality(), 0.001);
-    Assert.assertEquals(0L, out.getLongMetric("unparseable"));
+    Assert.assertEquals(0L, out.getLongMetric("unparseable").longValue());
+    Assert.assertEquals(null, out.getLongMetric("m5"));
+
 
     EasyMock.verify(mockedAggregator);
+    EasyMock.verify(mockedNullAggregator);
   }
 
   @Test(expected = ParseException.class)

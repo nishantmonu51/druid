@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.druid.java.util.common.StringUtils;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.FloatColumnSelector;
+import io.druid.segment.NullHandlingHelper;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -34,13 +36,15 @@ import java.util.List;
  */
 public class FloatMinAggregatorFactory extends SimpleFloatAggregatorFactory
 {
+
+
   @JsonCreator
   public FloatMinAggregatorFactory(
       @JsonProperty("name") String name,
       @JsonProperty("fieldName") final String fieldName,
       @JsonProperty("expression") String expression,
       @JacksonInject ExprMacroTable macroTable
-  )
+      )
   {
     super(macroTable, name, fieldName, expression);
   }
@@ -53,13 +57,15 @@ public class FloatMinAggregatorFactory extends SimpleFloatAggregatorFactory
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new FloatMinAggregator(getFloatColumnSelector(metricFactory, Float.POSITIVE_INFINITY));
+    FloatColumnSelector floatColumnSelector = getFloatColumnSelector(metricFactory, Float.POSITIVE_INFINITY);
+    return NullHandlingHelper.getNullableAggregator(new FloatMinAggregator(floatColumnSelector), floatColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
-    return new FloatMinBufferAggregator(getFloatColumnSelector(metricFactory, Float.POSITIVE_INFINITY));
+    FloatColumnSelector floatColumnSelector = getFloatColumnSelector(metricFactory, Float.POSITIVE_INFINITY);
+    return NullHandlingHelper.getNullableAggregator(new FloatMinBufferAggregator(floatColumnSelector), floatColumnSelector);
   }
 
   @Override
@@ -71,7 +77,7 @@ public class FloatMinAggregatorFactory extends SimpleFloatAggregatorFactory
   @Override
   public AggregateCombiner makeAggregateCombiner()
   {
-    return new DoubleMinAggregateCombiner();
+    return NullHandlingHelper.getNullableCombiner(new DoubleMinAggregateCombiner());
   }
 
   @Override

@@ -81,7 +81,7 @@ public interface Row extends Comparable<Row>
    *
    * @return the float value for the provided column name.
    */
-  public float getFloatMetric(String metric);
+  public Float getFloatMetric(String metric);
 
   /**
    * Returns the long value of the given metric column.
@@ -91,7 +91,7 @@ public interface Row extends Comparable<Row>
    *
    * @return the long value for the provided column name.
    */
-  public long getLongMetric(String metric);
+  public Long getLongMetric(String metric);
 
   /**
    * Returns the double value of the given metric column.
@@ -101,5 +101,5 @@ public interface Row extends Comparable<Row>
    *
    * @return the double value for the provided column name.
    */
-  public double getDoubleMetric(String metric);
+  public Double getDoubleMetric(String metric);
 }

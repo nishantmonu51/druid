@@ -261,6 +261,7 @@ public class UseIndexesStrategy extends SearchStrategy
           extractionFn = IdentityExtractionFn.getInstance();
         }
         for (int i = 0; i < bitmapIndex.getCardinality(); ++i) {
+          // TODO: fixme
           String dimVal = Strings.nullToEmpty(extractionFn.apply(bitmapIndex.getValue(i)));
           if (!searchQuerySpec.accept(dimVal)) {
             continue;

@@ -68,6 +68,9 @@ public class StringUtils
 
   public static String fromUtf8(final byte[] bytes)
   {
+    if(bytes == null){
+      return null;
+    }
     try {
       return new String(bytes, UTF8_STRING);
     }
@@ -91,6 +94,9 @@ public class StringUtils
 
   public static byte[] toUtf8(final String string)
   {
+    if(string == null){
+      return null;
+    }
     try {
       return string.getBytes(UTF8_STRING);
     }

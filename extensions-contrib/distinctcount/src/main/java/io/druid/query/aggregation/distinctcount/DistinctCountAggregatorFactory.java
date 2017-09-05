@@ -34,6 +34,7 @@ import io.druid.query.aggregation.AggregateCombiner;
 import io.druid.query.dimension.DefaultDimensionSpec;
 import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.DimensionSelector;
+import io.druid.segment.NullHandlingHelper;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -70,10 +71,10 @@ public class DistinctCountAggregatorFactory extends AggregatorFactory
     if (selector == null) {
       return new EmptyDistinctCountAggregator();
     } else {
-      return new DistinctCountAggregator(
+      return NullHandlingHelper.getNullFilteringAggregator(new DistinctCountAggregator(
           selector,
           bitMapFactory.makeEmptyMutableBitmap()
-      );
+      ), selector);
     }
   }
 
@@ -84,7 +85,7 @@ public class DistinctCountAggregatorFactory extends AggregatorFactory
     if (selector == null) {
       return EmptyDistinctCountBufferAggregator.instance();
     } else {
-      return new DistinctCountBufferAggregator(makeDimensionSelector(columnFactory));
+      return NullHandlingHelper.getNullFilteringAggregator(new DistinctCountBufferAggregator(selector), selector);
     }
   }
 

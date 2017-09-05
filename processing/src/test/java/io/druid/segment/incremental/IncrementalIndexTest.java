@@ -224,10 +224,14 @@ public class IncrementalIndexTest
 
     Row row = index.iterator().next();
 
-    Assert.assertEquals(Arrays.asList(new String[]{"", "", "A"}), row.getRaw("string"));
-    Assert.assertEquals(Arrays.asList(new String[]{"", "", String.valueOf(Float.POSITIVE_INFINITY)}), row.getRaw("float"));
-    Assert.assertEquals(Arrays.asList(new String[]{"", "", String.valueOf(Long.MIN_VALUE)}), row.getRaw("long"));
-    Assert.assertEquals(0.0, row.getRaw("double"));
+
+    Assert.assertEquals(Arrays.asList(new String[]{null, "", "A"}), row.getRaw("string"));
+    Assert.assertEquals(
+        Arrays.asList(new String[]{null, "", String.valueOf(Float.POSITIVE_INFINITY)}),
+        row.getRaw("float")
+    );
+    Assert.assertEquals(Arrays.asList(new String[]{null, "", String.valueOf(Long.MIN_VALUE)}), row.getRaw("long"));
+    Assert.assertEquals(null, row.getRaw("double"));
   }
 
   @Test

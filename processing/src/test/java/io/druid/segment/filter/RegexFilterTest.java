@@ -62,9 +62,9 @@ public class RegexFilterTest extends BaseFilterTest
   );
 
   private static final List<InputRow> ROWS = ImmutableList.of(
-      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "0", "dim1", "", "dim2", ImmutableList.of("a", "b"))),
+      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "0", "dim2", ImmutableList.of("a", "b"))),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "1", "dim1", "10", "dim2", ImmutableList.of())),
-      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "2", "dim1", "2", "dim2", ImmutableList.of(""))),
+      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "2", "dim1", "2", "dim2", ImmutableList.of())),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "3", "dim1", "1", "dim2", ImmutableList.of("a"))),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "4", "dim1", "abdef", "dim2", ImmutableList.of("c"))),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "5", "dim1", "abc"))
@@ -148,10 +148,16 @@ public class RegexFilterTest extends BaseFilterTest
     assertFilterMatches(new RegexDimFilter("dim2", ".*ANYMORE", changeNullFn), ImmutableList.of("1", "2", "5"));
     assertFilterMatches(new RegexDimFilter("dim2", "a.*", changeNullFn), ImmutableList.of("0", "3"));
 
-    assertFilterMatches(new RegexDimFilter("dim3", ".*ANYMORE", changeNullFn), ImmutableList.of("0", "1", "2", "3", "4", "5"));
+    assertFilterMatches(
+        new RegexDimFilter("dim3", ".*ANYMORE", changeNullFn),
+        ImmutableList.of("0", "1", "2", "3", "4", "5")
+    );
     assertFilterMatches(new RegexDimFilter("dim3", "a.*", changeNullFn), ImmutableList.<String>of());
 
-    assertFilterMatches(new RegexDimFilter("dim4", ".*ANYMORE", changeNullFn), ImmutableList.of("0", "1", "2", "3", "4", "5"));
+    assertFilterMatches(
+        new RegexDimFilter("dim4", ".*ANYMORE", changeNullFn),
+        ImmutableList.of("0", "1", "2", "3", "4", "5")
+    );
     assertFilterMatches(new RegexDimFilter("dim4", "a.*", changeNullFn), ImmutableList.<String>of());
   }
 }

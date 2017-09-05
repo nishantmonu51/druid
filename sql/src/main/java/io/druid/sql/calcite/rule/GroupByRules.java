@@ -834,7 +834,6 @@ public class GroupByRules
         final String fieldName;
         final String expression;
         final ExprMacroTable macroTable = plannerContext.getExprMacroTable();
-
         if (input.isDirectColumnAccess()) {
           fieldName = input.getDirectColumn();
           expression = null;

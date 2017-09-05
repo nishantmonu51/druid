@@ -19,6 +19,7 @@
 
 package io.druid.segment.data;
 
+import io.druid.collections.bitmap.ImmutableBitmap;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.DoubleColumnSelector;
 import io.druid.segment.LongColumnSelector;
@@ -35,7 +36,7 @@ public interface IndexedDoubles extends Closeable
   @Override
   void close();
 
-  default DoubleColumnSelector makeDoubleColumnSelector(ReadableOffset offset)
+  default DoubleColumnSelector makeDoubleColumnSelector(ReadableOffset offset, ImmutableBitmap nullValueBitmap)
   {
     return new DoubleColumnSelector()
     {
@@ -43,6 +44,12 @@ public interface IndexedDoubles extends Closeable
       public double getDouble()
       {
         return IndexedDoubles.this.get(offset.getOffset());
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        return nullValueBitmap.get(offset.getOffset());
       }
 
       @Override
@@ -54,10 +61,11 @@ public interface IndexedDoubles extends Closeable
     };
   }
 
-  default HistoricalFloatColumnSelector makeFloatColumnSelector(ReadableOffset offset)
+  default HistoricalFloatColumnSelector makeFloatColumnSelector(ReadableOffset offset, ImmutableBitmap nullValueBitmap)
   {
     return new HistoricalFloatColumnSelector()
     {
+
       @Override
       public float get(int offset)
       {
@@ -71,6 +79,12 @@ public interface IndexedDoubles extends Closeable
       }
 
       @Override
+      public boolean isNull()
+      {
+        return nullValueBitmap.get(offset.getOffset());
+      }
+
+      @Override
       public void inspectRuntimeShape(RuntimeShapeInspector inspector)
       {
         inspector.visit("indexed", IndexedDoubles.this);
@@ -79,7 +93,7 @@ public interface IndexedDoubles extends Closeable
     };
   }
 
-  default LongColumnSelector makeLongColumnSelector(ReadableOffset offset)
+  default LongColumnSelector makeLongColumnSelector(ReadableOffset offset, ImmutableBitmap nullValueBitmap)
   {
     return new LongColumnSelector()
     {
@@ -87,6 +101,12 @@ public interface IndexedDoubles extends Closeable
       public long getLong()
       {
         return (long) IndexedDoubles.this.get(offset.getOffset());
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        return nullValueBitmap.get(offset.getOffset());
       }
 
       @Override

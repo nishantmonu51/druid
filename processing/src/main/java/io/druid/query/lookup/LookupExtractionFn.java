@@ -58,6 +58,7 @@ public class LookupExtractionFn extends FunctionalExtraction
           @Override
           public String apply(String input)
           {
+            // TODO: fixme
             return lookup.apply(Strings.nullToEmpty(input));
           }
         },
@@ -120,6 +121,7 @@ public class LookupExtractionFn extends FunctionalExtraction
       outputStream.write(isInjective() ? 1 : 0);
       outputStream.write(isRetainMissingValue() ? 1 : 0);
       outputStream.write(isOptimize() ? 1 : 0);
+      outputStream.write(getReplaceMissingValueWith() == null ? 1 : 0);
       return outputStream.toByteArray();
     }
     catch (IOException ex) {

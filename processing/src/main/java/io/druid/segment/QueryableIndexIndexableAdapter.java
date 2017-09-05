@@ -136,6 +136,54 @@ public class QueryableIndexIndexableAdapter implements IndexableAdapter
       return null;
     }
 
+    List values = Lists.newArrayList(new Indexed<Comparable>()
+    {
+      @Override
+      public Class<? extends Comparable> getClazz()
+      {
+        return Comparable.class;
+      }
+
+      @Override
+      public int size()
+      {
+        return dict.getCardinality();
+      }
+
+      @Override
+      public Comparable get(int index)
+      {
+        return dict.lookupName(index);
+      }
+
+      @Override
+      public int indexOf(Comparable value)
+      {
+        return dict.lookupId(value);
+      }
+
+      @Override
+      public Iterator<Comparable> iterator()
+      {
+        return IndexedIterable.create(this).iterator();
+      }
+
+      @Override
+      public void inspectRuntimeShape(RuntimeShapeInspector inspector)
+      {
+        inspector.visit("dict", dict);
+      }
+    });
+    int count = 0;
+    for (Object val : values) {
+      if (val == null) {
+        count++;
+      }
+    }
+    if (count > 1) {
+      throw new ISE("God save me!!");
+    }
+
     return new Indexed<Comparable>()
     {
       @Override

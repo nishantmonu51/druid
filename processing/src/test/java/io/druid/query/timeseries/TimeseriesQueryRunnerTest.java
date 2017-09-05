@@ -2521,7 +2521,8 @@ public class TimeseriesQueryRunnerTest
     extractionMap.put("spot", "upfront");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, true, null, true, true);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, true, null, true, true
+    );
     TimeseriesQuery query = Druids.newTimeseriesQueryBuilder()
                                   .dataSource(QueryRunnerTestHelper.dataSource)
                                   .granularity(QueryRunnerTestHelper.dayGran)

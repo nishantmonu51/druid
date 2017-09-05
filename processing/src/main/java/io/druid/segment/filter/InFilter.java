@@ -166,8 +166,10 @@ public class InFilter implements Filter
       public Predicate<String> makeStringPredicate()
       {
         if (extractionFn != null) {
+          // TODO: fixme
           return input -> values.contains(Strings.nullToEmpty(extractionFn.apply(input)));
         } else {
+          // TODO: fixme
           return input -> values.contains(Strings.nullToEmpty(input));
         }
       }

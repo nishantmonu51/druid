@@ -28,6 +28,7 @@ import io.druid.client.DruidServerConfig;
 import io.druid.discovery.DataNodeService;
 import io.druid.guice.annotations.Self;
 import io.druid.query.DruidProcessingConfig;
+import io.druid.segment.NullHandlingHelper;
 import io.druid.segment.column.ColumnConfig;
 import io.druid.segment.loading.SegmentLoaderConfig;
 import io.druid.server.DruidNode;

@@ -35,6 +35,7 @@ public class LookupExprMacro implements ExprMacroTable.ExprMacro
 {
   private final LookupReferencesManager lookupReferencesManager;
 
+
   @Inject
   public LookupExprMacro(final LookupReferencesManager lookupReferencesManager)
   {

@@ -65,7 +65,7 @@ public class PlannerFactory
       final ExprMacroTable macroTable,
       final PlannerConfig plannerConfig,
       final @Json ObjectMapper jsonMapper
-  )
+      )
   {
     this.druidSchema = druidSchema;
     this.queryLifecycleFactory = queryLifecycleFactory;

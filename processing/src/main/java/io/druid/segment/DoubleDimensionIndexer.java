@@ -21,6 +21,7 @@ package io.druid.segment;
 
 import io.druid.collections.bitmap.BitmapFactory;
 import io.druid.collections.bitmap.MutableBitmap;
+import io.druid.java.util.common.guava.Comparators;
 import io.druid.query.dimension.DimensionSpec;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.column.ValueType;
@@ -29,10 +30,14 @@ import io.druid.segment.incremental.IncrementalIndex;
 import io.druid.segment.incremental.TimeAndDimsHolder;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class DoubleDimensionIndexer implements DimensionIndexer<Double, Double, Double>
 {
+  public static final Comparator DOUBLE_COMPARATOR = Comparators.<Double>naturalNullsFirst();
+
   @Override
   public ValueType getValueType()
   {
@@ -106,11 +111,17 @@ public class DoubleDimensionIndexer implements DimensionIndexer<Double, Double, 
         final Object[] dims = currEntry.getKey().getDims();
 
         if (dimIndex >= dims.length) {
-          return 0L;
+          return 0;
         }
 
-        double doubleValue = (Double) dims[dimIndex];
-        return (long) doubleValue;
+        return DimensionHandlerUtils.nullToZero((Double) dims[dimIndex]).longValue();
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        final Object[] dims = currEntry.getKey().getDims();
+        return dimIndex >= dims.length || dims[dimIndex] == null;
       }
 
       @Override
@@ -135,11 +146,17 @@ public class DoubleDimensionIndexer implements DimensionIndexer<Double, Double, 
         final Object[] dims = currEntry.getKey().getDims();
 
         if (dimIndex >= dims.length) {
-          return 0.0f;
+          return 0;
         }
 
-        double doubleValue = (Double) dims[dimIndex];
-        return (float) doubleValue;
+        return DimensionHandlerUtils.nullToZero((Double) dims[dimIndex]).floatValue();
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        final Object[] dims = currEntry.getKey().getDims();
+        return dimIndex >= dims.length || dims[dimIndex] == null;
       }
 
       @Override
@@ -164,9 +181,16 @@ public class DoubleDimensionIndexer implements DimensionIndexer<Double, Double, 
         final Object[] dims = currEntry.getKey().getDims();
 
         if (dimIndex >= dims.length) {
-          return 0.0;
+          return 0;
         }
-        return (Double) dims[dimIndex];
+        return DimensionHandlerUtils.nullToZero((Double) dims[dimIndex]);
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        final Object[] dims = currEntry.getKey().getDims();
+        return dimIndex >= dims.length || dims[dimIndex] == null;
       }
 
       @Override
@@ -182,13 +206,13 @@ public class DoubleDimensionIndexer implements DimensionIndexer<Double, Double, 
   @Override
   public int compareUnsortedEncodedKeyComponents(@Nullable Double lhs, @Nullable Double rhs)
   {
-    return Double.compare(DimensionHandlerUtils.nullToZero(lhs), DimensionHandlerUtils.nullToZero(rhs));
+    return DOUBLE_COMPARATOR.compare(lhs, rhs);
   }
 
   @Override
   public boolean checkUnsortedEncodedKeyComponentsEqual(@Nullable Double lhs, @Nullable Double rhs)
   {
-    return DimensionHandlerUtils.nullToZero(lhs).equals(DimensionHandlerUtils.nullToZero(rhs));
+    return Objects.equals(lhs, rhs);
   }
 
   @Override

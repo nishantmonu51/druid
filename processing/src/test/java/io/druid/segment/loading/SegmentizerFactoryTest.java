@@ -49,6 +49,7 @@ public class SegmentizerFactoryTest
       {
         return 777;
       }
+
     });
     mapper.setInjectableValues(
         new InjectableValues.Std().addValue(

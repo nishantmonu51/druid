@@ -201,11 +201,13 @@ public class AggregationTestHelper
         mapper,
         new ColumnConfig()
         {
+
           @Override
           public int columnCacheSizeBytes()
           {
             return 0;
           }
+
         }
     );
 

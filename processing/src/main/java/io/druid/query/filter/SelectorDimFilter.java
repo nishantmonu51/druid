@@ -25,7 +25,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
@@ -38,6 +37,7 @@ import io.druid.segment.filter.DimensionPredicateFilter;
 import io.druid.segment.filter.SelectorFilter;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -64,7 +64,7 @@ public class SelectorDimFilter implements DimFilter
     Preconditions.checkArgument(dimension != null, "dimension must not be null");
 
     this.dimension = dimension;
-    this.value = Strings.nullToEmpty(value);
+    this.value = value;
     this.extractionFn = extractionFn;
   }
 
@@ -72,6 +72,7 @@ public class SelectorDimFilter implements DimFilter
   public byte[] getCacheKey()
   {
     byte[] dimensionBytes = StringUtils.toUtf8(dimension);
+    byte nullValue = value == null ? (byte) 0 : (byte) 1;
     byte[] valueBytes = (value == null) ? new byte[]{} : StringUtils.toUtf8(value);
     byte[] extractionFnBytes = extractionFn == null ? new byte[0] : extractionFn.getCacheKey();
 
@@ -88,7 +89,7 @@ public class SelectorDimFilter implements DimFilter
   @Override
   public DimFilter optimize()
   {
-    return new InDimFilter(dimension, ImmutableList.of(value), extractionFn).optimize();
+    return new InDimFilter(dimension, Arrays.asList(value), extractionFn).optimize();
   }
 
   @Override
@@ -97,7 +98,7 @@ public class SelectorDimFilter implements DimFilter
     if (extractionFn == null) {
       return new SelectorFilter(dimension, value);
     } else {
-      final String valueOrNull = Strings.emptyToNull(value);
+      final String valueOrNull = value;
 
       final DruidPredicateFactory predicateFactory = new DruidPredicateFactory()
       {

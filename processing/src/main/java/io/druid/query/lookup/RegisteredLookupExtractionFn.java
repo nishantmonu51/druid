@@ -41,6 +41,7 @@ public class RegisteredLookupExtractionFn implements ExtractionFn
   private final boolean injective;
   private final boolean optimize;
 
+
   @JsonCreator
   public RegisteredLookupExtractionFn(
       @JacksonInject LookupReferencesManager manager,

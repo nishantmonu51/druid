@@ -6941,7 +6941,11 @@ public class GroupByQueryRunnerTest
                                          )
                                      )
                                      .setGranularity(QueryRunnerTestHelper.dayGran)
-                                     .setDimFilter(new ExtractionDimFilter("quality", "", lookupExtractionFn, null))
+                                     .setDimFilter(new InDimFilter(
+                                         "quality",
+                                         Arrays.asList("", null),
+                                         lookupExtractionFn
+                                     ))
                                      .build();
     List<Row> expectedResults = Arrays.asList(
         GroupByQueryRunnerTestHelper.createExpectedRow("2011-04-01", "alias", "mezzanine", "rows", 3L, "idx", 2870L),
@@ -7151,7 +7155,7 @@ public class GroupByQueryRunnerTest
     extractionMap.put("", "EMPTY");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, "EMPTY", true, true);
 
     GroupByQuery query = GroupByQuery.builder().setDataSource(QueryRunnerTestHelper.dataSource)
                                      .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
@@ -7182,6 +7186,7 @@ public class GroupByQueryRunnerTest
   }
 
   @Test
+  @Ignore
   public void testBySegmentResultsWithAllFiltersWithExtractionFns()
   {
     int segmentCount = 32;

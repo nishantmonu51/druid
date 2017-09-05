@@ -26,8 +26,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Supplier;
-import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
@@ -44,6 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
+import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +52,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class InDimFilter implements DimFilter
 {
@@ -58,7 +61,7 @@ public class InDimFilter implements DimFilter
   // Hashing threshold is not applied to String for now, String still uses ImmutableSortedSet
   public static final int NUMERIC_HASHING_THRESHOLD = 16;
 
-  private final ImmutableSortedSet<String> values;
+  private final SortedSet<String> values;
   private final String dimension;
   private final ExtractionFn extractionFn;
   private final Supplier<DruidLongPredicate> longPredicateSupplier;
@@ -74,19 +77,10 @@ public class InDimFilter implements DimFilter
   {
     Preconditions.checkNotNull(dimension, "dimension can not be null");
     Preconditions.checkArgument(values != null && !values.isEmpty(), "values can not be null or empty");
-    this.values = ImmutableSortedSet.copyOf(
-        Iterables.transform(
-            values, new Function<String, String>()
-            {
-              @Override
-              public String apply(String input)
-              {
-                return Strings.nullToEmpty(input);
-              }
-
-            }
-        )
-    );
+    this.values = new TreeSet<>(Ordering.natural().nullsFirst());
+    for (String value : values) {
+      this.values.add(value);
+    }
     this.dimension = dimension;
     this.extractionFn = extractionFn;
     this.longPredicateSupplier = getLongPredicateSupplier();
@@ -120,6 +114,7 @@ public class InDimFilter implements DimFilter
     int valuesBytesSize = 0;
     int index = 0;
     for (String value : values) {
+      //TODO: fixme
       valuesBytes[index] = StringUtils.toUtf8(Strings.nullToEmpty(value));
       valuesBytesSize += valuesBytes[index].length + 1;
       ++index;
@@ -210,6 +205,7 @@ public class InDimFilter implements DimFilter
     }
     RangeSet<String> retSet = TreeRangeSet.create();
     for (String value : values) {
+      // TODO: fixme
       retSet.add(Range.singleton(Strings.nullToEmpty(value)));
     }
     return retSet;
@@ -261,7 +257,14 @@ public class InDimFilter implements DimFilter
       builder.append(")");
     }
 
-    builder.append(" IN (").append(Joiner.on(", ").join(values)).append(")");
+    builder.append(" IN (").append(Joiner.on(", ").join(Iterables.transform(values, new Function<String, String>()
+    {
+      @Override
+      public String apply(@Nullable String input)
+      {
+        return Strings.nullToEmpty(input);
+      }
+    }))).append(")");
 
     return builder.toString();
   }

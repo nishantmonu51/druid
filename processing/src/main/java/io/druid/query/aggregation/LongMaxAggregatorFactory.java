@@ -30,6 +30,7 @@ import io.druid.math.expr.Parser;
 import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.ColumnValueSelector;
 import io.druid.segment.LongColumnSelector;
+import io.druid.segment.NullHandlingHelper;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -46,6 +47,7 @@ public class LongMaxAggregatorFactory extends AggregatorFactory
   private final String fieldName;
   private final String expression;
   private final ExprMacroTable macroTable;
+
 
   @JsonCreator
   public LongMaxAggregatorFactory(
@@ -75,13 +77,15 @@ public class LongMaxAggregatorFactory extends AggregatorFactory
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new LongMaxAggregator(getLongColumnSelector(metricFactory));
+    LongColumnSelector longColumnSelector = getLongColumnSelector(metricFactory);
+    return NullHandlingHelper.getNullableAggregator(new LongMaxAggregator(longColumnSelector), longColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
-    return new LongMaxBufferAggregator(getLongColumnSelector(metricFactory));
+    LongColumnSelector longColumnSelector = getLongColumnSelector(metricFactory);
+    return NullHandlingHelper.getNullableAggregator(new LongMaxBufferAggregator(longColumnSelector), longColumnSelector);
   }
 
   private LongColumnSelector getLongColumnSelector(ColumnSelectorFactory metricFactory)
@@ -104,7 +108,7 @@ public class LongMaxAggregatorFactory extends AggregatorFactory
   @Override
   public AggregateCombiner makeAggregateCombiner()
   {
-    return new LongAggregateCombiner()
+    return NullHandlingHelper.getNullableCombiner(new LongAggregateCombiner()
     {
       private long max;
 
@@ -125,7 +129,7 @@ public class LongMaxAggregatorFactory extends AggregatorFactory
       {
         return max;
       }
-    };
+    });
   }
 
   @Override

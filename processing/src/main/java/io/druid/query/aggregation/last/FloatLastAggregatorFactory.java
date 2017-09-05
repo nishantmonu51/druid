@@ -36,6 +36,8 @@ import io.druid.query.aggregation.first.FloatFirstAggregatorFactory;
 import io.druid.query.aggregation.first.LongFirstAggregatorFactory;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.FloatColumnSelector;
+import io.druid.segment.NullHandlingHelper;
 import io.druid.segment.ObjectColumnSelector;
 import io.druid.segment.column.Column;
 
@@ -52,6 +54,7 @@ public class FloatLastAggregatorFactory extends AggregatorFactory
   private final String fieldName;
   private final String name;
 
+
   @JsonCreator
   public FloatLastAggregatorFactory(
       @JsonProperty("name") String name,
@@ -67,20 +70,23 @@ public class FloatLastAggregatorFactory extends AggregatorFactory
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new FloatLastAggregator(
+
+    FloatColumnSelector floatColumnSelector = metricFactory.makeFloatColumnSelector(fieldName);
+    return NullHandlingHelper.getNullableAggregator(new FloatLastAggregator(
         name,
         metricFactory.makeLongColumnSelector(Column.TIME_COLUMN_NAME),
-        metricFactory.makeFloatColumnSelector(fieldName)
-    );
+        floatColumnSelector
+    ), floatColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
-    return new FloatLastBufferAggregator(
+    FloatColumnSelector floatColumnSelector = metricFactory.makeFloatColumnSelector(fieldName);
+    return NullHandlingHelper.getNullableAggregator(new FloatLastBufferAggregator(
         metricFactory.makeLongColumnSelector(Column.TIME_COLUMN_NAME),
-        metricFactory.makeFloatColumnSelector(fieldName)
-    );
+        floatColumnSelector
+    ), floatColumnSelector);
   }
 
   @Override
@@ -110,7 +116,7 @@ public class FloatLastAggregatorFactory extends AggregatorFactory
       public Aggregator factorize(ColumnSelectorFactory metricFactory)
       {
         final ObjectColumnSelector selector = metricFactory.makeObjectColumnSelector(name);
-        return new FloatLastAggregator(name, null, null)
+        return NullHandlingHelper.getNullableAggregator(new FloatLastAggregator(name, null, null)
         {
           @Override
           public void aggregate()
@@ -121,14 +127,14 @@ public class FloatLastAggregatorFactory extends AggregatorFactory
               lastValue = pair.rhs;
             }
           }
-        };
+        }, selector);
       }
 
       @Override
       public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
       {
         final ObjectColumnSelector selector = metricFactory.makeObjectColumnSelector(name);
-        return new FloatLastBufferAggregator(null, null)
+        return NullHandlingHelper.getNullableAggregator(new FloatLastBufferAggregator(null, null)
         {
           @Override
           public void aggregate(ByteBuffer buf, int position)
@@ -146,7 +152,7 @@ public class FloatLastAggregatorFactory extends AggregatorFactory
           {
             inspector.visit("selector", selector);
           }
-        };
+        }, selector);
       }
     };
   }

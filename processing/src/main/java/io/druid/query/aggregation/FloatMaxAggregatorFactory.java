@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.druid.java.util.common.StringUtils;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.FloatColumnSelector;
+import io.druid.segment.NullHandlingHelper;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
@@ -34,13 +36,15 @@ import java.util.List;
  */
 public class FloatMaxAggregatorFactory extends SimpleFloatAggregatorFactory
 {
+
+
   @JsonCreator
   public FloatMaxAggregatorFactory(
       @JsonProperty("name") String name,
       @JsonProperty("fieldName") final String fieldName,
       @JsonProperty("expression") String expression,
       @JacksonInject ExprMacroTable macroTable
-  )
+      )
   {
     super(macroTable, name, fieldName, expression);
   }
@@ -53,13 +57,15 @@ public class FloatMaxAggregatorFactory extends SimpleFloatAggregatorFactory
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new FloatMaxAggregator(getFloatColumnSelector(metricFactory, Float.NEGATIVE_INFINITY));
+    FloatColumnSelector floatColumnSelector = getFloatColumnSelector(metricFactory, Float.NEGATIVE_INFINITY);
+    return NullHandlingHelper.getNullableAggregator(new FloatMaxAggregator(floatColumnSelector), floatColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
-    return new FloatMaxBufferAggregator(getFloatColumnSelector(metricFactory, Float.NEGATIVE_INFINITY));
+    FloatColumnSelector floatColumnSelector = getFloatColumnSelector(metricFactory, Float.NEGATIVE_INFINITY);
+    return NullHandlingHelper.getNullableAggregator(new FloatMaxBufferAggregator(getFloatColumnSelector(metricFactory, Float.NEGATIVE_INFINITY)), floatColumnSelector);
   }
 
   @Override
@@ -71,7 +77,7 @@ public class FloatMaxAggregatorFactory extends SimpleFloatAggregatorFactory
   @Override
   public AggregateCombiner makeAggregateCombiner()
   {
-    return new DoubleMaxAggregateCombiner();
+    return NullHandlingHelper.getNullableCombiner(new DoubleMaxAggregateCombiner());
   }
 
   @Override

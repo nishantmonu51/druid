@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.druid.java.util.common.StringUtils;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.DoubleColumnSelector;
+import io.druid.segment.NullHandlingHelper;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -35,13 +37,14 @@ import java.util.Objects;
  */
 public class DoubleMinAggregatorFactory extends SimpleDoubleAggregatorFactory
 {
+
   @JsonCreator
   public DoubleMinAggregatorFactory(
       @JsonProperty("name") String name,
       @JsonProperty("fieldName") final String fieldName,
       @JsonProperty("expression") String expression,
       @JacksonInject ExprMacroTable macroTable
-  )
+      )
   {
     super(macroTable, fieldName, name, expression);
   }
@@ -54,13 +57,15 @@ public class DoubleMinAggregatorFactory extends SimpleDoubleAggregatorFactory
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new DoubleMinAggregator(getDoubleColumnSelector(metricFactory, Double.POSITIVE_INFINITY));
+    DoubleColumnSelector doubleColumnSelector = getDoubleColumnSelector(metricFactory, Double.POSITIVE_INFINITY);
+    return NullHandlingHelper.getNullableAggregator(new DoubleMinAggregator(doubleColumnSelector), doubleColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
-    return new DoubleMinBufferAggregator(getDoubleColumnSelector(metricFactory, Double.POSITIVE_INFINITY));
+    DoubleColumnSelector doubleColumnSelector = getDoubleColumnSelector(metricFactory, Double.POSITIVE_INFINITY);
+    return NullHandlingHelper.getNullableAggregator(new DoubleMinBufferAggregator(doubleColumnSelector), doubleColumnSelector);
   }
 
   @Override
@@ -72,7 +77,7 @@ public class DoubleMinAggregatorFactory extends SimpleDoubleAggregatorFactory
   @Override
   public AggregateCombiner makeAggregateCombiner()
   {
-    return new DoubleMinAggregateCombiner();
+    return NullHandlingHelper.getNullableCombiner(new DoubleMinAggregateCombiner());
   }
 
   @Override

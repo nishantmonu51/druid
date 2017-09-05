@@ -140,7 +140,8 @@ public class ColumnComparisonFilterTest extends BaseFilterTest
         "a", "7"
     );
     LookupExtractor mapExtractor = new MapLookupExtractor(stringMap, false);
-    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, true, null, false, true);
+    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, true, null, false, true
+    );
 
     assertFilterMatches(new ColumnComparisonDimFilter(ImmutableList.<DimensionSpec>of(
         new ExtractionDimensionSpec("dim0", "dim0", lookupFn),

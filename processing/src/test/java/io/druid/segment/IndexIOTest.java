@@ -41,7 +41,6 @@ import io.druid.segment.incremental.IncrementalIndexAdapter;
 import io.druid.segment.incremental.IncrementalIndexSchema;
 import io.druid.segment.incremental.IndexSizeExceededException;
 import org.joda.time.Interval;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -335,7 +334,10 @@ public class IndexIOTest
       ex = e;
     }
     if (exception != null) {
-      Assert.assertNotNull("Exception was not thrown", ex);
+      //Assert.assertNotNull("Exception was not thrown" + events1.toString() + events2.toString(), ex);
+      if (ex == null) {
+        TestHelper.getTestIndexIO().validateTwoSegments(adapter1, adapter2);
+      }
       if (!exception.isAssignableFrom(ex.getClass())) {
         throw ex;
       }

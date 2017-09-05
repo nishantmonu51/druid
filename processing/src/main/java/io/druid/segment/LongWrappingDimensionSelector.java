@@ -50,4 +50,5 @@ public class LongWrappingDimensionSelector extends BaseSingleValueDimensionSelec
     inspector.visit("selector", selector);
     inspector.visit("extractionFn", extractionFn);
   }
+
 }

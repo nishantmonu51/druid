@@ -359,7 +359,8 @@ public class ScanQueryRunnerTest
     Map<String, String> extractionMap = new HashMap<>();
     extractionMap.put("total_market", "replaced");
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true
+    );
     ScanQuery query = newTestQuery()
         .intervals(I_0112_0114)
         .filters(new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "replaced", lookupExtractionFn))

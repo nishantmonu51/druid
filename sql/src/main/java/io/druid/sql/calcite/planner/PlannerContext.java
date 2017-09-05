@@ -53,8 +53,7 @@ public class PlannerContext
       final ExprMacroTable macroTable,
       final PlannerConfig plannerConfig,
       final DateTime localNow,
-      final Map<String, Object> queryContext
-  )
+      final Map<String, Object> queryContext)
   {
     this.operatorTable = operatorTable;
     this.macroTable = macroTable;
@@ -68,8 +67,7 @@ public class PlannerContext
       final DruidOperatorTable operatorTable,
       final ExprMacroTable macroTable,
       final PlannerConfig plannerConfig,
-      final Map<String, Object> queryContext
-  )
+      final Map<String, Object> queryContext)
   {
     final DateTime utcNow;
     final DateTimeZone timeZone;
