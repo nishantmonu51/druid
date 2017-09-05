@@ -26,6 +26,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.druid.jackson.JacksonModule;
+import io.druid.segment.NullHandlingConfig;
+import io.druid.segment.NullHandlingHelper;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +44,7 @@ public class GuiceInjectors
         new JacksonModule(),
         new PropertiesModule(Arrays.asList("common.runtime.properties", "runtime.properties")),
         new ConfigModule(),
+        new NullHandlingModule(),
         new Module()
         {
           @Override

@@ -31,6 +31,7 @@ import io.druid.java.util.common.StringUtils;
 import io.druid.query.extraction.ExtractionFn;
 import io.druid.query.ordering.StringComparators;
 import io.druid.segment.NullHandlingConfig;
+import io.druid.segment.NullHandlingHelper;
 import org.joda.time.Interval;
 
 import java.nio.ByteBuffer;
@@ -52,7 +53,7 @@ public class IntervalDimFilter implements DimFilter
       @JsonProperty("dimension") String dimension,
       @JsonProperty("intervals") List<Interval> intervals,
       @JsonProperty("extractionFn") ExtractionFn extractionFn,
-      @JacksonInject  NullHandlingConfig nullHandlingConfig
+      @JacksonInject final NullHandlingConfig nullHandlingConfig
   )
   {
     Preconditions.checkNotNull(dimension, "dimension can not be null");

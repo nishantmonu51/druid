@@ -56,7 +56,6 @@ public class BoundDimFilter implements DimFilter
   private final Supplier<DruidLongPredicate> longPredicateSupplier;
   private final Supplier<DruidFloatPredicate> floatPredicateSupplier;
   private final Supplier<DruidDoublePredicate> doublePredicateSupplier;
-  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public BoundDimFilter(
@@ -67,8 +66,7 @@ public class BoundDimFilter implements DimFilter
       @JsonProperty("upperStrict") Boolean upperStrict,
       @Deprecated @JsonProperty("alphaNumeric") Boolean alphaNumeric,
       @JsonProperty("extractionFn") ExtractionFn extractionFn,
-      @JsonProperty("ordering") StringComparator ordering,
-      @JacksonInject NullHandlingConfig nullHandlingConfig
+      @JsonProperty("ordering") StringComparator ordering
   )
   {
     this.dimension = Preconditions.checkNotNull(dimension, "dimension can not be null");

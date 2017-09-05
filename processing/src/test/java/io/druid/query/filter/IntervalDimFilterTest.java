@@ -19,12 +19,15 @@
 
 package io.druid.query.filter;
 
+import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import io.druid.guice.GuiceInjectors;
 import io.druid.guice.annotations.Json;
 import io.druid.java.util.common.Intervals;
+import io.druid.math.expr.ExprMacroTable;
+import io.druid.query.expression.TestExprMacroTable;
 import io.druid.query.extraction.RegexDimExtractionFn;
 import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
