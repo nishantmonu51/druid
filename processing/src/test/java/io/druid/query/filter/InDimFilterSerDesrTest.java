@@ -25,6 +25,7 @@ import com.google.inject.Key;
 import io.druid.guice.GuiceInjectors;
 import io.druid.guice.annotations.Json;
 import io.druid.query.extraction.RegexDimExtractionFn;
+import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,14 +49,18 @@ public class InDimFilterSerDesrTest
   public void testDeserialization() throws IOException
   {
     final InDimFilter actualInDimFilter = mapper.reader(DimFilter.class).readValue(actualInFilter);
-    final InDimFilter expectedInDimFilter = new InDimFilter("dimTest", Arrays.asList("good", "bad"), null);
+    final InDimFilter expectedInDimFilter = new InDimFilter("dimTest", Arrays.asList("good", "bad"), null,
+                                                            NullHandlingConfig.LEGACY_CONFIG
+    );
     Assert.assertEquals(expectedInDimFilter, actualInDimFilter);
   }
 
   @Test
   public void testSerialization() throws IOException
   {
-    final InDimFilter dimInFilter = new InDimFilter("dimTest", Arrays.asList("good", "bad"), null);
+    final InDimFilter dimInFilter = new InDimFilter("dimTest", Arrays.asList("good", "bad"), null,
+                                                    NullHandlingConfig.LEGACY_CONFIG
+    );
     final String expectedInFilter = mapper.writeValueAsString(dimInFilter);
     Assert.assertEquals(expectedInFilter, actualInFilter);
   }
@@ -63,13 +68,21 @@ public class InDimFilterSerDesrTest
   @Test
   public void testGetCacheKey()
   {
-    final InDimFilter inDimFilter_1 = new InDimFilter("dimTest", Arrays.asList("good", "bad"), null);
-    final InDimFilter inDimFilter_2 = new InDimFilter("dimTest", Arrays.asList("good,bad"), null);
+    final InDimFilter inDimFilter_1 = new InDimFilter("dimTest", Arrays.asList("good", "bad"), null,
+                                                      NullHandlingConfig.LEGACY_CONFIG
+    );
+    final InDimFilter inDimFilter_2 = new InDimFilter("dimTest", Arrays.asList("good,bad"), null,
+                                                      NullHandlingConfig.LEGACY_CONFIG
+    );
     Assert.assertNotEquals(inDimFilter_1.getCacheKey(), inDimFilter_2.getCacheKey());
 
     RegexDimExtractionFn regexFn = new RegexDimExtractionFn(".*", false, null);
-    final InDimFilter inDimFilter_3 = new InDimFilter("dimTest", Arrays.asList("good", "bad"), regexFn);
-    final InDimFilter inDimFilter_4 = new InDimFilter("dimTest", Arrays.asList("good,bad"), regexFn);
+    final InDimFilter inDimFilter_3 = new InDimFilter("dimTest", Arrays.asList("good", "bad"), regexFn,
+                                                      NullHandlingConfig.LEGACY_CONFIG
+    );
+    final InDimFilter inDimFilter_4 = new InDimFilter("dimTest", Arrays.asList("good,bad"), regexFn,
+                                                      NullHandlingConfig.LEGACY_CONFIG
+    );
     Assert.assertNotEquals(inDimFilter_3.getCacheKey(), inDimFilter_4.getCacheKey());
   }
 

@@ -45,6 +45,7 @@ import io.druid.query.QueryRunnerFactory;
 import io.druid.query.SegmentDescriptor;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.TestHelper;
 import io.druid.segment.indexing.DataSchema;
@@ -216,7 +217,7 @@ public class RealtimePlumberSchoolTest
         TestHelper.getTestIndexIO(),
         MapCache.create(0),
         FireDepartmentTest.NO_CACHE_CONFIG,
-        TestHelper.getJsonMapper()
+        TestHelper.getJsonMapper(), NullHandlingConfig.LEGACY_CONFIG
     );
 
     metrics = new FireDepartmentMetrics();
@@ -263,7 +264,7 @@ public class RealtimePlumberSchoolTest
                    tuningConfig.getShardSpec(),
                    DateTimes.of("2014-12-01T12:34:56.789").toString(),
                    tuningConfig.getMaxRowsInMemory(),
-                   tuningConfig.isReportParseExceptions()
+                   tuningConfig.isReportParseExceptions(), NullHandlingConfig.LEGACY_CONFIG
                )
            );
     Assert.assertNull(plumber.startJob());
@@ -310,7 +311,7 @@ public class RealtimePlumberSchoolTest
                    tuningConfig.getShardSpec(),
                    DateTimes.of("2014-12-01T12:34:56.789").toString(),
                    tuningConfig.getMaxRowsInMemory(),
-                   tuningConfig.isReportParseExceptions()
+                   tuningConfig.isReportParseExceptions(), NullHandlingConfig.LEGACY_CONFIG
                )
            );
     plumber.startJob();
@@ -367,7 +368,7 @@ public class RealtimePlumberSchoolTest
                     tuningConfig.getShardSpec(),
                     DateTimes.of("2014-12-01T12:34:56.789").toString(),
                     tuningConfig.getMaxRowsInMemory(),
-                    tuningConfig.isReportParseExceptions()
+                    tuningConfig.isReportParseExceptions(), NullHandlingConfig.LEGACY_CONFIG
                 )
             );
     Assert.assertNull(plumber2.startJob());
@@ -598,21 +599,21 @@ public class RealtimePlumberSchoolTest
       }
 
       @Override
-      public float getFloatMetric(String metric)
+      public Float getFloatMetric(String metric)
       {
-        return 0;
+        return 0F;
       }
 
       @Override
-      public long getLongMetric(String metric)
+      public Long getLongMetric(String metric)
       {
         return 0L;
       }
 
       @Override
-      public double getDoubleMetric(String metric)
+      public Double getDoubleMetric(String metric)
       {
-        return 0;
+        return 0D;
       }
 
       @Override
@@ -658,13 +659,13 @@ public class RealtimePlumberSchoolTest
       }
 
       @Override
-      public float getFloatMetric(String metric)
+      public Float getFloatMetric(String metric)
       {
-        return 0;
+        return 0F;
       }
 
       @Override
-      public long getLongMetric(String metric)
+      public Long getLongMetric(String metric)
       {
         return 0L;
       }
@@ -676,9 +677,9 @@ public class RealtimePlumberSchoolTest
       }
 
       @Override
-      public double getDoubleMetric(String metric)
+      public Double getDoubleMetric(String metric)
       {
-        return 0;
+        return 0D;
       }
 
       @Override

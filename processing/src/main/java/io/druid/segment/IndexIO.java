@@ -86,6 +86,7 @@ public class IndexIO
   public static final byte V8_VERSION = 0x8;
   public static final byte V9_VERSION = 0x9;
   public static final int CURRENT_VERSION_ID = V9_VERSION;
+  public static BitmapSerdeFactory LEGACY_FACTORY = new BitmapSerde.LegacyBitmapSerdeFactory();
 
   public static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
 
@@ -95,9 +96,10 @@ public class IndexIO
   private static final SerializerUtils serializerUtils = new SerializerUtils();
 
   private final ObjectMapper mapper;
+  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
-  public IndexIO(ObjectMapper mapper, ColumnConfig columnConfig)
+  public IndexIO(ObjectMapper mapper, ColumnConfig columnConfig, NullHandlingConfig nullHandlingConfig)
   {
     this.mapper = Preconditions.checkNotNull(mapper, "null ObjectMapper");
     Preconditions.checkNotNull(columnConfig, "null ColumnConfig");
@@ -108,6 +110,7 @@ public class IndexIO
     }
     indexLoadersBuilder.put((int) V9_VERSION, new V9IndexLoader(columnConfig));
     indexLoaders = indexLoadersBuilder.build();
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   public void validateTwoSegments(File dir1, File dir2) throws IOException
@@ -124,6 +127,11 @@ public class IndexIO
 
   public void validateTwoSegments(final IndexableAdapter adapter1, final IndexableAdapter adapter2)
   {
+    System.out.println(String.format(
+        "Adapters Testing [%s,%s]",
+        adapter1.getClass().getName(),
+        adapter2.getClass().getName()
+    ));
     if (adapter1.getNumRows() != adapter2.getNumRows()) {
       throw new SegmentValidationException(
           "Row count mismatch. Expected [%d] found [%d]",
@@ -162,14 +170,12 @@ public class IndexIO
       if (rb1.getRowNum() != rb2.getRowNum()) {
         throw new SegmentValidationException("Row number mismatch: [%d] vs [%d]", rb1.getRowNum(), rb2.getRowNum());
       }
-      if (rb1.compareTo(rb2) != 0) {
         try {
           validateRowValues(dimHandlers, rb1, adapter1, rb2, adapter2);
         }
         catch (SegmentValidationException ex) {
           throw new SegmentValidationException(ex, "Validation failure on row %d: [%s] vs [%s]", row, rb1, rb2);
         }
-      }
     }
     if (it2.hasNext()) {
       throw new SegmentValidationException("Unexpected end of first adapter");
@@ -230,7 +236,7 @@ public class IndexIO
     final int version = SegmentUtils.getVersionFromDir(toConvert);
     boolean current = version == CURRENT_VERSION_ID;
     if (!current || forceIfCurrent) {
-      new IndexMergerV9(mapper, this).convert(toConvert, converted, indexSpec);
+      new IndexMergerV9(mapper, this, nullHandlingConfig).convert(toConvert, converted, indexSpec);
       if (validate) {
         validateTwoSegments(toConvert, converted);
       }
@@ -477,7 +483,12 @@ public class IndexIO
               metric,
               new ColumnBuilder()
                   .setType(ValueType.FLOAT)
-                  .setGenericColumn(new FloatGenericColumnSupplier(metricHolder.floatType, BYTE_ORDER))
+                  .setGenericColumn(new FloatGenericColumnSupplier(
+                      metricHolder.floatType,
+                      BYTE_ORDER,
+                      LEGACY_FACTORY.getBitmapFactory()
+                                    .makeEmptyImmutableBitmap()
+                  ))
                   .build()
           );
         } else if (metricHolder.getType() == MetricHolder.MetricType.COMPLEX) {
@@ -507,7 +518,11 @@ public class IndexIO
       columns.put(
           Column.TIME_COLUMN_NAME, new ColumnBuilder()
               .setType(ValueType.LONG)
-              .setGenericColumn(new LongGenericColumnSupplier(index.timestamps))
+              .setGenericColumn(new LongGenericColumnSupplier(
+                  index.timestamps,
+                  LEGACY_FACTORY.getBitmapFactory()
+                                .makeEmptyImmutableBitmap()
+              ))
               .build()
       );
       return new SimpleQueryableIndex(

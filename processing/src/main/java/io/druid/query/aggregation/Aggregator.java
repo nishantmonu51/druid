@@ -51,6 +51,11 @@ public interface Aggregator extends Closeable
     return (double) getFloat();
   }
 
+  default boolean isNull()
+  {
+    return false;
+  }
+
   @Override
   void close();
 }

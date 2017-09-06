@@ -19,6 +19,7 @@
 
 package io.druid.indexing.common.task;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,6 +63,7 @@ import io.druid.java.util.common.logger.Logger;
 import io.druid.java.util.common.parsers.ParseException;
 import io.druid.query.DruidMetrics;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.IOConfig;
 import io.druid.segment.indexing.IngestionSpec;
@@ -143,13 +145,17 @@ public class IndexTask extends AbstractTask
   @JsonIgnore
   private final IndexIngestionSpec ingestionSchema;
 
+  @JsonIgnore
+  private final NullHandlingConfig nullHandlingConfig;
+
   @JsonCreator
   public IndexTask(
       @JsonProperty("id") final String id,
       @JsonProperty("resource") final TaskResource taskResource,
       @JsonProperty("spec") final IndexIngestionSpec ingestionSchema,
-      @JsonProperty("context") final Map<String, Object> context
-  )
+      @JsonProperty("context") final Map<String, Object> context,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
+      )
   {
     super(
         makeId(id, ingestionSchema),
@@ -160,6 +166,7 @@ public class IndexTask extends AbstractTask
     );
 
     this.ingestionSchema = ingestionSchema;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -609,7 +616,7 @@ public class IndexTask extends AbstractTask
     };
 
     try (
-        final Appenderator appenderator = newAppenderator(fireDepartmentMetrics, toolbox, dataSchema, tuningConfig);
+        final Appenderator appenderator = newAppenderator(fireDepartmentMetrics, toolbox, dataSchema, tuningConfig, nullHandlingConfig);
         final AppenderatorDriver driver = newDriver(
             appenderator,
             toolbox,
@@ -747,7 +754,8 @@ public class IndexTask extends AbstractTask
       FireDepartmentMetrics metrics,
       TaskToolbox toolbox,
       DataSchema dataSchema,
-      IndexTuningConfig tuningConfig
+      IndexTuningConfig tuningConfig,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     return Appenderators.createOffline(
@@ -757,7 +765,8 @@ public class IndexTask extends AbstractTask
         toolbox.getSegmentPusher(),
         toolbox.getObjectMapper(),
         toolbox.getIndexIO(),
-        toolbox.getIndexMergerV9()
+        toolbox.getIndexMergerV9(),
+        nullHandlingConfig
     );
   }
 

@@ -30,6 +30,7 @@ import io.druid.query.lookup.LookupExtractor;
 import io.druid.query.lookup.LookupExtractorFactoryContainer;
 import io.druid.query.lookup.LookupReferencesManager;
 import io.druid.query.lookup.MapLookupExtractorFactory;
+import io.druid.segment.NullHandlingConfig;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.easymock.EasyMock;
@@ -61,7 +62,7 @@ public class LookupDimensionSpecTest
   }
 
   private final DimensionSpec lookupDimSpec = new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, null, null, null,
-                                                                      true
+                                                                      true, NullHandlingConfig.LEGACY_CONFIG
   );
 
 
@@ -81,23 +82,35 @@ public class LookupDimensionSpecTest
   private Object[] parametersForTestSerDesr()
   {
     return new Object[]{
-        new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, true, null, null, null, true),
-        new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, "Missing_value", null, null, true),
-        new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, null, null, null, true),
-        new LookupDimensionSpec("dimName", "outputName", null, false, null, "name", LOOKUP_REF_MANAGER, true)
+        new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, true, null, null, null, true,
+                                NullHandlingConfig.LEGACY_CONFIG
+        ),
+        new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, "Missing_value", null, null, true,
+                                NullHandlingConfig.LEGACY_CONFIG
+        ),
+        new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, null, null, null, true,
+                                NullHandlingConfig.LEGACY_CONFIG
+        ),
+        new LookupDimensionSpec("dimName", "outputName", null, false, null, "name", LOOKUP_REF_MANAGER, true,
+                                NullHandlingConfig.LEGACY_CONFIG
+        )
     };
   }
 
   @Test(expected = Exception.class)
   public void testExceptionWhenNameAndLookupNotNull()
   {
-    new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, "replace", "name", null, true);
+    new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, "replace", "name", null, true,
+                            NullHandlingConfig.LEGACY_CONFIG
+    );
   }
 
   @Test(expected = Exception.class)
   public void testExceptionWhenNameAndLookupNull()
   {
-    new LookupDimensionSpec("dimName", "outputName", null, false, "replace", "", null, true);
+    new LookupDimensionSpec("dimName", "outputName", null, false, "replace", "", null, true,
+                            NullHandlingConfig.LEGACY_CONFIG
+    );
   }
 
   @Test
@@ -116,39 +129,53 @@ public class LookupDimensionSpecTest
   {
     return new Object[]{
         new Object[]{
-            new LookupDimensionSpec("dimName", "outputName", null, true, null, "lookupName", LOOKUP_REF_MANAGER, true),
+            new LookupDimensionSpec("dimName", "outputName", null, true, null, "lookupName", LOOKUP_REF_MANAGER, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
             STRING_MAP
         },
         new Object[]{
-            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, true, null, null, null, true),
+            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, true, null, null, null, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
             STRING_MAP
         },
         new Object[]{
-            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, null, null, null, true),
+            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, null, null, null, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
             ImmutableMap.of("not there", "")
         },
         new Object[]{
-            new LookupDimensionSpec("dimName", "outputName", null, false, null, "lookupName", LOOKUP_REF_MANAGER, true),
+            new LookupDimensionSpec("dimName", "outputName", null, false, null, "lookupName", LOOKUP_REF_MANAGER, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
             ImmutableMap.of("not there", "")
         },
         new Object[]{
             new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, "Missing_value", null, null,
-                                    true
+                                    true,
+                                    NullHandlingConfig.LEGACY_CONFIG
             ),
             ImmutableMap.of("not there", "Missing_value")
         },
         new Object[]{
             new LookupDimensionSpec("dimName", "outputName", null, false, "Missing_value", "lookupName", LOOKUP_REF_MANAGER,
-                                    true
+                                    true,
+                                    NullHandlingConfig.LEGACY_CONFIG
             ),
             ImmutableMap.of("not there", "Missing_value")
         },
         new Object[]{
-            new LookupDimensionSpec("dimName", "outputName", null, true, null, "lookupName", LOOKUP_REF_MANAGER, true),
+            new LookupDimensionSpec("dimName", "outputName", null, true, null, "lookupName", LOOKUP_REF_MANAGER, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
             ImmutableMap.of("not there", "not there")
         },
         new Object[]{
-            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, true, null, "", null, true),
+            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, true, null, "", null, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
             ImmutableMap.of("not there", "not there")
         }
 
@@ -169,29 +196,40 @@ public class LookupDimensionSpecTest
   {
     return new Object[]{
         new Object[]{
-            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, true, null, null, null, true),
-            false
-        },
-        new Object[]{
-            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, "Missing_value", null, null,
-                                    true
+            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, true, null, null, null, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
             ),
             false
         },
         new Object[]{
-            new LookupDimensionSpec("dimName", "outputName2", MAP_LOOKUP_EXTRACTOR, false, null, null, null, true),
+            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, "Missing_value", null, null,
+                                    true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
             false
         },
         new Object[]{
-            new LookupDimensionSpec("dimName2", "outputName2", MAP_LOOKUP_EXTRACTOR, false, null, null, null, true),
+            new LookupDimensionSpec("dimName", "outputName2", MAP_LOOKUP_EXTRACTOR, false, null, null, null, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
             false
         },
         new Object[]{
-            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, null, null, null, true),
+            new LookupDimensionSpec("dimName2", "outputName2", MAP_LOOKUP_EXTRACTOR, false, null, null, null, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
+            false
+        },
+        new Object[]{
+            new LookupDimensionSpec("dimName", "outputName", MAP_LOOKUP_EXTRACTOR, false, null, null, null, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
             true
         },
         new Object[]{
-            new LookupDimensionSpec("dimName", "outputName", null, false, null, "name", LOOKUP_REF_MANAGER, true),
+            new LookupDimensionSpec("dimName", "outputName", null, false, null, "name", LOOKUP_REF_MANAGER, true,
+                                    NullHandlingConfig.LEGACY_CONFIG
+            ),
             false
         }
     };

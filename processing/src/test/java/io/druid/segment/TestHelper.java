@@ -31,6 +31,7 @@ import io.druid.java.util.common.guava.Sequences;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.query.Result;
 import io.druid.query.expression.TestExprMacroTable;
+import io.druid.query.extraction.StringFormatExtractionFn;
 import io.druid.query.timeseries.TimeseriesResultValue;
 import io.druid.query.topn.TopNResultValue;
 import io.druid.segment.column.ColumnConfig;
@@ -60,9 +61,16 @@ public class TestHelper
           {
             return 0;
           }
-        }
+
+          @Override
+          public boolean useDefaultValuesForNull()
+          {
+            return true;
+          }
+
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(jsonMapper, INDEX_IO);
+    INDEX_MERGER_V9 = new IndexMergerV9(jsonMapper, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   public static IndexMergerV9 getTestIndexMergerV9()
@@ -82,7 +90,9 @@ public class TestHelper
         new InjectableValues.Std()
             .addValue(ExprMacroTable.class.getName(), TestExprMacroTable.INSTANCE)
             .addValue(ObjectMapper.class.getName(), mapper)
+            .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
     );
+
     return mapper;
   }
 
@@ -93,6 +103,7 @@ public class TestHelper
         new InjectableValues.Std()
             .addValue(ExprMacroTable.class.getName(), TestExprMacroTable.INSTANCE)
             .addValue(ObjectMapper.class.getName(), mapper)
+            .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
     );
     return mapper;
   }

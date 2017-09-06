@@ -48,7 +48,7 @@ public class ExpressionSelectors
   public static LongColumnSelector makeLongColumnSelector(
       final ColumnSelectorFactory columnSelectorFactory,
       final Expr expression,
-      final long nullValue
+      final Long nullValue
   )
   {
     final ExpressionObjectSelector baseSelector = ExpressionObjectSelector.from(columnSelectorFactory, expression);
@@ -59,6 +59,12 @@ public class ExpressionSelectors
       {
         final ExprEval exprEval = baseSelector.get();
         return exprEval.isNull() ? nullValue : exprEval.asLong();
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        return baseSelector.get().isNull() && nullValue == null;
       }
 
       @Override
@@ -73,7 +79,7 @@ public class ExpressionSelectors
   public static FloatColumnSelector makeFloatColumnSelector(
       final ColumnSelectorFactory columnSelectorFactory,
       final Expr expression,
-      final float nullValue
+      final Float nullValue
   )
   {
     final ExpressionObjectSelector baseSelector = ExpressionObjectSelector.from(columnSelectorFactory, expression);
@@ -84,6 +90,12 @@ public class ExpressionSelectors
       {
         final ExprEval exprEval = baseSelector.get();
         return exprEval.isNull() ? nullValue : (float) exprEval.asDouble();
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        return baseSelector.get().isNull() && nullValue == null;
       }
 
       @Override
@@ -98,7 +110,7 @@ public class ExpressionSelectors
   public static DoubleColumnSelector makeDoubleColumnSelector(
       ColumnSelectorFactory columnSelectorFactory,
       Expr expression,
-      double nullValue
+      Double nullValue
   )
   {
     final ExpressionObjectSelector baseSelector = ExpressionObjectSelector.from(columnSelectorFactory, expression);
@@ -109,6 +121,13 @@ public class ExpressionSelectors
       {
         final ExprEval exprEval = baseSelector.get();
         return exprEval.isNull() ? nullValue : exprEval.asDouble();
+      }
+
+      @Override
+      public boolean isNull()
+      {
+        final ExprEval exprEval = baseSelector.get();
+        return exprEval.isNull() && nullValue == null;
       }
 
       @Override

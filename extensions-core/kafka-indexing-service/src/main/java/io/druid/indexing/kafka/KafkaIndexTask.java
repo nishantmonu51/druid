@@ -65,6 +65,7 @@ import io.druid.query.NoopQueryRunner;
 import io.druid.query.Query;
 import io.druid.query.QueryPlus;
 import io.druid.query.QueryRunner;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeIOConfig;
 import io.druid.segment.realtime.FireDepartment;
@@ -190,6 +191,8 @@ public class KafkaIndexTask extends AbstractTask implements ChatHandler
   // This value can be tuned in some tests
   private long pollRetryMs = 30000;
 
+  private final NullHandlingConfig nullHandlingConfig;
+
   @JsonCreator
   public KafkaIndexTask(
       @JsonProperty("id") String id,
@@ -198,7 +201,8 @@ public class KafkaIndexTask extends AbstractTask implements ChatHandler
       @JsonProperty("tuningConfig") KafkaTuningConfig tuningConfig,
       @JsonProperty("ioConfig") KafkaIOConfig ioConfig,
       @JsonProperty("context") Map<String, Object> context,
-      @JacksonInject ChatHandlerProvider chatHandlerProvider
+      @JacksonInject ChatHandlerProvider chatHandlerProvider,
+      @JacksonInject  NullHandlingConfig nullHandlingConfig
   )
   {
     super(
@@ -216,6 +220,7 @@ public class KafkaIndexTask extends AbstractTask implements ChatHandler
     this.chatHandlerProvider = Optional.fromNullable(chatHandlerProvider);
 
     this.endOffsets.putAll(ioConfig.getEndPartitions().getPartitionOffsetMap());
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @VisibleForTesting
@@ -897,7 +902,8 @@ public class KafkaIndexTask extends AbstractTask implements ChatHandler
         toolbox.getEmitter(),
         toolbox.getQueryExecutorService(),
         toolbox.getCache(),
-        toolbox.getCacheConfig()
+        toolbox.getCacheConfig(),
+        nullHandlingConfig
     );
   }
 

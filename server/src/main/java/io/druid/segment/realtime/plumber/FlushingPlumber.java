@@ -34,6 +34,7 @@ import io.druid.java.util.common.concurrent.ScheduledExecutors;
 import io.druid.query.QueryRunnerFactoryConglomerate;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMerger;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeTuningConfig;
 import io.druid.segment.realtime.FireDepartmentMetrics;
@@ -73,8 +74,8 @@ public class FlushingPlumber extends RealtimePlumber
       IndexIO indexIO,
       Cache cache,
       CacheConfig cacheConfig,
-      ObjectMapper objectMapper
-
+      ObjectMapper objectMapper,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     super(
@@ -92,7 +93,8 @@ public class FlushingPlumber extends RealtimePlumber
         indexIO,
         cache,
         cacheConfig,
-        objectMapper
+        objectMapper,
+        nullHandlingConfig
     );
 
     this.flushDuration = flushDuration;

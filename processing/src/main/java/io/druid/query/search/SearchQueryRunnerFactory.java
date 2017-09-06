@@ -27,6 +27,7 @@ import io.druid.query.QueryToolChest;
 import io.druid.query.QueryWatcher;
 import io.druid.query.Result;
 import io.druid.query.search.search.SearchQuery;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 
 import java.util.concurrent.ExecutorService;
@@ -38,23 +39,26 @@ public class SearchQueryRunnerFactory implements QueryRunnerFactory<Result<Searc
   private final SearchStrategySelector strategySelector;
   private final SearchQueryQueryToolChest toolChest;
   private final QueryWatcher queryWatcher;
+  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
   public SearchQueryRunnerFactory(
       SearchStrategySelector strategySelector,
       SearchQueryQueryToolChest toolChest,
-      QueryWatcher queryWatcher
+      QueryWatcher queryWatcher,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     this.strategySelector = strategySelector;
     this.toolChest = toolChest;
     this.queryWatcher = queryWatcher;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
   public QueryRunner<Result<SearchResultValue>> createRunner(final Segment segment)
   {
-    return new SearchQueryRunner(segment, strategySelector);
+    return new SearchQueryRunner(segment, strategySelector, nullHandlingConfig);
   }
 
   @Override

@@ -81,6 +81,7 @@ import io.druid.query.topn.DimensionTopNMetricSpec;
 import io.druid.query.topn.InvertedTopNMetricSpec;
 import io.druid.query.topn.NumericTopNMetricSpec;
 import io.druid.query.topn.TopNQueryBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import io.druid.segment.column.ValueType;
 import io.druid.segment.virtual.ExpressionVirtualColumn;
@@ -786,7 +787,8 @@ public class CalciteQueryTest
                                     false,
                                     false,
                                     null,
-                                    StringComparators.NUMERIC
+                                    StringComparators.NUMERIC,
+                                    NullHandlingConfig.LEGACY_CONFIG
                                 )
                             )
                         )
@@ -825,7 +827,8 @@ public class CalciteQueryTest
                                     false,
                                     false,
                                     null,
-                                    StringComparators.NUMERIC
+                                    StringComparators.NUMERIC,
+                                    NullHandlingConfig.LEGACY_CONFIG
                                 )
                             )
                         )
@@ -2069,11 +2072,11 @@ public class CalciteQueryTest
                   .intervals(QSS(Filtration.eternity()))
                   .granularity(Granularities.ALL)
                   .aggregators(AGGS(
-                      new LongSumAggregatorFactory("a0", null, "(\"cnt\" * 3)", macroTable),
+                      new LongSumAggregatorFactory("a0", null, "(\"cnt\" * 3)", macroTable, NullHandlingConfig.LEGACY_CONFIG),
                       new LongSumAggregatorFactory("a1", "cnt"),
                       new DoubleSumAggregatorFactory("a2", "m1"),
-                      new LongSumAggregatorFactory("a3", null, "strlen(CAST((\"cnt\" * 10), 'STRING'))", macroTable),
-                      new DoubleMaxAggregatorFactory("a4", null, "(strlen(\"dim2\") + log(\"m1\"))", macroTable)
+                      new LongSumAggregatorFactory("a3", null, "strlen(CAST((\"cnt\" * 10), 'STRING'))", macroTable, NullHandlingConfig.LEGACY_CONFIG),
+                      new DoubleMaxAggregatorFactory("a4", null, "(strlen(\"dim2\") + log(\"m1\"))", macroTable, NullHandlingConfig.LEGACY_CONFIG)
                   ))
                   .postAggregators(ImmutableList.of(
                       EXPRESSION_POST_AGG("p0", "log((\"a1\" + \"a2\"))"),
@@ -2244,7 +2247,9 @@ public class CalciteQueryTest
                         .setInterval(QSS(Filtration.eternity()))
                         .setGranularity(Granularities.ALL)
                         .setDimensions(DIMS(new DefaultDimensionSpec("dim1", "d0")))
-                        .setDimFilter(new InDimFilter("dim1", ImmutableList.of("abc", "def", "ghi"), null))
+                        .setDimFilter(new InDimFilter("dim1", ImmutableList.of("abc", "def", "ghi"), null,
+                                                      NullHandlingConfig.LEGACY_CONFIG
+                        ))
                         .setAggregatorSpecs(
                             AGGS(
                                 new CountAggregatorFactory("a0")
@@ -2706,7 +2711,8 @@ public class CalciteQueryTest
                           "a0",
                           null,
                           "CAST(\"dim1\", 'LONG')",
-                          CalciteTests.createExprMacroTable()
+                          CalciteTests.createExprMacroTable(),
+                          NullHandlingConfig.LEGACY_CONFIG
                       )
                   ))
                   .context(TIMESERIES_CONTEXT_DEFAULT)
@@ -2735,7 +2741,8 @@ public class CalciteQueryTest
                           "a0",
                           null,
                           "CAST(substring(\"dim1\", 0, 10), 'LONG')",
-                          CalciteTests.createExprMacroTable()
+                          CalciteTests.createExprMacroTable(),
+                          NullHandlingConfig.LEGACY_CONFIG
                       )
                   ))
                   .context(TIMESERIES_CONTEXT_DEFAULT)
@@ -4404,7 +4411,8 @@ public class CalciteQueryTest
         false,
         null,
         false,
-        true
+        true,
+        NullHandlingConfig.LEGACY_CONFIG
     );
 
     testQuery(
@@ -4457,7 +4465,8 @@ public class CalciteQueryTest
         false,
         null,
         false,
-        true
+        true,
+        NullHandlingConfig.LEGACY_CONFIG
     );
 
     testQuery(
@@ -5440,7 +5449,7 @@ public class CalciteQueryTest
                         .setGranularity(Granularities.ALL)
                         .setDimFilter(OR(
                             new LikeDimFilter("dim1", "דר%", null, null),
-                            new SelectorDimFilter("dim1", "друид", null)
+                            new SelectorDimFilter("dim1", "друид", null, NullHandlingConfig.LEGACY_CONFIG)
                         ))
                         .setDimensions(DIMS(
                             new DefaultDimensionSpec("dim1", "d0"),
@@ -5512,7 +5521,8 @@ public class CalciteQueryTest
         operatorTable,
         macroTable,
         plannerConfig,
-        CalciteTests.getJsonMapper()
+        CalciteTests.getJsonMapper(),
+        NullHandlingConfig.LEGACY_CONFIG
     );
 
     viewManager.createView(
@@ -5613,12 +5623,12 @@ public class CalciteQueryTest
 
   private static InDimFilter IN(String dimension, List<String> values, ExtractionFn extractionFn)
   {
-    return new InDimFilter(dimension, values, extractionFn);
+    return new InDimFilter(dimension, values, extractionFn, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private static SelectorDimFilter SELECTOR(final String fieldName, final String value, final ExtractionFn extractionFn)
   {
-    return new SelectorDimFilter(fieldName, value, extractionFn);
+    return new SelectorDimFilter(fieldName, value, extractionFn, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private static ExpressionDimFilter EXPRESSION_FILTER(final String expression)
@@ -5646,7 +5656,9 @@ public class CalciteQueryTest
       final StringComparator comparator
   )
   {
-    return new BoundDimFilter(fieldName, lower, upper, lowerStrict, upperStrict, null, extractionFn, comparator);
+    return new BoundDimFilter(fieldName, lower, upper, lowerStrict, upperStrict, null, extractionFn, comparator,
+                              NullHandlingConfig.LEGACY_CONFIG
+    );
   }
 
   private static BoundDimFilter TIME_BOUND(final Object intervalObj)
@@ -5660,7 +5672,8 @@ public class CalciteQueryTest
         true,
         null,
         null,
-        StringComparators.NUMERIC
+        StringComparators.NUMERIC,
+        NullHandlingConfig.LEGACY_CONFIG
     );
   }
 

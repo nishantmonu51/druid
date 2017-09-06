@@ -47,6 +47,7 @@ import io.druid.query.metadata.metadata.ColumnIncluderator;
 import io.druid.query.metadata.metadata.SegmentAnalysis;
 import io.druid.query.metadata.metadata.SegmentMetadataQuery;
 import io.druid.segment.Metadata;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import org.joda.time.Interval;
 
@@ -67,118 +68,117 @@ public class SegmentMetadataQueryRunnerFactory implements QueryRunnerFactory<Seg
 
   private final SegmentMetadataQueryQueryToolChest toolChest;
   private final QueryWatcher queryWatcher;
+  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
   public SegmentMetadataQueryRunnerFactory(
       SegmentMetadataQueryQueryToolChest toolChest,
-      QueryWatcher queryWatcher
+      QueryWatcher queryWatcher,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     this.toolChest = toolChest;
     this.queryWatcher = queryWatcher;
+    this.nullHandlingConfig = nullHandlingConfig;
+
   }
 
   @Override
   public QueryRunner<SegmentAnalysis> createRunner(final Segment segment)
   {
-    return new QueryRunner<SegmentAnalysis>()
-    {
-      @Override
-      public Sequence<SegmentAnalysis> run(QueryPlus<SegmentAnalysis> inQ, Map<String, Object> responseContext)
-      {
-        SegmentMetadataQuery updatedQuery = ((SegmentMetadataQuery) inQ.getQuery())
-            .withFinalizedAnalysisTypes(toolChest.getConfig());
-        final SegmentAnalyzer analyzer = new SegmentAnalyzer(updatedQuery.getAnalysisTypes());
-        final Map<String, ColumnAnalysis> analyzedColumns = analyzer.analyze(segment);
-        final long numRows = analyzer.numRows(segment);
-        long totalSize = 0;
+    return (inQ, responseContext) -> {
+      SegmentMetadataQuery updatedQuery = ((SegmentMetadataQuery) inQ.getQuery())
+          .withFinalizedAnalysisTypes(toolChest.getConfig());
+      final SegmentAnalyzer analyzer = new SegmentAnalyzer(updatedQuery.getAnalysisTypes());
+      final Map<String, ColumnAnalysis> analyzedColumns = analyzer.analyze(segment, nullHandlingConfig);
+      final long numRows = analyzer.numRows(segment.asStorageAdapter());
+      long totalSize = 0;
 
-        if (analyzer.analyzingSize()) {
-          // Initialize with the size of the whitespace, 1 byte per
-          totalSize = analyzedColumns.size() * numRows;
+      if (analyzer.analyzingSize()) {
+        // Initialize with the size of the whitespace, 1 byte per
+        totalSize = analyzedColumns.size() * numRows;
+      }
+
+      Map<String, ColumnAnalysis> columns = Maps.newTreeMap();
+      ColumnIncluderator includerator = updatedQuery.getToInclude();
+      for (Map.Entry<String, ColumnAnalysis> entry : analyzedColumns.entrySet()) {
+        final String columnName = entry.getKey();
+        final ColumnAnalysis column = entry.getValue();
+
+        if (!column.isError()) {
+          totalSize += column.getSize();
         }
-
-        Map<String, ColumnAnalysis> columns = Maps.newTreeMap();
-        ColumnIncluderator includerator = updatedQuery.getToInclude();
-        for (Map.Entry<String, ColumnAnalysis> entry : analyzedColumns.entrySet()) {
-          final String columnName = entry.getKey();
-          final ColumnAnalysis column = entry.getValue();
-
-          if (!column.isError()) {
-            totalSize += column.getSize();
-          }
-          if (includerator.include(columnName)) {
-            columns.put(columnName, column);
-          }
+        if (includerator.include(columnName)) {
+          columns.put(columnName, column);
         }
-        List<Interval> retIntervals = updatedQuery.analyzingInterval() ?
-                                      Collections.singletonList(segment.getDataInterval()) : null;
+      }
+      List<Interval> retIntervals = updatedQuery.analyzingInterval() ?
+                                    Collections.singletonList(segment.getDataInterval()) : null;
 
-        final Map<String, AggregatorFactory> aggregators;
-        Metadata metadata = null;
-        if (updatedQuery.hasAggregators()) {
-          metadata = segment.asStorageAdapter().getMetadata();
-          if (metadata != null && metadata.getAggregators() != null) {
-            aggregators = Maps.newHashMap();
-            for (AggregatorFactory aggregator : metadata.getAggregators()) {
-              aggregators.put(aggregator.getName(), aggregator);
-            }
-          } else {
-            aggregators = null;
+      final Map<String, AggregatorFactory> aggregators;
+      Metadata metadata = null;
+      if (updatedQuery.hasAggregators()) {
+        metadata = segment.asStorageAdapter().getMetadata();
+        if (metadata != null && metadata.getAggregators() != null) {
+          aggregators = Maps.newHashMap();
+          for (AggregatorFactory aggregator : metadata.getAggregators()) {
+            aggregators.put(aggregator.getName(), aggregator);
           }
         } else {
           aggregators = null;
         }
-
-        final TimestampSpec timestampSpec;
-        if (updatedQuery.hasTimestampSpec()) {
-          if (metadata == null) {
-            metadata = segment.asStorageAdapter().getMetadata();
-          }
-          timestampSpec = metadata != null ? metadata.getTimestampSpec() : null;
-        } else {
-          timestampSpec = null;
-        }
-
-        final Granularity queryGranularity;
-        if (updatedQuery.hasQueryGranularity()) {
-          if (metadata == null) {
-            metadata = segment.asStorageAdapter().getMetadata();
-          }
-          queryGranularity = metadata != null ? metadata.getQueryGranularity() : null;
-        } else {
-          queryGranularity = null;
-        }
-
-        Boolean rollup = null;
-        if (updatedQuery.hasRollup()) {
-          if (metadata == null) {
-            metadata = segment.asStorageAdapter().getMetadata();
-          }
-          rollup = metadata != null ? metadata.isRollup() : null;
-          if (rollup == null) {
-            // in this case, this segment is built before no-rollup function is coded,
-            // thus it is built with rollup
-            rollup = Boolean.TRUE;
-          }
-        }
-
-        return Sequences.simple(
-            Collections.singletonList(
-                new SegmentAnalysis(
-                    segment.getIdentifier(),
-                    retIntervals,
-                    columns,
-                    totalSize,
-                    numRows,
-                    aggregators,
-                    timestampSpec,
-                    queryGranularity,
-                    rollup
-                )
-            )
-        );
+      } else {
+        aggregators = null;
       }
+
+      final TimestampSpec timestampSpec;
+      if (updatedQuery.hasTimestampSpec()) {
+        if (metadata == null) {
+          metadata = segment.asStorageAdapter().getMetadata();
+        }
+        timestampSpec = metadata != null ? metadata.getTimestampSpec() : null;
+      } else {
+        timestampSpec = null;
+      }
+
+      final Granularity queryGranularity;
+      if (updatedQuery.hasQueryGranularity()) {
+        if (metadata == null) {
+          metadata = segment.asStorageAdapter().getMetadata();
+        }
+        queryGranularity = metadata != null ? metadata.getQueryGranularity() : null;
+      } else {
+        queryGranularity = null;
+      }
+
+      Boolean rollup = null;
+      if (updatedQuery.hasRollup()) {
+        if (metadata == null) {
+          metadata = segment.asStorageAdapter().getMetadata();
+        }
+        rollup = metadata != null ? metadata.isRollup() : null;
+        if (rollup == null) {
+          // in this case, this segment is built before no-rollup function is coded,
+          // thus it is built with rollup
+          rollup = Boolean.TRUE;
+        }
+      }
+
+      return Sequences.simple(
+          Collections.singletonList(
+              new SegmentAnalysis(
+                  segment.getIdentifier(),
+                  retIntervals,
+                  columns,
+                  totalSize,
+                  numRows,
+                  aggregators,
+                  timestampSpec,
+                  queryGranularity,
+                  rollup
+              )
+          )
+      );
     };
   }
 

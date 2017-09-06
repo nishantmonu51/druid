@@ -47,6 +47,7 @@ import io.druid.segment.DoubleColumnSelector;
 import io.druid.segment.FloatColumnSelector;
 import io.druid.segment.IdLookup;
 import io.druid.segment.LongColumnSelector;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.ObjectColumnSelector;
 import io.druid.segment.column.ColumnCapabilities;
 import io.druid.segment.column.ColumnCapabilitiesImpl;
@@ -75,7 +76,7 @@ public class FilteredAggregatorTest
 
     FilteredAggregatorFactory factory = new FilteredAggregatorFactory(
         new DoubleSumAggregatorFactory("billy", "value"),
-        new SelectorDimFilter("dim", "a", null)
+        new SelectorDimFilter("dim", "a", null, NullHandlingConfig.LEGACY_CONFIG)
     );
 
     FilteredAggregator agg = (FilteredAggregator) factory.factorize(
@@ -213,6 +214,12 @@ public class FilteredAggregatorTest
             }
 
             @Override
+            public boolean isNull()
+            {
+              return selector.isNull();
+            }
+
+            @Override
             public void inspectRuntimeShape(RuntimeShapeInspector inspector)
             {
 
@@ -270,7 +277,7 @@ public class FilteredAggregatorTest
 
     FilteredAggregatorFactory factory = new FilteredAggregatorFactory(
         new DoubleSumAggregatorFactory("billy", "value"),
-        new NotDimFilter(new SelectorDimFilter("dim", "b", null))
+        new NotDimFilter(new SelectorDimFilter("dim", "b", null, NullHandlingConfig.LEGACY_CONFIG))
     );
 
     validateFilteredAggs(factory, values, selector);
@@ -284,7 +291,9 @@ public class FilteredAggregatorTest
 
     FilteredAggregatorFactory factory = new FilteredAggregatorFactory(
         new DoubleSumAggregatorFactory("billy", "value"),
-        new OrDimFilter(Lists.<DimFilter>newArrayList(new SelectorDimFilter("dim", "a", null), new SelectorDimFilter("dim", "b", null)))
+        new OrDimFilter(Lists.<DimFilter>newArrayList(new SelectorDimFilter("dim", "a", null,
+                                                                            NullHandlingConfig.LEGACY_CONFIG
+        ), new SelectorDimFilter("dim", "b", null, NullHandlingConfig.LEGACY_CONFIG)))
     );
 
     FilteredAggregator agg = (FilteredAggregator) factory.factorize(
@@ -305,7 +314,9 @@ public class FilteredAggregatorTest
 
     FilteredAggregatorFactory factory = new FilteredAggregatorFactory(
         new DoubleSumAggregatorFactory("billy", "value"),
-        new AndDimFilter(Lists.<DimFilter>newArrayList(new NotDimFilter(new SelectorDimFilter("dim", "b", null)), new SelectorDimFilter("dim", "a", null))));
+        new AndDimFilter(Lists.<DimFilter>newArrayList(new NotDimFilter(new SelectorDimFilter("dim", "b", null,
+                                                                                              NullHandlingConfig.LEGACY_CONFIG
+        )), new SelectorDimFilter("dim", "a", null, NullHandlingConfig.LEGACY_CONFIG))));
 
     validateFilteredAggs(factory, values, selector);
   }
@@ -319,7 +330,9 @@ public class FilteredAggregatorTest
 
     factory = new FilteredAggregatorFactory(
         new DoubleSumAggregatorFactory("billy", "value"),
-        new BoundDimFilter("dim", "a", "a", false, false, true, null, StringComparators.ALPHANUMERIC)
+        new BoundDimFilter("dim", "a", "a", false, false, true, null, StringComparators.ALPHANUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
+        )
     );
     selector = new TestFloatColumnSelector(values);
     validateFilteredAggs(factory, values, selector);
@@ -359,14 +372,16 @@ public class FilteredAggregatorTest
 
     factory = new FilteredAggregatorFactory(
         new DoubleSumAggregatorFactory("billy", "value"),
-        new SelectorDimFilter("dim", "aAARDVARK", extractionFn)
+        new SelectorDimFilter("dim", "aAARDVARK", extractionFn, NullHandlingConfig.LEGACY_CONFIG)
     );
     selector = new TestFloatColumnSelector(values);
     validateFilteredAggs(factory, values, selector);
 
     factory = new FilteredAggregatorFactory(
         new DoubleSumAggregatorFactory("billy", "value"),
-        new InDimFilter("dim", Arrays.asList("NOT-aAARDVARK", "FOOBAR", "aAARDVARK"), extractionFn)
+        new InDimFilter("dim", Arrays.asList("NOT-aAARDVARK", "FOOBAR", "aAARDVARK"), extractionFn,
+                        NullHandlingConfig.LEGACY_CONFIG
+        )
     );
     selector = new TestFloatColumnSelector(values);
     validateFilteredAggs(factory, values, selector);
@@ -374,7 +389,8 @@ public class FilteredAggregatorTest
     factory = new FilteredAggregatorFactory(
         new DoubleSumAggregatorFactory("billy", "value"),
         new BoundDimFilter("dim", "aAARDVARK", "aAARDVARK", false, false, true, extractionFn,
-                           StringComparators.ALPHANUMERIC
+                           StringComparators.ALPHANUMERIC,
+                           NullHandlingConfig.LEGACY_CONFIG
         )
     );
     selector = new TestFloatColumnSelector(values);

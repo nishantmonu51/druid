@@ -22,6 +22,7 @@ package io.druid.query.extraction;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.druid.segment.NullHandlingConfig;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +36,7 @@ public abstract class FunctionalExtraction extends DimExtractionFn
   private final String replaceMissingValueWith;
   private final Function<String, String> extractionFunction;
   private final ExtractionType extractionType;
+  private final NullHandlingConfig nullHandlingConfig;
 
   /**
    * The general constructor which handles most of the logic for extractions which can be expressed as a function of string-->string
@@ -48,13 +50,15 @@ public abstract class FunctionalExtraction extends DimExtractionFn
       final Function<String, String> extractionFunction,
       final boolean retainMissingValue,
       final String replaceMissingValueWith,
-      final boolean injective
+      final boolean injective,
+      final NullHandlingConfig nullHandlingConfig
   )
   {
     this.retainMissingValue = retainMissingValue;
-    this.replaceMissingValueWith = Strings.emptyToNull(replaceMissingValueWith);
+    this.nullHandlingConfig = nullHandlingConfig;
+    this.replaceMissingValueWith = nullHandlingConfig.defaultToNull(replaceMissingValueWith);
     Preconditions.checkArgument(
-        !(this.retainMissingValue && !Strings.isNullOrEmpty(this.replaceMissingValueWith)),
+        !(this.retainMissingValue && !nullHandlingConfig.isNullOrDefault(this.replaceMissingValueWith)),
         "Cannot specify a [replaceMissingValueWith] and set [retainMissingValue] to true"
     );
 
@@ -80,7 +84,7 @@ public abstract class FunctionalExtraction extends DimExtractionFn
         public String apply(@Nullable String dimValue)
         {
           final String retval = extractionFunction.apply(dimValue);
-          return Strings.isNullOrEmpty(retval) ? FunctionalExtraction.this.replaceMissingValueWith : retval;
+          return nullHandlingConfig.isNullOrDefault(retval) ? FunctionalExtraction.this.replaceMissingValueWith : retval;
         }
       };
     }

@@ -64,6 +64,7 @@ import io.druid.query.spec.MultipleIntervalSegmentSpec;
 import io.druid.query.spec.MultipleSpecificSegmentSpec;
 import io.druid.query.spec.SpecificSegmentQueryRunner;
 import io.druid.query.spec.SpecificSegmentSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.incremental.IndexSizeExceededException;
 import io.druid.segment.indexing.DataSchema;
@@ -219,7 +220,7 @@ public class RealtimeManagerTest
         tuningConfig.getShardSpec(),
         DateTimes.nowUtc().toString(),
         tuningConfig.getMaxRowsInMemory(),
-        tuningConfig.isReportParseExceptions()
+        tuningConfig.isReportParseExceptions(), NullHandlingConfig.LEGACY_CONFIG
     ));
 
     realtimeManager = new RealtimeManager(
@@ -239,7 +240,7 @@ public class RealtimeManagerTest
         tuningConfig.getShardSpec(),
         DateTimes.nowUtc().toString(),
         tuningConfig.getMaxRowsInMemory(),
-        tuningConfig.isReportParseExceptions()
+        tuningConfig.isReportParseExceptions(), NullHandlingConfig.LEGACY_CONFIG
     ));
 
     realtimeManager2 = new RealtimeManager(
@@ -811,19 +812,19 @@ public class RealtimeManagerTest
         }
 
         @Override
-        public float getFloatMetric(String metric)
+        public Float getFloatMetric(String metric)
         {
-          return 0;
+          return 0F;
         }
 
         @Override
-        public long getLongMetric(String metric)
+        public Long getLongMetric(String metric)
         {
           return 0L;
         }
 
         @Override
-        public double getDoubleMetric(String metric)
+        public Double getDoubleMetric(String metric)
         {
           return 0.0d;
         }

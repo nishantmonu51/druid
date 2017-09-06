@@ -32,6 +32,7 @@ import io.druid.query.metadata.metadata.SegmentAnalysis;
 import io.druid.query.metadata.metadata.SegmentMetadataQuery;
 import io.druid.query.spec.QuerySegmentSpecs;
 import io.druid.segment.IncrementalIndexSegment;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.Segment;
 import io.druid.segment.TestIndex;
@@ -61,7 +62,7 @@ public class SegmentAnalyzerTest
   private void testIncrementalWorksHelper(EnumSet<SegmentMetadataQuery.AnalysisType> analyses) throws Exception
   {
     final List<SegmentAnalysis> results = getSegmentAnalysises(
-        new IncrementalIndexSegment(TestIndex.getIncrementalTestIndex(), null),
+        new IncrementalIndexSegment(TestIndex.getIncrementalTestIndex(), null, NullHandlingConfig.LEGACY_CONFIG),
         analyses
     );
 
@@ -120,7 +121,7 @@ public class SegmentAnalyzerTest
   private void testMappedWorksHelper(EnumSet<SegmentMetadataQuery.AnalysisType> analyses) throws Exception
   {
     final List<SegmentAnalysis> results = getSegmentAnalysises(
-        new QueryableIndexSegment("test_1", TestIndex.getMMappedTestIndex()),
+        new QueryableIndexSegment("test_1", TestIndex.getMMappedTestIndex(), NullHandlingConfig.LEGACY_CONFIG),
         analyses
     );
 
@@ -185,7 +186,7 @@ public class SegmentAnalyzerTest
     final QueryRunner runner = QueryRunnerTestHelper.makeQueryRunner(
         (QueryRunnerFactory) new SegmentMetadataQueryRunnerFactory(
             new SegmentMetadataQueryQueryToolChest(new SegmentMetadataQueryConfig()),
-            QueryRunnerTestHelper.NOOP_QUERYWATCHER
+            QueryRunnerTestHelper.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
         ),
         index,
         null

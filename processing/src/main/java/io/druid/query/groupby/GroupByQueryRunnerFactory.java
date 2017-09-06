@@ -31,6 +31,7 @@ import io.druid.query.QueryRunner;
 import io.druid.query.QueryRunnerFactory;
 import io.druid.query.QueryToolChest;
 import io.druid.query.groupby.strategy.GroupByStrategySelector;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.StorageAdapter;
 
@@ -43,21 +44,24 @@ public class GroupByQueryRunnerFactory implements QueryRunnerFactory<Row, GroupB
 {
   private final GroupByStrategySelector strategySelector;
   private final GroupByQueryQueryToolChest toolChest;
+  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
   public GroupByQueryRunnerFactory(
       GroupByStrategySelector strategySelector,
-      GroupByQueryQueryToolChest toolChest
+      GroupByQueryQueryToolChest toolChest,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     this.strategySelector = strategySelector;
     this.toolChest = toolChest;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
   public QueryRunner<Row> createRunner(final Segment segment)
   {
-    return new GroupByQueryRunner(segment, strategySelector);
+    return new GroupByQueryRunner(segment, strategySelector, nullHandlingConfig);
   }
 
   @Override
@@ -91,7 +95,7 @@ public class GroupByQueryRunnerFactory implements QueryRunnerFactory<Row, GroupB
     private final StorageAdapter adapter;
     private final GroupByStrategySelector strategySelector;
 
-    public GroupByQueryRunner(Segment segment, final GroupByStrategySelector strategySelector)
+    public GroupByQueryRunner(Segment segment, final GroupByStrategySelector strategySelector, NullHandlingConfig nullHandlingConfig)
     {
       this.adapter = segment.asStorageAdapter();
       this.strategySelector = strategySelector;

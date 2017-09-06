@@ -29,6 +29,7 @@ import io.druid.java.util.common.Intervals;
 import io.druid.java.util.common.granularity.Granularities;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeTuningConfig;
 import io.druid.segment.indexing.granularity.UniformGranularitySpec;
@@ -81,7 +82,7 @@ public class SinkTest
         tuningConfig.getShardSpec(),
         version,
         tuningConfig.getMaxRowsInMemory(),
-        tuningConfig.isReportParseExceptions()
+        tuningConfig.isReportParseExceptions(), NullHandlingConfig.LEGACY_CONFIG
     );
 
     sink.add(
@@ -112,19 +113,19 @@ public class SinkTest
           }
 
           @Override
-          public float getFloatMetric(String metric)
+          public Float getFloatMetric(String metric)
           {
-            return 0;
+            return 0F;
           }
 
           @Override
-          public long getLongMetric(String metric)
+          public Long getLongMetric(String metric)
           {
             return 0L;
           }
 
           @Override
-          public double getDoubleMetric(String metric)
+          public Double getDoubleMetric(String metric)
           {
             return 0.0d;
           }
@@ -177,19 +178,19 @@ public class SinkTest
           }
 
           @Override
-          public float getFloatMetric(String metric)
+          public Float getFloatMetric(String metric)
           {
-            return 0;
+            return 0F;
           }
 
           @Override
-          public long getLongMetric(String metric)
+          public Long getLongMetric(String metric)
           {
             return 0L;
           }
 
           @Override
-          public double getDoubleMetric(String metric)
+          public Double getDoubleMetric(String metric)
           {
             return 0.0d;
           }

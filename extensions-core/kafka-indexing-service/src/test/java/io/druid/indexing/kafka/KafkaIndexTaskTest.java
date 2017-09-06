@@ -109,6 +109,7 @@ import io.druid.query.timeseries.TimeseriesQueryQueryToolChest;
 import io.druid.query.timeseries.TimeseriesQueryRunnerFactory;
 import io.druid.query.timeseries.TimeseriesResultValue;
 import io.druid.segment.IndexIO;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.TestHelper;
 import io.druid.segment.column.DictionaryEncodedColumn;
@@ -1487,7 +1488,7 @@ public class KafkaIndexTaskTest
         tuningConfig,
         ioConfig,
         null,
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
     task.setPollRetryMs(POLL_RETRY_MS);
     return task;
@@ -1636,7 +1637,7 @@ public class KafkaIndexTaskTest
                   {
                     return Lists.newArrayList();
                   }
-                }, testUtils.getTestObjectMapper()
+                }, testUtils.getTestObjectMapper(), NullHandlingConfig.LEGACY_CONFIG
             )
         ),
         testUtils.getTestObjectMapper(),

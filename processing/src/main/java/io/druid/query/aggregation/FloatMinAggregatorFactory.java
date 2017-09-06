@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.druid.java.util.common.StringUtils;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.FloatColumnSelector;
+import io.druid.segment.NullHandlingConfig;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -34,32 +36,38 @@ import java.util.List;
  */
 public class FloatMinAggregatorFactory extends SimpleFloatAggregatorFactory
 {
+  private final NullHandlingConfig nullHandlingConfig;
+
   @JsonCreator
   public FloatMinAggregatorFactory(
       @JsonProperty("name") String name,
       @JsonProperty("fieldName") final String fieldName,
       @JsonProperty("expression") String expression,
-      @JacksonInject ExprMacroTable macroTable
-  )
+      @JacksonInject ExprMacroTable macroTable,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
+      )
   {
     super(macroTable, name, fieldName, expression);
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   public FloatMinAggregatorFactory(String name, String fieldName)
   {
-    this(name, fieldName, null, ExprMacroTable.nil());
+    this(name, fieldName, null, ExprMacroTable.nil(), NullHandlingConfig.LEGACY_CONFIG);
   }
 
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new FloatMinAggregator(getFloatColumnSelector(metricFactory, Float.POSITIVE_INFINITY));
+    FloatColumnSelector floatColumnSelector = getFloatColumnSelector(metricFactory, Float.POSITIVE_INFINITY);
+    return nullHandlingConfig.getNullableAggregator(new FloatMinAggregator(floatColumnSelector), floatColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
-    return new FloatMinBufferAggregator(getFloatColumnSelector(metricFactory, Float.POSITIVE_INFINITY));
+    FloatColumnSelector floatColumnSelector = getFloatColumnSelector(metricFactory, Float.POSITIVE_INFINITY);
+    return nullHandlingConfig.getNullableAggregator(new FloatMinBufferAggregator(floatColumnSelector), floatColumnSelector);
   }
 
   @Override
@@ -71,13 +79,13 @@ public class FloatMinAggregatorFactory extends SimpleFloatAggregatorFactory
   @Override
   public AggregateCombiner makeAggregateCombiner()
   {
-    return new DoubleMinAggregateCombiner();
+    return nullHandlingConfig.getNullableCombiner(new DoubleMinAggregateCombiner());
   }
 
   @Override
   public AggregatorFactory getCombiningFactory()
   {
-    return new FloatMinAggregatorFactory(name, name, null, macroTable);
+    return new FloatMinAggregatorFactory(name, name, null, macroTable, nullHandlingConfig);
   }
 
 
@@ -88,7 +96,8 @@ public class FloatMinAggregatorFactory extends SimpleFloatAggregatorFactory
         fieldName,
         fieldName,
         expression,
-        macroTable
+        macroTable,
+        nullHandlingConfig
     ));
   }
 

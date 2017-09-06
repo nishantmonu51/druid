@@ -55,6 +55,7 @@ import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.ordering.StringComparators;
 import io.druid.query.spec.LegacySegmentSpec;
 import io.druid.query.spec.QuerySegmentSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import io.druid.segment.column.ValueType;
 import io.druid.segment.virtual.ExpressionVirtualColumn;
@@ -267,7 +268,9 @@ public class SelectQueryRunnerTest
                 new ExtractionDimensionSpec(
                     QueryRunnerTestHelper.qualityDimension,
                     "qual",
-                    new LookupExtractionFn(new MapLookupExtractor(map, true), false, null, true, false)
+                    new LookupExtractionFn(new MapLookupExtractor(map, true), false, null, true, false,
+                                           NullHandlingConfig.LEGACY_CONFIG
+                    )
                 ),
                 new DefaultDimensionSpec(QueryRunnerTestHelper.placementDimension, "place")
             )
@@ -454,7 +457,9 @@ public class SelectQueryRunnerTest
     for (int[] param : new int[][]{{3, 3}, {0, 1}, {5, 5}, {2, 7}, {3, 0}}) {
       SelectQuery query = newTestQuery()
           .intervals(I_0112_0114)
-          .filters(new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "spot", null))
+          .filters(new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "spot", null,
+                                         NullHandlingConfig.LEGACY_CONFIG
+          ))
           .granularity(QueryRunnerTestHelper.dayGran)
           .dimensionSpecs(DefaultDimensionSpec.toSpec(QueryRunnerTestHelper.qualityDimension))
           .metrics(Lists.<String>newArrayList(QueryRunnerTestHelper.indexMetric))
@@ -521,8 +526,10 @@ public class SelectQueryRunnerTest
         .filters(
             new AndDimFilter(
                 Arrays.asList(
-                    new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "spot", null),
-                    new BoundDimFilter("expr", "11.1", null, false, false, null, null, StringComparators.NUMERIC)
+                    new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "spot", null,
+                                          NullHandlingConfig.LEGACY_CONFIG
+                    ),
+                    new BoundDimFilter("expr", "11.1", null, false, false, null, null, StringComparators.NUMERIC, NullHandlingConfig.LEGACY_CONFIG)
                 )
             )
         )
@@ -575,10 +582,14 @@ public class SelectQueryRunnerTest
     Map<String, String> extractionMap = new HashMap<>();
     extractionMap.put("total_market", "replaced");
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true,
+                                                                   NullHandlingConfig.LEGACY_CONFIG
+    );
     SelectQuery query = newTestQuery()
         .intervals(I_0112_0114)
-        .filters(new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "replaced", lookupExtractionFn))
+        .filters(new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "replaced", lookupExtractionFn,
+                                       NullHandlingConfig.LEGACY_CONFIG
+        ))
         .granularity(QueryRunnerTestHelper.dayGran)
         .dimensionSpecs(DefaultDimensionSpec.toSpec(QueryRunnerTestHelper.qualityDimension))
         .metrics(Lists.<String>newArrayList(QueryRunnerTestHelper.indexMetric))
@@ -635,8 +646,12 @@ public class SelectQueryRunnerTest
         .filters(
             new AndDimFilter(
                 Arrays.<DimFilter>asList(
-                    new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "spot", null),
-                    new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "foo", null)
+                    new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "spot", null,
+                                          NullHandlingConfig.LEGACY_CONFIG
+                    ),
+                    new SelectorDimFilter(QueryRunnerTestHelper.marketDimension, "foo", null,
+                                          NullHandlingConfig.LEGACY_CONFIG
+                    )
                 )
             )
         )

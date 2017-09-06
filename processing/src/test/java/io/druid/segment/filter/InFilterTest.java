@@ -40,6 +40,7 @@ import io.druid.query.filter.InDimFilter;
 import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.lookup.LookupExtractor;
 import io.druid.segment.IndexBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -63,9 +64,9 @@ public class InFilterTest extends BaseFilterTest
   );
 
   private static final List<InputRow> ROWS = ImmutableList.of(
-      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "a", "dim1", "", "dim2", ImmutableList.of("a", "b"))),
+      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "a", "dim2", ImmutableList.of("a", "b"))),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "b", "dim1", "10", "dim2", ImmutableList.of())),
-      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "c", "dim1", "2", "dim2", ImmutableList.of(""))),
+      PARSER.parse(ImmutableMap.<String, Object>of("dim0", "c", "dim1", "2", "dim2", ImmutableList.of())),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "d", "dim1", "1", "dim2", ImmutableList.of("a"))),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "e", "dim1", "def", "dim2", ImmutableList.of("c"))),
       PARSER.parse(ImmutableMap.<String, Object>of("dim0", "f", "dim1", "abc"))
@@ -121,12 +122,12 @@ public class InFilterTest extends BaseFilterTest
     );
 
     assertFilterMatches(
-        toInFilter("dim1", ""),
+        toInFilter("dim1", null, ""),
         ImmutableList.of("a")
     );
 
     assertFilterMatches(
-        toInFilter("dim1", null, "10", "abc"),
+        toInFilter("dim1", null, "", "10", "abc"),
         ImmutableList.of("a", "b", "f")
     );
 
@@ -140,7 +141,7 @@ public class InFilterTest extends BaseFilterTest
   public void testMultiValueStringColumn()
   {
     assertFilterMatches(
-        toInFilter("dim2", null),
+        toInFilter("dim2", null, ""),
         ImmutableList.of("b", "c", "f")
     );
 
@@ -150,13 +151,13 @@ public class InFilterTest extends BaseFilterTest
     );
 
     assertFilterMatches(
-        toInFilter("dim2", null, "a"),
+        toInFilter("dim2", null, "", "a"),
         ImmutableList.of("a", "b", "c", "d", "f")
 
     );
 
     assertFilterMatches(
-        toInFilter("dim2", null, "b"),
+        toInFilter("dim2", null, "", "b"),
         ImmutableList.of("a", "b", "c", "f")
 
     );
@@ -176,17 +177,17 @@ public class InFilterTest extends BaseFilterTest
   public void testMissingColumn()
   {
     assertFilterMatches(
-        toInFilter("dim3", null, (String) null),
+        toInFilter("dim3", null, (String) ""),
         ImmutableList.of("a", "b", "c", "d", "e", "f")
     );
 
     assertFilterMatches(
-        toInFilter("dim3", ""),
+        toInFilter("dim3", null, ""),
         ImmutableList.of("a", "b", "c", "d", "e", "f")
     );
 
     assertFilterMatches(
-        toInFilter("dim3", null, "a"),
+        toInFilter("dim3", null, "", "a"),
         ImmutableList.of("a", "b", "c", "d", "e", "f")
     );
 
@@ -256,7 +257,7 @@ public class InFilterTest extends BaseFilterTest
         "c", "BYE"
     );
     LookupExtractor mapExtractor = new MapLookupExtractor(stringMap, false);
-    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true);
+    LookupExtractionFn lookupFn = new LookupExtractionFn(mapExtractor, false, "UNKNOWN", false, true, NullHandlingConfig.LEGACY_CONFIG);
 
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn, null, "HELLO"), ImmutableList.of("a"));
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn, "HELLO", "BYE"), ImmutableList.of("a", "c"));
@@ -272,7 +273,7 @@ public class InFilterTest extends BaseFilterTest
             "a", "e"
     );
     LookupExtractor mapExtractor2 = new MapLookupExtractor(stringMap2, false);
-    LookupExtractionFn lookupFn2 = new LookupExtractionFn(mapExtractor2, true, null, false, true);
+    LookupExtractionFn lookupFn2 = new LookupExtractionFn(mapExtractor2, true, null, false, true, NullHandlingConfig.LEGACY_CONFIG);
 
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn2, null, "e"), ImmutableList.of("a", "e"));
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn2, "a"), ImmutableList.<String>of());
@@ -282,20 +283,20 @@ public class InFilterTest extends BaseFilterTest
             "100", "e"
     );
     LookupExtractor mapExtractor3 = new MapLookupExtractor(stringMap3, false);
-    LookupExtractionFn lookupFn3 = new LookupExtractionFn(mapExtractor3, false, null, false, true);
+    LookupExtractionFn lookupFn3 = new LookupExtractionFn(mapExtractor3, false, null, false, true, NullHandlingConfig.LEGACY_CONFIG);
 
-    assertFilterMatches(toInFilterWithFn("dim0", lookupFn3, null, "c"), ImmutableList.of("a", "b", "d", "e", "f"));
+    assertFilterMatches(toInFilterWithFn("dim0", lookupFn3, null, "c", ""), ImmutableList.of("a", "b", "d", "e", "f"));
     assertFilterMatches(toInFilterWithFn("dim0", lookupFn3, "e"), ImmutableList.<String>of());
 
   }
 
   private DimFilter toInFilter(String dim, String value, String... values)
   {
-    return new InDimFilter(dim, Lists.asList(value, values), null);
+    return new InDimFilter(dim, Lists.asList(value, values), null, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private DimFilter toInFilterWithFn(String dim, ExtractionFn fn, String value, String... values)
   {
-    return new InDimFilter(dim, Lists.asList(value, values), fn);
+    return new InDimFilter(dim, Lists.asList(value, values), fn, NullHandlingConfig.LEGACY_CONFIG);
   }
 }

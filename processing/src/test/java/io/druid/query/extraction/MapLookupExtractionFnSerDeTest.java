@@ -20,6 +20,7 @@
 package io.druid.query.extraction;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Injector;
@@ -27,6 +28,7 @@ import com.google.inject.Key;
 import io.druid.guice.GuiceInjectors;
 import io.druid.guice.annotations.Json;
 import io.druid.java.util.common.StringUtils;
+import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,6 +43,7 @@ import java.util.UUID;
 public class MapLookupExtractionFnSerDeTest
 {
   private static ObjectMapper mapper;
+
   private static final Map<String, String> renames = ImmutableMap.of(
       "foo", "bar",
       "bar", "baz"
@@ -51,6 +54,10 @@ public class MapLookupExtractionFnSerDeTest
   {
     Injector defaultInjector = GuiceInjectors.makeStartupInjector();
     mapper = defaultInjector.getInstance(Key.get(ObjectMapper.class, Json.class));
+    mapper.setInjectableValues(
+        new InjectableValues.Std()
+            .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
+    );
   }
 
   @Test

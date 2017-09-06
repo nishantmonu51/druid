@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.druid.java.util.common.StringUtils;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.DoubleColumnSelector;
+import io.druid.segment.NullHandlingConfig;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
@@ -35,33 +37,38 @@ import java.util.Objects;
  */
 public class DoubleMaxAggregatorFactory extends SimpleDoubleAggregatorFactory
 {
+  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public DoubleMaxAggregatorFactory(
       @JsonProperty("name") String name,
       @JsonProperty("fieldName") final String fieldName,
       @JsonProperty("expression") String expression,
-      @JacksonInject ExprMacroTable macroTable
-  )
+      @JacksonInject ExprMacroTable macroTable,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
+      )
   {
     super(macroTable, fieldName, name, expression);
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   public DoubleMaxAggregatorFactory(String name, String fieldName)
   {
-    this(name, fieldName, null, ExprMacroTable.nil());
+    this(name, fieldName, null, ExprMacroTable.nil(), NullHandlingConfig.LEGACY_CONFIG);
   }
 
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new DoubleMaxAggregator(getDoubleColumnSelector(metricFactory, Double.NEGATIVE_INFINITY));
+    DoubleColumnSelector doubleColumnSelector = getDoubleColumnSelector(metricFactory, Double.NEGATIVE_INFINITY);
+    return nullHandlingConfig.getNullableAggregator(new DoubleMaxAggregator(doubleColumnSelector), doubleColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
-    return new DoubleMaxBufferAggregator(getDoubleColumnSelector(metricFactory, Double.NEGATIVE_INFINITY));
+    DoubleColumnSelector doubleColumnSelector = getDoubleColumnSelector(metricFactory, Double.NEGATIVE_INFINITY);
+    return nullHandlingConfig.getNullableAggregator(new DoubleMaxBufferAggregator(doubleColumnSelector), doubleColumnSelector);
   }
 
   @Override
@@ -73,20 +80,20 @@ public class DoubleMaxAggregatorFactory extends SimpleDoubleAggregatorFactory
   @Override
   public AggregateCombiner makeAggregateCombiner()
   {
-    return new DoubleMaxAggregateCombiner();
+    return nullHandlingConfig.getNullableCombiner(new DoubleMaxAggregateCombiner());
   }
 
   @Override
   public AggregatorFactory getCombiningFactory()
   {
-    return new DoubleMaxAggregatorFactory(name, name, null, macroTable);
+    return new DoubleMaxAggregatorFactory(name, name, null, macroTable, nullHandlingConfig);
   }
 
 
   @Override
   public List<AggregatorFactory> getRequiredColumns()
   {
-    return Collections.singletonList(new DoubleMaxAggregatorFactory(fieldName, fieldName, expression, macroTable));
+    return Collections.singletonList(new DoubleMaxAggregatorFactory(fieldName, fieldName, expression, macroTable, nullHandlingConfig));
   }
 
   @Override

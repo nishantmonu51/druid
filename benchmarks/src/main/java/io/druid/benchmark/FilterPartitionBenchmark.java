@@ -58,6 +58,7 @@ import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
 import io.druid.segment.LongColumnSelector;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexStorageAdapter;
 import io.druid.segment.StorageAdapter;
@@ -135,13 +136,19 @@ public class FilterPartitionBenchmark
         new ColumnConfig()
         {
           @Override
+          public boolean useDefaultValuesForNull()
+          {
+            return true;
+          }
+
+          @Override
           public int columnCacheSizeBytes()
           {
             return 0;
           }
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO);
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   @Setup
@@ -191,7 +198,8 @@ public class FilterPartitionBenchmark
         true,
         null,
         null,
-        StringComparators.ALPHANUMERIC
+        StringComparators.ALPHANUMERIC,
+        NullHandlingConfig.LEGACY_CONFIG
     ));
 
     long halfEnd = (interval.getEndMillis() + interval.getStartMillis()) / 2;
@@ -203,7 +211,8 @@ public class FilterPartitionBenchmark
         true,
         null,
         null,
-        StringComparators.ALPHANUMERIC
+        StringComparators.ALPHANUMERIC,
+        NullHandlingConfig.LEGACY_CONFIG
     ));
 
     timeFilterAll = new BoundFilter(new BoundDimFilter(
@@ -214,7 +223,8 @@ public class FilterPartitionBenchmark
         true,
         null,
         null,
-        StringComparators.ALPHANUMERIC
+        StringComparators.ALPHANUMERIC,
+        NullHandlingConfig.LEGACY_CONFIG
     ));
   }
 
@@ -238,7 +248,7 @@ public class FilterPartitionBenchmark
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
   public void stringRead(Blackhole blackhole) throws Exception
   {
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, null);
 
     Sequence<List<String>> stringListSeq = readCursors(cursors, blackhole);
@@ -253,7 +263,7 @@ public class FilterPartitionBenchmark
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
   public void longRead(Blackhole blackhole) throws Exception
   {
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, null);
 
     Sequence<List<Long>> longListSeq = readCursorsLong(cursors, blackhole);
@@ -268,7 +278,7 @@ public class FilterPartitionBenchmark
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
   public void timeFilterNone(Blackhole blackhole) throws Exception
   {
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, timeFilterNone);
 
     Sequence<List<Long>> longListSeq = readCursorsLong(cursors, blackhole);
@@ -283,7 +293,7 @@ public class FilterPartitionBenchmark
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
   public void timeFilterHalf(Blackhole blackhole) throws Exception
   {
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, timeFilterHalf);
 
     Sequence<List<Long>> longListSeq = readCursorsLong(cursors, blackhole);
@@ -298,7 +308,7 @@ public class FilterPartitionBenchmark
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
   public void timeFilterAll(Blackhole blackhole) throws Exception
   {
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, timeFilterAll);
 
     Sequence<List<Long>> longListSeq = readCursorsLong(cursors, blackhole);
@@ -315,7 +325,7 @@ public class FilterPartitionBenchmark
   {
     Filter filter = new SelectorFilter("dimSequential", "199");
 
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, filter);
 
     Sequence<List<String>> stringListSeq = readCursors(cursors, blackhole);
@@ -332,7 +342,7 @@ public class FilterPartitionBenchmark
   {
     Filter filter = new NoBitmapSelectorFilter("dimSequential", "199");
 
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, filter);
 
     Sequence<List<String>> stringListSeq = readCursors(cursors, blackhole);
@@ -347,9 +357,9 @@ public class FilterPartitionBenchmark
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
   public void readWithExFnPreFilter(Blackhole blackhole) throws Exception
   {
-    Filter filter = new SelectorDimFilter("dimSequential", "super-199", JS_EXTRACTION_FN).toFilter();
+    Filter filter = new SelectorDimFilter("dimSequential", "super-199", JS_EXTRACTION_FN, NullHandlingConfig.LEGACY_CONFIG).toFilter();
 
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, filter);
 
     Sequence<List<String>> stringListSeq = readCursors(cursors, blackhole);
@@ -366,7 +376,7 @@ public class FilterPartitionBenchmark
   {
     Filter filter = new NoBitmapSelectorDimFilter("dimSequential", "super-199", JS_EXTRACTION_FN).toFilter();
 
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, filter);
 
     Sequence<List<String>> stringListSeq = readCursors(cursors, blackhole);
@@ -385,7 +395,7 @@ public class FilterPartitionBenchmark
     Filter filter2 = new AndFilter(Arrays.<Filter>asList(new SelectorFilter("dimMultivalEnumerated2", "Corundum"), new NoBitmapSelectorFilter("dimMultivalEnumerated", "Bar")));
     Filter orFilter = new OrFilter(Arrays.<Filter>asList(filter, filter2));
 
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, orFilter);
 
     Sequence<List<String>> stringListSeq = readCursors(cursors, blackhole);
@@ -404,7 +414,7 @@ public class FilterPartitionBenchmark
     Filter filter2 = new AndFilter(Arrays.<Filter>asList(new SelectorFilter("dimMultivalEnumerated2", "Corundum"), new NoBitmapSelectorFilter("dimMultivalEnumerated", "Bar")));
     Filter orFilter = new OrFilter(Arrays.<Filter>asList(filter, filter2));
 
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, Filters.convertToCNF(orFilter));
 
     Sequence<List<String>> stringListSeq = readCursors(cursors, blackhole);
@@ -420,19 +430,19 @@ public class FilterPartitionBenchmark
   public void readComplexOrFilter(Blackhole blackhole) throws Exception
   {
     DimFilter dimFilter1 = new OrDimFilter(Arrays.<DimFilter>asList(
-        new SelectorDimFilter("dimSequential", "199", null),
+        new SelectorDimFilter("dimSequential", "199", null, NullHandlingConfig.LEGACY_CONFIG),
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dimMultivalEnumerated2", "Corundum", null),
-            new SelectorDimFilter("dimMultivalEnumerated", "Bar", null)
+            new SelectorDimFilter("dimMultivalEnumerated", "Bar", null, NullHandlingConfig.LEGACY_CONFIG)
         )
         ))
     );
     DimFilter dimFilter2 = new OrDimFilter(Arrays.<DimFilter>asList(
-        new SelectorDimFilter("dimSequential", "299", null),
-        new SelectorDimFilter("dimSequential", "399", null),
+        new SelectorDimFilter("dimSequential", "299", null, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("dimSequential", "399", null, NullHandlingConfig.LEGACY_CONFIG),
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dimMultivalEnumerated2", "Xylophone", null),
-            new SelectorDimFilter("dimMultivalEnumerated", "Foo", null)
+            new SelectorDimFilter("dimMultivalEnumerated", "Foo", null, NullHandlingConfig.LEGACY_CONFIG)
         )
         ))
     );
@@ -441,12 +451,12 @@ public class FilterPartitionBenchmark
         dimFilter2,
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dimMultivalEnumerated2", "Orange", null),
-            new SelectorDimFilter("dimMultivalEnumerated", "World", null)
+            new SelectorDimFilter("dimMultivalEnumerated", "World", null, NullHandlingConfig.LEGACY_CONFIG)
         )
         ))
     );
 
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, dimFilter3.toFilter());
 
     Sequence<List<String>> stringListSeq = readCursors(cursors, blackhole);
@@ -462,19 +472,19 @@ public class FilterPartitionBenchmark
   public void readComplexOrFilterCNF(Blackhole blackhole) throws Exception
   {
     DimFilter dimFilter1 = new OrDimFilter(Arrays.<DimFilter>asList(
-        new SelectorDimFilter("dimSequential", "199", null),
+        new SelectorDimFilter("dimSequential", "199", null, NullHandlingConfig.LEGACY_CONFIG),
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dimMultivalEnumerated2", "Corundum", null),
-            new SelectorDimFilter("dimMultivalEnumerated", "Bar", null)
+            new SelectorDimFilter("dimMultivalEnumerated", "Bar", null, NullHandlingConfig.LEGACY_CONFIG)
         )
         ))
     );
     DimFilter dimFilter2 = new OrDimFilter(Arrays.<DimFilter>asList(
-        new SelectorDimFilter("dimSequential", "299", null),
-        new SelectorDimFilter("dimSequential", "399", null),
+        new SelectorDimFilter("dimSequential", "299", null, NullHandlingConfig.LEGACY_CONFIG),
+        new SelectorDimFilter("dimSequential", "399", null, NullHandlingConfig.LEGACY_CONFIG),
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dimMultivalEnumerated2", "Xylophone", null),
-            new SelectorDimFilter("dimMultivalEnumerated", "Foo", null)
+            new SelectorDimFilter("dimMultivalEnumerated", "Foo", null, NullHandlingConfig.LEGACY_CONFIG)
         )
         ))
     );
@@ -483,12 +493,12 @@ public class FilterPartitionBenchmark
         dimFilter2,
         new AndDimFilter(Arrays.<DimFilter>asList(
             new NoBitmapSelectorDimFilter("dimMultivalEnumerated2", "Orange", null),
-            new SelectorDimFilter("dimMultivalEnumerated", "World", null)
+            new SelectorDimFilter("dimMultivalEnumerated", "World", null, NullHandlingConfig.LEGACY_CONFIG)
         )
         ))
     );
 
-    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex);
+    StorageAdapter sa = new QueryableIndexStorageAdapter(qIndex, NullHandlingConfig.LEGACY_CONFIG);
     Sequence<Cursor> cursors = makeCursors(sa, Filters.convertToCNF(dimFilter3.toFilter()));
 
     Sequence<List<String>> stringListSeq = readCursors(cursors, blackhole);
@@ -597,7 +607,7 @@ public class FilterPartitionBenchmark
         ExtractionFn extractionFn
     )
     {
-      super(dimension, value, extractionFn);
+      super(dimension, value, extractionFn, NullHandlingConfig.LEGACY_CONFIG);
     }
     @Override
     public Filter toFilter()

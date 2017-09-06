@@ -19,6 +19,7 @@
 
 package io.druid.query.aggregation.first;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
@@ -35,6 +36,8 @@ import io.druid.query.aggregation.BufferAggregator;
 import io.druid.query.aggregation.AggregateCombiner;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.FloatColumnSelector;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.ObjectColumnSelector;
 import io.druid.segment.column.Column;
 
@@ -59,11 +62,13 @@ public class FloatFirstAggregatorFactory extends AggregatorFactory
 
   private final String fieldName;
   private final String name;
+  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public FloatFirstAggregatorFactory(
       @JsonProperty("name") String name,
-      @JsonProperty("fieldName") final String fieldName
+      @JsonProperty("fieldName") final String fieldName,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
   )
   {
     Preconditions.checkNotNull(name, "Must have a valid, non-null aggregator name");
@@ -71,25 +76,27 @@ public class FloatFirstAggregatorFactory extends AggregatorFactory
 
     this.name = name;
     this.fieldName = fieldName;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new FloatFirstAggregator(
+    FloatColumnSelector floatColumnSelector = metricFactory.makeFloatColumnSelector(fieldName);
+    return nullHandlingConfig.getNullableAggregator(new FloatFirstAggregator(
         name,
         metricFactory.makeLongColumnSelector(Column.TIME_COLUMN_NAME),
-        metricFactory.makeFloatColumnSelector(fieldName)
-    );
+        floatColumnSelector
+    ), floatColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
-  {
-    return new FloatFirstBufferAggregator(
+  {  FloatColumnSelector floatColumnSelector = metricFactory.makeFloatColumnSelector(fieldName);
+    return nullHandlingConfig.getNullableAggregator(new FloatFirstBufferAggregator(
         metricFactory.makeLongColumnSelector(Column.TIME_COLUMN_NAME),
-        metricFactory.makeFloatColumnSelector(fieldName)
-    );
+        floatColumnSelector
+    ), floatColumnSelector);
   }
 
   @Override
@@ -113,13 +120,13 @@ public class FloatFirstAggregatorFactory extends AggregatorFactory
   @Override
   public AggregatorFactory getCombiningFactory()
   {
-    return new FloatFirstAggregatorFactory(name, name)
+    return new FloatFirstAggregatorFactory(name, name, nullHandlingConfig)
     {
       @Override
       public Aggregator factorize(ColumnSelectorFactory metricFactory)
       {
         final ObjectColumnSelector selector = metricFactory.makeObjectColumnSelector(name);
-        return new FloatFirstAggregator(name, null, null)
+        return nullHandlingConfig.getNullableAggregator(new FloatFirstAggregator(name, null, null)
         {
           @Override
           public void aggregate()
@@ -130,14 +137,14 @@ public class FloatFirstAggregatorFactory extends AggregatorFactory
               firstValue = pair.rhs;
             }
           }
-        };
+        }, selector);
       }
 
       @Override
       public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
       {
         final ObjectColumnSelector selector = metricFactory.makeObjectColumnSelector(name);
-        return new FloatFirstBufferAggregator(null, null)
+        return nullHandlingConfig.getNullableAggregator(new FloatFirstBufferAggregator(null, null)
         {
           @Override
           public void aggregate(ByteBuffer buf, int position)
@@ -155,7 +162,7 @@ public class FloatFirstAggregatorFactory extends AggregatorFactory
           {
             inspector.visit("selector", selector);
           }
-        };
+        }, selector);
       }
     };
   }
@@ -173,7 +180,7 @@ public class FloatFirstAggregatorFactory extends AggregatorFactory
   @Override
   public List<AggregatorFactory> getRequiredColumns()
   {
-    return Arrays.<AggregatorFactory>asList(new FloatFirstAggregatorFactory(fieldName, fieldName));
+    return Arrays.<AggregatorFactory>asList(new FloatFirstAggregatorFactory(fieldName, fieldName, nullHandlingConfig));
   }
 
   @Override

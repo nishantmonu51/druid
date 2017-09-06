@@ -19,6 +19,7 @@
 
 package io.druid.query.aggregation.last;
 
+import com.fasterxml.jackson.databind.InjectableValues;
 import io.druid.collections.SerializablePair;
 import io.druid.jackson.DefaultObjectMapper;
 import io.druid.java.util.common.Pair;
@@ -26,6 +27,7 @@ import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.TestLongColumnSelector;
 import io.druid.query.aggregation.TestObjectColumnSelector;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.Column;
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -55,7 +57,7 @@ public class LongLastAggregationTest
   @Before
   public void setup()
   {
-    longLastAggFactory = new LongLastAggregatorFactory("billy", "nilly");
+    longLastAggFactory = new LongLastAggregatorFactory("billy", "nilly", NullHandlingConfig.LEGACY_CONFIG);
     combiningAggFactory = (LongLastAggregatorFactory) longLastAggFactory.getCombiningFactory();
     timeSelector = new TestLongColumnSelector(times);
     valueSelector = new TestLongColumnSelector(longValues);
@@ -168,6 +170,10 @@ public class LongLastAggregationTest
   public void testSerde() throws Exception
   {
     DefaultObjectMapper mapper = new DefaultObjectMapper();
+    mapper.setInjectableValues(
+        new InjectableValues.Std()
+            .addValue(NullHandlingConfig.class.getName(), NullHandlingConfig.LEGACY_CONFIG)
+    );
     String longSpecJson = "{\"type\":\"longLast\",\"name\":\"billy\",\"fieldName\":\"nilly\"}";
     Assert.assertEquals(longLastAggFactory, mapper.readValue(longSpecJson, AggregatorFactory.class));
   }

@@ -34,6 +34,7 @@ import io.druid.query.dimension.ExtractionDimensionSpec;
 import io.druid.query.extraction.MapLookupExtractor;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.lookup.LookupExtractionFn;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import org.joda.time.Interval;
 import org.joda.time.Period;
@@ -74,7 +75,8 @@ public class DefaultGroupByQueryMetricsTest
                             ),
                             false
                         ), false, null, true,
-                        false
+                        false,
+                        NullHandlingConfig.LEGACY_CONFIG
                     )
                 )
             )
@@ -86,7 +88,7 @@ public class DefaultGroupByQueryMetricsTest
             )
         )
         .setGranularity(new PeriodGranularity(new Period("P1M"), null, null))
-        .setDimFilter(new SelectorDimFilter("quality", "mezzanine", null))
+        .setDimFilter(new SelectorDimFilter("quality", "mezzanine", null, NullHandlingConfig.LEGACY_CONFIG))
         .setContext(ImmutableMap.<String, Object>of("bySegment", true));
     GroupByQuery query = builder.build();
     queryMetrics.query(query);

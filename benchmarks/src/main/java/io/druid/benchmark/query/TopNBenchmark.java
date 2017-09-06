@@ -64,6 +64,7 @@ import io.druid.segment.IncrementalIndexSegment;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.column.ColumnConfig;
@@ -136,13 +137,19 @@ public class TopNBenchmark
         new ColumnConfig()
         {
           @Override
+          public boolean useDefaultValuesForNull()
+          {
+            return true;
+          }
+
+          @Override
           public int columnCacheSizeBytes()
           {
             return 0;
           }
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO);
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private static final Map<String, Map<String, TopNQueryBuilder>> SCHEMA_QUERY_MAP = new LinkedHashMap<>();
@@ -318,7 +325,7 @@ public class TopNBenchmark
     QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "incIndex",
-        new IncrementalIndexSegment(incIndexes.get(0), "incIndex")
+        new IncrementalIndexSegment(incIndexes.get(0), "incIndex", NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNBenchmark.runQuery(factory, runner, query);
@@ -335,7 +342,7 @@ public class TopNBenchmark
     final QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
         factory,
         "qIndex",
-        new QueryableIndexSegment("qIndex", qIndexes.get(0))
+        new QueryableIndexSegment("qIndex", qIndexes.get(0), NullHandlingConfig.LEGACY_CONFIG)
     );
 
     List<Result<TopNResultValue>> results = TopNBenchmark.runQuery(factory, runner, query);
@@ -356,7 +363,7 @@ public class TopNBenchmark
       QueryRunner<Result<TopNResultValue>> runner = QueryBenchmarkUtil.makeQueryRunner(
           factory,
           segmentName,
-          new QueryableIndexSegment(segmentName, qIndexes.get(i))
+          new QueryableIndexSegment(segmentName, qIndexes.get(i), NullHandlingConfig.LEGACY_CONFIG)
       );
       singleSegmentRunners.add(toolChest.preMergeQueryDecoration(runner));
     }

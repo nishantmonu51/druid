@@ -51,6 +51,7 @@ import io.druid.query.groupby.GroupByQueryQueryToolChest;
 import io.druid.query.groupby.orderby.NoopLimitSpec;
 import io.druid.query.groupby.resource.GroupByQueryResource;
 import io.druid.query.spec.MultipleIntervalSegmentSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.StorageAdapter;
 import io.druid.segment.incremental.IncrementalIndex;
 import io.druid.segment.incremental.IncrementalIndexStorageAdapter;
@@ -66,19 +67,22 @@ public class GroupByStrategyV1 implements GroupByStrategy
   private final GroupByQueryEngine engine;
   private final QueryWatcher queryWatcher;
   private final NonBlockingPool<ByteBuffer> bufferPool;
+  private final NullHandlingConfig nullHandlingConfig;
 
   @Inject
   public GroupByStrategyV1(
       Supplier<GroupByQueryConfig> configSupplier,
       GroupByQueryEngine engine,
       QueryWatcher queryWatcher,
-      @Global NonBlockingPool<ByteBuffer> bufferPool
+      @Global NonBlockingPool<ByteBuffer> bufferPool,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     this.configSupplier = configSupplier;
     this.engine = engine;
     this.queryWatcher = queryWatcher;
     this.bufferPool = bufferPool;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -238,7 +242,7 @@ public class GroupByStrategyV1 implements GroupByStrategy
                         outerQuery.withQuerySegmentSpec(
                             new MultipleIntervalSegmentSpec(ImmutableList.of(interval))
                         ),
-                        new IncrementalIndexStorageAdapter(innerQueryResultIndex)
+                        new IncrementalIndexStorageAdapter(innerQueryResultIndex, nullHandlingConfig)
                     );
                   }
                 }

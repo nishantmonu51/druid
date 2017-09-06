@@ -32,6 +32,7 @@ import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.timeseries.TimeseriesQuery;
 import io.druid.query.timeseries.TimeseriesQueryEngine;
 import io.druid.query.timeseries.TimeseriesResultValue;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.incremental.IncrementalIndex;
 import io.druid.segment.incremental.IncrementalIndexSchema;
@@ -93,7 +94,7 @@ public class DistinctCountTimeseriesQueryTest
                                   .aggregators(
                                       Lists.newArrayList(
                                           QueryRunnerTestHelper.rowsCount,
-                                          new DistinctCountAggregatorFactory("UV", visitor_id, null)
+                                          new DistinctCountAggregatorFactory("UV", visitor_id, null, NullHandlingConfig.LEGACY_CONFIG)
                                       )
                                   )
                                   .build();
@@ -101,7 +102,7 @@ public class DistinctCountTimeseriesQueryTest
     final Iterable<Result<TimeseriesResultValue>> results = Sequences.toList(
         engine.process(
             query,
-            new IncrementalIndexStorageAdapter(index)
+            new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG)
         ),
         Lists.<Result<TimeseriesResultValue>>newLinkedList()
     );

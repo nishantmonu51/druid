@@ -31,14 +31,17 @@ public class IncrementalIndexSegment extends AbstractSegment
 {
   private final IncrementalIndex index;
   private final String segmentIdentifier;
+  private final NullHandlingConfig nullHandlingConfig;
 
   public IncrementalIndexSegment(
       IncrementalIndex index,
-      String segmentIdentifier
+      String segmentIdentifier,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     this.index = index;
     this.segmentIdentifier = segmentIdentifier;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -62,7 +65,7 @@ public class IncrementalIndexSegment extends AbstractSegment
   @Override
   public StorageAdapter asStorageAdapter()
   {
-    return new IncrementalIndexStorageAdapter(index);
+    return new IncrementalIndexStorageAdapter(index, nullHandlingConfig);
   }
 
   @Override

@@ -31,6 +31,7 @@ import io.druid.jackson.DefaultObjectMapper;
 import io.druid.java.util.common.granularity.Granularities;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeIOConfig;
@@ -113,7 +114,7 @@ public class FireDepartmentTest
                 TestHelper.getTestIndexIO(),
                 MapCache.create(0),
                 NO_CACHE_CONFIG,
-                TestHelper.getJsonMapper()
+                TestHelper.getJsonMapper(), NullHandlingConfig.LEGACY_CONFIG
 
             ),
             null

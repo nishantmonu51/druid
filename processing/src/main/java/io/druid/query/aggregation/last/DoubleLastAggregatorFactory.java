@@ -19,6 +19,7 @@
 
 package io.druid.query.aggregation.last;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
@@ -36,6 +37,8 @@ import io.druid.query.aggregation.first.DoubleFirstAggregatorFactory;
 import io.druid.query.aggregation.first.LongFirstAggregatorFactory;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.DoubleColumnSelector;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.ObjectColumnSelector;
 import io.druid.segment.column.Column;
 
@@ -51,36 +54,41 @@ public class DoubleLastAggregatorFactory extends AggregatorFactory
 
   private final String fieldName;
   private final String name;
+  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public DoubleLastAggregatorFactory(
       @JsonProperty("name") String name,
-      @JsonProperty("fieldName") final String fieldName
+      @JsonProperty("fieldName") final String fieldName,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
       )
   {
     Preconditions.checkNotNull(name, "Must have a valid, non-null aggregator name");
     Preconditions.checkNotNull(fieldName, "Must have a valid, non-null fieldName");
     this.name = name;
     this.fieldName = fieldName;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new DoubleLastAggregator(
+    DoubleColumnSelector doubleColumnSelector = metricFactory.makeDoubleColumnSelector(fieldName);
+    return nullHandlingConfig.getNullableAggregator(new DoubleLastAggregator(
         name,
         metricFactory.makeLongColumnSelector(Column.TIME_COLUMN_NAME),
-        metricFactory.makeDoubleColumnSelector(fieldName)
-    );
+        doubleColumnSelector
+    ), doubleColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
-    return new DoubleLastBufferAggregator(
+    DoubleColumnSelector doubleColumnSelector = metricFactory.makeDoubleColumnSelector(fieldName);
+    return nullHandlingConfig.getNullableAggregator(new DoubleLastBufferAggregator(
         metricFactory.makeLongColumnSelector(Column.TIME_COLUMN_NAME),
-        metricFactory.makeDoubleColumnSelector(fieldName)
-    );
+        doubleColumnSelector
+    ), doubleColumnSelector);
   }
 
   @Override
@@ -104,13 +112,13 @@ public class DoubleLastAggregatorFactory extends AggregatorFactory
   @Override
   public AggregatorFactory getCombiningFactory()
   {
-    return new DoubleLastAggregatorFactory(name, name)
+    return new DoubleLastAggregatorFactory(name, name, nullHandlingConfig)
     {
       @Override
       public Aggregator factorize(ColumnSelectorFactory metricFactory)
       {
         final ObjectColumnSelector selector = metricFactory.makeObjectColumnSelector(name);
-        return new DoubleLastAggregator(name, null, null)
+        return nullHandlingConfig.getNullableAggregator(new DoubleLastAggregator(name, null, null)
         {
           @Override
           public void aggregate()
@@ -121,14 +129,14 @@ public class DoubleLastAggregatorFactory extends AggregatorFactory
               lastValue = pair.rhs;
             }
           }
-        };
+        }, selector);
       }
 
       @Override
       public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
       {
         final ObjectColumnSelector selector = metricFactory.makeObjectColumnSelector(name);
-        return new DoubleLastBufferAggregator(null, null)
+        return nullHandlingConfig.getNullableAggregator(new DoubleLastBufferAggregator(null, null)
         {
           @Override
           public void aggregate(ByteBuffer buf, int position)
@@ -146,7 +154,7 @@ public class DoubleLastAggregatorFactory extends AggregatorFactory
           {
             inspector.visit("selector", selector);
           }
-        };
+        }, selector);
       }
     };
   }
@@ -164,7 +172,7 @@ public class DoubleLastAggregatorFactory extends AggregatorFactory
   @Override
   public List<AggregatorFactory> getRequiredColumns()
   {
-    return Arrays.<AggregatorFactory>asList(new LongFirstAggregatorFactory(fieldName, fieldName));
+    return Arrays.<AggregatorFactory>asList(new LongFirstAggregatorFactory(fieldName, fieldName, nullHandlingConfig));
   }
 
   @Override

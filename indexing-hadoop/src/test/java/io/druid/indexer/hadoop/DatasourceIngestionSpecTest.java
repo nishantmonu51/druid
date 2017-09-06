@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import io.druid.java.util.common.Intervals;
 import io.druid.query.filter.SelectorDimFilter;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.timeline.DataSegment;
 import org.joda.time.Interval;
@@ -48,7 +49,7 @@ public class DatasourceIngestionSpecTest
         interval,
         null,
         null,
-        new SelectorDimFilter("dim", "value", null),
+        new SelectorDimFilter("dim", "value", null, NullHandlingConfig.LEGACY_CONFIG),
         Lists.newArrayList("d1", "d2"),
         Lists.newArrayList("m1", "m2", "m3"),
         false
@@ -130,7 +131,7 @@ public class DatasourceIngestionSpecTest
                 128
             )
         ),
-        new SelectorDimFilter("dim", "value", null),
+        new SelectorDimFilter("dim", "value", null, NullHandlingConfig.LEGACY_CONFIG),
         Lists.newArrayList("d1", "d2"),
         Lists.newArrayList("m1", "m2", "m3"),
         true

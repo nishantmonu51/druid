@@ -20,6 +20,7 @@
 package io.druid.query.lookup;
 
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Function;
@@ -28,6 +29,7 @@ import com.google.common.base.Throwables;
 import io.druid.java.util.common.StringUtils;
 import io.druid.query.extraction.ExtractionCacheHelper;
 import io.druid.query.extraction.FunctionalExtraction;
+import io.druid.segment.NullHandlingConfig;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
@@ -48,7 +50,8 @@ public class LookupExtractionFn extends FunctionalExtraction
       @JsonProperty("retainMissingValue") final boolean retainMissingValue,
       @Nullable @JsonProperty("replaceMissingValueWith") final String replaceMissingValueWith,
       @JsonProperty("injective") final boolean injective,
-      @JsonProperty("optimize") Boolean optimize
+      @JsonProperty("optimize") Boolean optimize,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
   )
   {
     super(
@@ -58,12 +61,14 @@ public class LookupExtractionFn extends FunctionalExtraction
           @Override
           public String apply(String input)
           {
+            // TODO: fixme
             return lookup.apply(Strings.nullToEmpty(input));
           }
         },
         retainMissingValue,
         replaceMissingValueWith,
-        injective
+        injective,
+        nullHandlingConfig
     );
     this.lookup = lookup;
     this.optimize = optimize == null ? true : optimize;
@@ -120,6 +125,7 @@ public class LookupExtractionFn extends FunctionalExtraction
       outputStream.write(isInjective() ? 1 : 0);
       outputStream.write(isRetainMissingValue() ? 1 : 0);
       outputStream.write(isOptimize() ? 1 : 0);
+      outputStream.write(getReplaceMissingValueWith() == null ? 1 : 0);
       return outputStream.toByteArray();
     }
     catch (IOException ex) {

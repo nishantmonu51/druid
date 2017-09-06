@@ -56,6 +56,7 @@ import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.groupby.GroupByQuery;
 import io.druid.query.groupby.GroupByQueryConfig;
 import io.druid.query.groupby.epinephelinae.RowBasedGrouperHelper.RowBasedKey;
+import io.druid.segment.NullHandlingConfig;
 
 import java.io.Closeable;
 import java.io.File;
@@ -83,6 +84,7 @@ public class GroupByMergingQueryRunnerV2 implements QueryRunner<Row>
   private final BlockingPool<ByteBuffer> mergeBufferPool;
   private final ObjectMapper spillMapper;
   private final String processingTmpDir;
+  private final NullHandlingConfig nullHandlingConfig;
 
   public GroupByMergingQueryRunnerV2(
       GroupByQueryConfig config,
@@ -92,7 +94,8 @@ public class GroupByMergingQueryRunnerV2 implements QueryRunner<Row>
       int concurrencyHint,
       BlockingPool<ByteBuffer> mergeBufferPool,
       ObjectMapper spillMapper,
-      String processingTmpDir
+      String processingTmpDir,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     this.config = config;
@@ -103,6 +106,7 @@ public class GroupByMergingQueryRunnerV2 implements QueryRunner<Row>
     this.mergeBufferPool = mergeBufferPool;
     this.spillMapper = spillMapper;
     this.processingTmpDir = processingTmpDir;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -198,7 +202,8 @@ public class GroupByMergingQueryRunnerV2 implements QueryRunner<Row>
                   exec,
                   priority,
                   hasTimeout,
-                  timeoutAt
+                  timeoutAt,
+                  nullHandlingConfig
               );
               final Grouper<RowBasedKey> grouper = pair.lhs;
               final Accumulator<AggregateResult, Row> accumulator = pair.rhs;

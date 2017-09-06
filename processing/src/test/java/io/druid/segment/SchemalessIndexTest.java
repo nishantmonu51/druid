@@ -315,7 +315,7 @@ public class SchemalessIndexTest
   {
     return getMergedIncrementalIndex(
         Arrays.<Pair<String, AggregatorFactory[]>>asList(
-            new Pair<String, AggregatorFactory[]>("druid.sample.json.top", METRIC_AGGS_NO_UNIQ),
+            new Pair<String, AggregatorFactory[]>("druid.sample.json.top", METRIC_AGGS),
             new Pair<String, AggregatorFactory[]>("druid.sample.json.bottom", METRIC_AGGS)
         )
     );

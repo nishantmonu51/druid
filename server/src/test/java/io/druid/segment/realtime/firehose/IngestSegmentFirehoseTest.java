@@ -40,6 +40,7 @@ import io.druid.query.filter.SpatialDimFilter;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMerger;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexStorageAdapter;
 import io.druid.segment.StorageAdapter;
@@ -113,7 +114,7 @@ public class IngestSegmentFirehoseTest
         .setMaxRowCount(5000)
         .buildOnheap();
     ) {
-      final StorageAdapter sa = new QueryableIndexStorageAdapter(qi);
+      final StorageAdapter sa = new QueryableIndexStorageAdapter(qi, NullHandlingConfig.LEGACY_CONFIG);
       final WindowedStorageAdapter wsa = new WindowedStorageAdapter(sa, sa.getInterval());
       final IngestSegmentFirehose firehose = new IngestSegmentFirehose(
           ImmutableList.of(wsa, wsa),
@@ -140,7 +141,7 @@ public class IngestSegmentFirehoseTest
 
       // Check the index
       Assert.assertEquals(9, index.size());
-      final IncrementalIndexStorageAdapter queryable = new IncrementalIndexStorageAdapter(index);
+      final IncrementalIndexStorageAdapter queryable = new IncrementalIndexStorageAdapter(index,NullHandlingConfig.LEGACY_CONFIG );
       Assert.assertEquals(2, queryable.getAvailableDimensions().size());
       Assert.assertEquals("host", queryable.getAvailableDimensions().get(0));
       Assert.assertEquals("spatial", queryable.getAvailableDimensions().get(1));

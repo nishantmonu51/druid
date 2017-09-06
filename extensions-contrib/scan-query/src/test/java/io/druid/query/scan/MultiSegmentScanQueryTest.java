@@ -36,6 +36,7 @@ import io.druid.query.QueryRunnerTestHelper;
 import io.druid.query.TableDataSource;
 import io.druid.query.select.SelectQueryRunnerTest;
 import io.druid.segment.IncrementalIndexSegment;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.Segment;
 import io.druid.segment.TestIndex;
 import io.druid.segment.incremental.IncrementalIndex;
@@ -117,8 +118,8 @@ public class MultiSegmentScanQueryTest
     IncrementalIndex index0 = TestIndex.loadIncrementalIndex(newIndex("2011-01-12T00:00:00.000Z"), v_0112);
     IncrementalIndex index1 = TestIndex.loadIncrementalIndex(newIndex("2011-01-13T00:00:00.000Z"), v_0113);
 
-    segment0 = new IncrementalIndexSegment(index0, makeIdentifier(index0, "v1"));
-    segment1 = new IncrementalIndexSegment(index1, makeIdentifier(index1, "v1"));
+    segment0 = new IncrementalIndexSegment(index0, makeIdentifier(index0, "v1"), NullHandlingConfig.LEGACY_CONFIG);
+    segment1 = new IncrementalIndexSegment(index1, makeIdentifier(index1, "v1"), NullHandlingConfig.LEGACY_CONFIG);
   }
 
   private static String makeIdentifier(IncrementalIndex index, String version)

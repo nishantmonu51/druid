@@ -33,6 +33,7 @@ import io.druid.query.dimension.LegacyDimensionSpec;
 import io.druid.query.extraction.MapLookupExtractor;
 import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.ordering.StringComparators;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -94,7 +95,7 @@ public class TopNQueryTest
             new ExtractionDimensionSpec(
                 marketDimension,
                 marketDimension,
-                new LookupExtractionFn(new MapLookupExtractor(ImmutableMap.of("foo", "bar"), false), true, null, false, false)
+                new LookupExtractionFn(new MapLookupExtractor(ImmutableMap.of("foo", "bar"), false), true, null, false, false, NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .metric(new NumericTopNMetricSpec(indexMetric))

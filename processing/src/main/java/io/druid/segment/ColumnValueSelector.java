@@ -33,4 +33,6 @@ public interface ColumnValueSelector
   double getDouble();
 
   long getLong();
+
+  boolean isNull();
 }

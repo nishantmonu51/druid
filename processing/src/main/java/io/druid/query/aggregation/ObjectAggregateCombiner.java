@@ -26,4 +26,9 @@ import io.druid.segment.ObjectColumnSelector;
  */
 public abstract class ObjectAggregateCombiner<T> implements AggregateCombiner, ObjectColumnSelector<T>
 {
+  @Override
+  public boolean isNull()
+  {
+    return false;
+  }
 }

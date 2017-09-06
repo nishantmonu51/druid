@@ -34,6 +34,7 @@ import io.druid.query.topn.TopNQuery;
 import io.druid.query.topn.TopNQueryBuilder;
 import io.druid.query.topn.TopNQueryEngine;
 import io.druid.query.topn.TopNResultValue;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.incremental.IncrementalIndex;
 import io.druid.segment.incremental.IncrementalIndexSchema;
@@ -112,13 +113,13 @@ public class DistinctCountTopNQueryTest
                           .aggregators(
                               Lists.newArrayList(
                                   QueryRunnerTestHelper.rowsCount,
-                                  new DistinctCountAggregatorFactory("UV", visitor_id, null)
+                                  new DistinctCountAggregatorFactory("UV", visitor_id, null, NullHandlingConfig.LEGACY_CONFIG)
                               )
                           )
                           .build();
 
     final Iterable<Result<TopNResultValue>> results = Sequences.toList(
-        engine.query(query, new IncrementalIndexStorageAdapter(index), null),
+        engine.query(query, new IncrementalIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG), null),
         Lists.<Result<TopNResultValue>>newLinkedList()
     );
 

@@ -86,4 +86,11 @@ public abstract class DruidProcessingConfig extends ExecutorServiceConfig implem
   {
     return System.getProperty("java.io.tmpdir");
   }
+
+  @Override
+  @Config(value = "${base_path}.column.useDefaultValuesForNull")
+  public boolean useDefaultValuesForNull()
+  {
+    return true;
+  }
 }

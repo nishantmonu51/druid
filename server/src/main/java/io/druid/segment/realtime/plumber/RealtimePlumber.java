@@ -58,6 +58,7 @@ import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMerger;
 import io.druid.segment.IndexSpec;
 import io.druid.segment.Metadata;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.Segment;
@@ -126,6 +127,7 @@ public class RealtimePlumber implements Plumber
 
   private static final String COMMIT_METADATA_KEY = "%commitMetadata%";
   private static final String COMMIT_METADATA_TIMESTAMP_KEY = "%commitMetadataTimestamp%";
+  private final NullHandlingConfig nullHandlingConfig;
 
   public RealtimePlumber(
       DataSchema schema,
@@ -142,7 +144,8 @@ public class RealtimePlumber implements Plumber
       IndexIO indexIO,
       Cache cache,
       CacheConfig cacheConfig,
-      ObjectMapper objectMapper
+      ObjectMapper objectMapper,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     this.schema = schema;
@@ -166,6 +169,7 @@ public class RealtimePlumber implements Plumber
         cache,
         cacheConfig
     );
+    this.nullHandlingConfig = nullHandlingConfig;
 
     log.info("Creating plumber using rejectionPolicy[%s]", getRejectionPolicy());
   }
@@ -249,7 +253,8 @@ public class RealtimePlumber implements Plumber
           config.getShardSpec(),
           versioningPolicy.getVersion(sinkInterval),
           config.getMaxRowsInMemory(),
-          config.isReportParseExceptions()
+          config.isReportParseExceptions(),
+          nullHandlingConfig
       );
       addSink(retVal);
 
@@ -690,7 +695,8 @@ public class RealtimePlumber implements Plumber
                         versioningPolicy.getVersion(sinkInterval),
                         config.getShardSpec()
                     ),
-                    queryableIndex
+                    queryableIndex,
+                    nullHandlingConfig
                 ),
                 Integer.parseInt(segmentDir.getName())
             )
@@ -711,7 +717,8 @@ public class RealtimePlumber implements Plumber
           versioningPolicy.getVersion(sinkInterval),
           config.getMaxRowsInMemory(),
           config.isReportParseExceptions(),
-          hydrants
+          hydrants,
+          nullHandlingConfig
       );
       addSink(currSink);
     }
@@ -937,7 +944,8 @@ public class RealtimePlumber implements Plumber
         indexToPersist.swapSegment(
             new QueryableIndexSegment(
                 indexToPersist.getSegment().getIdentifier(),
-                indexIO.loadIndex(persistedFile)
+                indexIO.loadIndex(persistedFile),
+                nullHandlingConfig
             )
         );
         return numRows;

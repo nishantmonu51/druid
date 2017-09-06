@@ -48,6 +48,7 @@ import io.druid.query.dimension.DimensionSpec;
 import io.druid.query.groupby.strategy.GroupByStrategySelector;
 import io.druid.query.groupby.strategy.GroupByStrategyV1;
 import io.druid.query.groupby.strategy.GroupByStrategyV2;
+import io.druid.segment.NullHandlingConfig;
 import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;
@@ -119,7 +120,7 @@ public class GroupByQueryRunnerFailureTest
             configSupplier,
             new GroupByQueryEngine(configSupplier, bufferPool),
             QueryRunnerTestHelper.NOOP_QUERYWATCHER,
-            bufferPool
+            bufferPool, NullHandlingConfig.LEGACY_CONFIG
         ),
         new GroupByStrategyV2(
             DEFAULT_PROCESSING_CONFIG,
@@ -127,7 +128,7 @@ public class GroupByQueryRunnerFailureTest
             bufferPool,
             mergeBufferPool,
             mapper,
-            QueryRunnerTestHelper.NOOP_QUERYWATCHER
+            QueryRunnerTestHelper.NOOP_QUERYWATCHER, NullHandlingConfig.LEGACY_CONFIG
         )
     );
     final GroupByQueryQueryToolChest toolChest = new GroupByQueryQueryToolChest(
@@ -136,7 +137,7 @@ public class GroupByQueryRunnerFailureTest
     );
     return new GroupByQueryRunnerFactory(
         strategySelector,
-        toolChest
+        toolChest, NullHandlingConfig.LEGACY_CONFIG
     );
   }
 

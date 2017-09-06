@@ -28,6 +28,7 @@ import io.druid.java.util.common.IAE;
 import io.druid.query.Druids;
 import io.druid.query.dimension.DimensionSpec;
 import io.druid.query.filter.Filter;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.Segment;
 import io.druid.segment.data.Indexed;
@@ -51,7 +52,7 @@ public abstract class SearchStrategy
     this.interval = intervals.get(0);
   }
 
-  public abstract List<SearchQueryExecutor> getExecutionPlan(SearchQuery query, Segment segment);
+  public abstract List<SearchQueryExecutor> getExecutionPlan(SearchQuery query, Segment segment, NullHandlingConfig nullHandlingConfig);
 
   public SearchQueryDecisionHelper getDecisionHelper(QueryableIndex index)
   {

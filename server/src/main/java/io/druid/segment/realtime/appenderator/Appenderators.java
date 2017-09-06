@@ -27,6 +27,7 @@ import io.druid.java.util.common.StringUtils;
 import io.druid.query.QueryRunnerFactoryConglomerate;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMerger;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.loading.DataSegmentPusher;
 import io.druid.segment.realtime.FireDepartmentMetrics;
@@ -53,7 +54,8 @@ public class Appenderators
       ServiceEmitter emitter,
       ExecutorService queryExecutorService,
       Cache cache,
-      CacheConfig cacheConfig
+      CacheConfig cacheConfig,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     return new AppenderatorImpl(
@@ -69,7 +71,8 @@ public class Appenderators
         indexIO,
         indexMerger,
         cache,
-        cacheConfig
+        cacheConfig,
+        nullHandlingConfig
     );
   }
 
@@ -80,7 +83,8 @@ public class Appenderators
       DataSegmentPusher dataSegmentPusher,
       ObjectMapper objectMapper,
       IndexIO indexIO,
-      IndexMerger indexMerger
+      IndexMerger indexMerger,
+      NullHandlingConfig nullHandlingConfig
   )
   {
     return new AppenderatorImpl(
@@ -121,7 +125,8 @@ public class Appenderators
         indexIO,
         indexMerger,
         null,
-        null
+        null,
+        nullHandlingConfig
     );
   }
 

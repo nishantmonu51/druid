@@ -49,6 +49,7 @@ import io.druid.query.groupby.orderby.DefaultLimitSpec;
 import io.druid.query.groupby.orderby.OrderByColumnSpec;
 import io.druid.query.ordering.StringComparator;
 import io.druid.query.ordering.StringComparators;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.VirtualColumn;
 import io.druid.segment.column.ValueType;
 import io.druid.sql.calcite.aggregation.Aggregation;
@@ -834,7 +835,7 @@ public class GroupByRules
         final String fieldName;
         final String expression;
         final ExprMacroTable macroTable = plannerContext.getExprMacroTable();
-
+        final NullHandlingConfig nullHandlingConfig = plannerContext.getNullHandlingConfig();
         if (input.isDirectColumnAccess()) {
           fieldName = input.getDirectColumn();
           expression = null;
@@ -845,15 +846,15 @@ public class GroupByRules
 
         if (kind == SqlKind.SUM || kind == SqlKind.SUM0) {
           retVal = Aggregation.create(
-              createSumAggregatorFactory(aggregationType, name, fieldName, expression, macroTable)
+              createSumAggregatorFactory(aggregationType, name, fieldName, expression, macroTable, nullHandlingConfig)
           );
         } else if (kind == SqlKind.MIN) {
           retVal = Aggregation.create(
-              createMinAggregatorFactory(aggregationType, name, fieldName, expression, macroTable)
+              createMinAggregatorFactory(aggregationType, name, fieldName, expression, macroTable, nullHandlingConfig)
           );
         } else if (kind == SqlKind.MAX) {
           retVal = Aggregation.create(
-              createMaxAggregatorFactory(aggregationType, name, fieldName, expression, macroTable)
+              createMaxAggregatorFactory(aggregationType, name, fieldName, expression, macroTable, nullHandlingConfig)
           );
         } else if (kind == SqlKind.AVG) {
           final String sumName = StringUtils.format("%s:sum", name);
@@ -863,7 +864,7 @@ public class GroupByRules
               sumName,
               fieldName,
               expression,
-              macroTable
+              macroTable, NullHandlingConfig.LEGACY_CONFIG
           );
           final AggregatorFactory count = new CountAggregatorFactory(countName);
           retVal = Aggregation.create(
@@ -940,16 +941,17 @@ public class GroupByRules
       final String name,
       final String fieldName,
       final String expression,
-      final ExprMacroTable macroTable
+      final ExprMacroTable macroTable,
+      final NullHandlingConfig nullHandlingConfig
   )
   {
     switch (aggregationType) {
       case LONG:
-        return new LongSumAggregatorFactory(name, fieldName, expression, macroTable);
+        return new LongSumAggregatorFactory(name, fieldName, expression, macroTable, nullHandlingConfig);
       case FLOAT:
-        return new FloatSumAggregatorFactory(name, fieldName, expression, macroTable);
+        return new FloatSumAggregatorFactory(name, fieldName, expression, macroTable, nullHandlingConfig);
       case DOUBLE:
-        return new DoubleSumAggregatorFactory(name, fieldName, expression, macroTable);
+        return new DoubleSumAggregatorFactory(name, fieldName, expression, macroTable, nullHandlingConfig);
       default:
         throw new ISE("Cannot create aggregator factory for type[%s]", aggregationType);
     }
@@ -960,16 +962,17 @@ public class GroupByRules
       final String name,
       final String fieldName,
       final String expression,
-      final ExprMacroTable macroTable
+      final ExprMacroTable macroTable,
+      final NullHandlingConfig nullHandlingConfig
   )
   {
     switch (aggregationType) {
       case LONG:
-        return new LongMinAggregatorFactory(name, fieldName, expression, macroTable);
+        return new LongMinAggregatorFactory(name, fieldName, expression, macroTable, nullHandlingConfig);
       case FLOAT:
-        return new FloatMinAggregatorFactory(name, fieldName, expression, macroTable);
+        return new FloatMinAggregatorFactory(name, fieldName, expression, macroTable, nullHandlingConfig);
       case DOUBLE:
-        return new DoubleMinAggregatorFactory(name, fieldName, expression, macroTable);
+        return new DoubleMinAggregatorFactory(name, fieldName, expression, macroTable, nullHandlingConfig);
       default:
         throw new ISE("Cannot create aggregator factory for type[%s]", aggregationType);
     }
@@ -980,16 +983,17 @@ public class GroupByRules
       final String name,
       final String fieldName,
       final String expression,
-      final ExprMacroTable macroTable
+      final ExprMacroTable macroTable,
+      final NullHandlingConfig nullHandlingConfig
   )
   {
     switch (aggregationType) {
       case LONG:
-        return new LongMaxAggregatorFactory(name, fieldName, expression, macroTable);
+        return new LongMaxAggregatorFactory(name, fieldName, expression, macroTable, nullHandlingConfig);
       case FLOAT:
-        return new FloatMaxAggregatorFactory(name, fieldName, expression, macroTable);
+        return new FloatMaxAggregatorFactory(name, fieldName, expression, macroTable, nullHandlingConfig);
       case DOUBLE:
-        return new DoubleMaxAggregatorFactory(name, fieldName, expression, macroTable);
+        return new DoubleMaxAggregatorFactory(name, fieldName, expression, macroTable, nullHandlingConfig);
       default:
         throw new ISE("Cannot create aggregator factory for type[%s]", aggregationType);
     }

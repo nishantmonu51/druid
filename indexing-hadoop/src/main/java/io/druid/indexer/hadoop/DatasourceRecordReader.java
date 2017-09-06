@@ -33,6 +33,7 @@ import io.druid.indexer.HadoopDruidIndexerConfig;
 import io.druid.indexer.JobHelper;
 import io.druid.java.util.common.ISE;
 import io.druid.java.util.common.logger.Logger;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexStorageAdapter;
 import io.druid.segment.realtime.firehose.IngestSegmentFirehose;
@@ -72,36 +73,32 @@ public class DatasourceRecordReader extends RecordReader<NullWritable, InputRow>
 
     List<WindowedStorageAdapter> adapters = Lists.transform(
         segments,
-        new Function<WindowedDataSegment, WindowedStorageAdapter>()
-        {
-          @Override
-          public WindowedStorageAdapter apply(WindowedDataSegment segment)
-          {
-            try {
-              logger.info("Getting storage path for segment [%s]", segment.getSegment().getIdentifier());
-              Path path = new Path(JobHelper.getURIFromSegment(segment.getSegment()));
+        segment -> {
+          try {
+            logger.info("Getting storage path for segment [%s]", segment.getSegment().getIdentifier());
+            Path path = new Path(JobHelper.getURIFromSegment(segment.getSegment()));
 
-              logger.info("Fetch segment files from [%s]", path);
+            logger.info("Fetch segment files from [%s]", path);
 
-              File dir = Files.createTempDir();
-              tmpSegmentDirs.add(dir);
-              logger.info("Locally storing fetched segment at [%s]", dir);
+            File dir = Files.createTempDir();
+            tmpSegmentDirs.add(dir);
+            logger.info("Locally storing fetched segment at [%s]", dir);
 
-              JobHelper.unzipNoGuava(path, context.getConfiguration(), dir, context);
-              logger.info("finished fetching segment files");
+            JobHelper.unzipNoGuava(path, context.getConfiguration(), dir, context);
+            logger.info("finished fetching segment files");
 
-              QueryableIndex index = HadoopDruidIndexerConfig.INDEX_IO.loadIndex(dir);
-              indexes.add(index);
-              numRows += index.getNumRows();
+            QueryableIndex index = HadoopDruidIndexerConfig.INDEX_IO.loadIndex(dir);
+            indexes.add(index);
+            numRows += index.getNumRows();
 
-              return new WindowedStorageAdapter(
-                  new QueryableIndexStorageAdapter(index),
-                  segment.getInterval()
-              );
-            }
-            catch (IOException ex) {
-              throw Throwables.propagate(ex);
-            }
+            return new WindowedStorageAdapter(
+                // TODO: Find a way to get null Handling Config from configuration here.
+                new QueryableIndexStorageAdapter(index, NullHandlingConfig.LEGACY_CONFIG),
+                segment.getInterval()
+            );
+          }
+          catch (IOException ex) {
+            throw Throwables.propagate(ex);
           }
         }
     );

@@ -55,6 +55,7 @@ import io.druid.query.spec.QuerySegmentSpec;
 import io.druid.query.timeboundary.TimeBoundaryQuery;
 import io.druid.query.timeboundary.TimeBoundaryResultValue;
 import io.druid.query.timeseries.TimeseriesQuery;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.VirtualColumn;
 import io.druid.segment.VirtualColumns;
 import org.joda.time.DateTime;
@@ -167,9 +168,9 @@ public class Druids
 
     public OrDimFilterBuilder fields(String dimensionName, String value, String... values)
     {
-      fields = Lists.<DimFilter>newArrayList(new SelectorDimFilter(dimensionName, value, null));
+      fields = Lists.<DimFilter>newArrayList(new SelectorDimFilter(dimensionName, value, null, NullHandlingConfig.LEGACY_CONFIG));
       for (String val : values) {
-        fields.add(new SelectorDimFilter(dimensionName, val, null));
+        fields.add(new SelectorDimFilter(dimensionName, val, null, NullHandlingConfig.LEGACY_CONFIG));
       }
       return this;
     }
@@ -260,7 +261,7 @@ public class Druids
 
     public SelectorDimFilter build()
     {
-      return new SelectorDimFilter(dimension, value, null);
+      return new SelectorDimFilter(dimension, value, null, NullHandlingConfig.LEGACY_CONFIG);
     }
 
     public SelectorDimFilterBuilder copy(SelectorDimFilterBuilder builder)
@@ -470,13 +471,13 @@ public class Druids
 
     public TimeseriesQueryBuilder filters(String dimensionName, String value)
     {
-      dimFilter = new SelectorDimFilter(dimensionName, value, null);
+      dimFilter = new SelectorDimFilter(dimensionName, value, null, NullHandlingConfig.LEGACY_CONFIG);
       return this;
     }
 
     public TimeseriesQueryBuilder filters(String dimensionName, String value, String... values)
     {
-      dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null);
+      dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null, NullHandlingConfig.LEGACY_CONFIG);
       return this;
     }
 
@@ -615,13 +616,13 @@ public class Druids
 
     public SearchQueryBuilder filters(String dimensionName, String value)
     {
-      dimFilter = new SelectorDimFilter(dimensionName, value, null);
+      dimFilter = new SelectorDimFilter(dimensionName, value, null, NullHandlingConfig.LEGACY_CONFIG);
       return this;
     }
 
     public SearchQueryBuilder filters(String dimensionName, String value, String... values)
     {
-      dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null);
+      dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null, NullHandlingConfig.LEGACY_CONFIG);
       return this;
     }
 
@@ -845,13 +846,13 @@ public class Druids
 
     public TimeBoundaryQueryBuilder filters(String dimensionName, String value)
     {
-      dimFilter = new SelectorDimFilter(dimensionName, value, null);
+      dimFilter = new SelectorDimFilter(dimensionName, value, null, NullHandlingConfig.LEGACY_CONFIG);
       return this;
     }
 
     public TimeBoundaryQueryBuilder filters(String dimensionName, String value, String... values)
     {
-      dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null);
+      dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null, NullHandlingConfig.LEGACY_CONFIG);
       return this;
     }
 
@@ -1196,13 +1197,13 @@ public class Druids
 
     public SelectQueryBuilder filters(String dimensionName, String value)
     {
-      dimFilter = new SelectorDimFilter(dimensionName, value, null);
+      dimFilter = new SelectorDimFilter(dimensionName, value, null, NullHandlingConfig.LEGACY_CONFIG);
       return this;
     }
 
     public SelectQueryBuilder filters(String dimensionName, String value, String... values)
     {
-      dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null);
+      dimFilter = new InDimFilter(dimensionName, Lists.asList(value, values), null, NullHandlingConfig.LEGACY_CONFIG);
       return this;
     }
 

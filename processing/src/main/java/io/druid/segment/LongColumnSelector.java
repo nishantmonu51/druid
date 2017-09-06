@@ -40,7 +40,8 @@ public interface LongColumnSelector extends ColumnValueSelector, HotLoopCallee
   @Override
   default float getFloat()
   {
-    return (float) getLong();
+    Long longValue = getLong();
+    return longValue == null ? null : longValue.floatValue();
   }
 
   /**
@@ -53,6 +54,7 @@ public interface LongColumnSelector extends ColumnValueSelector, HotLoopCallee
   @Override
   default double getDouble()
   {
-    return (double) getLong();
+    Long longValue = getLong();
+    return longValue == null ? null : longValue.doubleValue();
   }
 }

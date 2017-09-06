@@ -29,6 +29,7 @@ import io.druid.java.util.common.Pair;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.query.QueryInterruptedException;
 import io.druid.query.ResourceLimitExceededException;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.sql.calcite.planner.Calcites;
 import io.druid.sql.calcite.planner.DruidOperatorTable;
 import io.druid.sql.calcite.planner.PlannerConfig;
@@ -85,7 +86,8 @@ public class SqlResourceTest
             operatorTable,
             macroTable,
             plannerConfig,
-            CalciteTests.getJsonMapper()
+            CalciteTests.getJsonMapper(),
+            NullHandlingConfig.LEGACY_CONFIG
         )
     );
   }

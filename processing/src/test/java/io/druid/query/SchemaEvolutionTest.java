@@ -48,6 +48,7 @@ import io.druid.query.timeseries.TimeseriesQuery;
 import io.druid.query.timeseries.TimeseriesQueryRunnerFactory;
 import io.druid.query.timeseries.TimeseriesResultValue;
 import io.druid.segment.IndexBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.incremental.IncrementalIndexSchema;
@@ -116,7 +117,9 @@ public class SchemaEvolutionTest
                           @Override
                           public QueryRunner<T> apply(final QueryableIndex index)
                           {
-                            return factory.createRunner(new QueryableIndexSegment("xxx", index));
+                            return factory.createRunner(new QueryableIndexSegment("xxx", index,
+                                                                                  NullHandlingConfig.LEGACY_CONFIG
+                            ));
                           }
                         }
                     )
@@ -260,8 +263,8 @@ public class SchemaEvolutionTest
             ImmutableList.of(
                 new LongSumAggregatorFactory("a", "c1"),
                 new DoubleSumAggregatorFactory("b", "c1"),
-                new LongSumAggregatorFactory("c", null, "c1 * 1", TestExprMacroTable.INSTANCE),
-                new DoubleSumAggregatorFactory("d", null, "c1 * 1", TestExprMacroTable.INSTANCE)
+                new LongSumAggregatorFactory("c", null, "c1 * 1", TestExprMacroTable.INSTANCE, NullHandlingConfig.LEGACY_CONFIG),
+                new DoubleSumAggregatorFactory("d", null, "c1 * 1", TestExprMacroTable.INSTANCE, NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .build();
@@ -326,7 +329,7 @@ public class SchemaEvolutionTest
         .newTimeseriesQueryBuilder()
         .dataSource(DATA_SOURCE)
         .intervals("1000/3000")
-        .filters(new BoundDimFilter("c1", "9", "11", false, false, null, null, StringComparators.NUMERIC))
+        .filters(new BoundDimFilter("c1", "9", "11", false, false, null, null, StringComparators.NUMERIC, NullHandlingConfig.LEGACY_CONFIG))
         .aggregators(
             ImmutableList.of(
                 new LongSumAggregatorFactory("a", "c1"),

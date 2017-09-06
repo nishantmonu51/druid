@@ -35,6 +35,7 @@ import io.druid.query.filter.BoundDimFilter;
 import io.druid.query.filter.DimFilter;
 import io.druid.query.filter.ExpressionDimFilter;
 import io.druid.query.filter.OrDimFilter;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.VirtualColumn;
 import io.druid.segment.virtual.ExpressionVirtualColumn;
 import io.druid.sql.calcite.expression.DruidExpression;
@@ -310,7 +311,8 @@ public class DruidSemiJoin extends DruidRel<DruidSemiJoin>
                           false,
                           null,
                           leftExpression.getSimpleExtraction().getExtractionFn(),
-                          getSourceRowSignature().naturalStringComparator(leftExpression.getSimpleExtraction())
+                          getSourceRowSignature().naturalStringComparator(leftExpression.getSimpleExtraction()),
+                          NullHandlingConfig.LEGACY_CONFIG
                       )
                   );
                 } else {

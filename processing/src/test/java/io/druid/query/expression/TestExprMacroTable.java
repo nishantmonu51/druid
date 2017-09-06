@@ -28,6 +28,7 @@ import io.druid.query.lookup.LookupExtractorFactory;
 import io.druid.query.lookup.LookupExtractorFactoryContainer;
 import io.druid.query.lookup.LookupIntrospectHandler;
 import io.druid.query.lookup.LookupReferencesManager;
+import io.druid.segment.NullHandlingConfig;
 import org.easymock.EasyMock;
 
 import javax.annotation.Nullable;
@@ -41,7 +42,7 @@ public class TestExprMacroTable extends ExprMacroTable
     super(
         ImmutableList.of(
             new LikeExprMacro(),
-            new LookupExprMacro(createTestLookupReferencesManager(ImmutableMap.of("foo", "xfoo"))),
+            new LookupExprMacro(createTestLookupReferencesManager(ImmutableMap.of("foo", "xfoo")), NullHandlingConfig.LEGACY_CONFIG),
             new RegexpExtractExprMacro(),
             new TimestampCeilExprMacro(),
             new TimestampExtractExprMacro(),

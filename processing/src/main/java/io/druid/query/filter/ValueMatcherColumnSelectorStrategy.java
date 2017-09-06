@@ -21,6 +21,7 @@ package io.druid.query.filter;
 
 import io.druid.query.dimension.ColumnSelectorStrategy;
 import io.druid.segment.ColumnValueSelector;
+import io.druid.segment.NullHandlingConfig;
 
 public interface ValueMatcherColumnSelectorStrategy<ValueSelectorType extends ColumnValueSelector> extends ColumnSelectorStrategy
 {

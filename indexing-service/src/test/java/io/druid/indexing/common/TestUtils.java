@@ -32,6 +32,7 @@ import io.druid.math.expr.ExprMacroTable;
 import io.druid.query.expression.TestExprMacroTable;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.ColumnConfig;
 import io.druid.segment.realtime.firehose.ChatHandlerProvider;
 import io.druid.segment.realtime.firehose.NoopChatHandlerProvider;
@@ -57,13 +58,19 @@ public class TestUtils
         new ColumnConfig()
         {
           @Override
+          public boolean useDefaultValuesForNull()
+          {
+            return true;
+          }
+
+          @Override
           public int columnCacheSizeBytes()
           {
             return 0;
           }
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    indexMergerV9 = new IndexMergerV9(jsonMapper, indexIO);
+    indexMergerV9 = new IndexMergerV9(jsonMapper, indexIO, NullHandlingConfig.LEGACY_CONFIG);
 
     final List<? extends Module> list = new ServerModule().getJacksonModules();
     for (Module module : list) {

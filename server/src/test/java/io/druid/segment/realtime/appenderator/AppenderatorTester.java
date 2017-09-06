@@ -51,6 +51,7 @@ import io.druid.query.timeseries.TimeseriesQueryRunnerFactory;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMerger;
 import io.druid.segment.IndexMergerV9;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.column.ColumnConfig;
 import io.druid.segment.indexing.DataSchema;
 import io.druid.segment.indexing.RealtimeTuningConfig;
@@ -159,13 +160,19 @@ public class AppenderatorTester implements AutoCloseable
         new ColumnConfig()
         {
           @Override
+          public boolean useDefaultValuesForNull()
+          {
+            return true;
+          }
+
+          @Override
           public int columnCacheSizeBytes()
           {
             return 0;
           }
-        }
+        }, NullHandlingConfig.LEGACY_CONFIG
     );
-    indexMerger = new IndexMergerV9(objectMapper, indexIO);
+    indexMerger = new IndexMergerV9(objectMapper, indexIO, NullHandlingConfig.LEGACY_CONFIG);
 
     emitter = new ServiceEmitter(
         "test",
@@ -266,7 +273,7 @@ public class AppenderatorTester implements AutoCloseable
         emitter,
         queryExecutor,
         MapCache.create(2048),
-        new CacheConfig()
+        new CacheConfig(), NullHandlingConfig.LEGACY_CONFIG
     );
   }
 

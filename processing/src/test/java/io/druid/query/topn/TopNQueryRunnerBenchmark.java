@@ -35,6 +35,7 @@ import io.druid.query.aggregation.DoubleMaxAggregatorFactory;
 import io.druid.query.aggregation.DoubleMinAggregatorFactory;
 import io.druid.query.aggregation.PostAggregator;
 import io.druid.segment.IncrementalIndexSegment;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndexSegment;
 import io.druid.segment.TestIndex;
 import org.junit.BeforeClass;
@@ -108,7 +109,7 @@ public class TopNQueryRunnerBenchmark extends AbstractBenchmark
         TestCases.rtIndex,
         QueryRunnerTestHelper.makeQueryRunner(
             factory,
-            new IncrementalIndexSegment(TestIndex.getIncrementalTestIndex(), segmentId),
+            new IncrementalIndexSegment(TestIndex.getIncrementalTestIndex(), segmentId, NullHandlingConfig.LEGACY_CONFIG),
             null
         )
     );
@@ -116,7 +117,7 @@ public class TopNQueryRunnerBenchmark extends AbstractBenchmark
         TestCases.mMappedTestIndex,
         QueryRunnerTestHelper.makeQueryRunner(
             factory,
-            new QueryableIndexSegment(segmentId, TestIndex.getMMappedTestIndex()),
+            new QueryableIndexSegment(segmentId, TestIndex.getMMappedTestIndex(), NullHandlingConfig.LEGACY_CONFIG),
             null
         )
     );
@@ -124,7 +125,7 @@ public class TopNQueryRunnerBenchmark extends AbstractBenchmark
         TestCases.mergedRealtimeIndex,
         QueryRunnerTestHelper.makeQueryRunner(
             factory,
-            new QueryableIndexSegment(segmentId, TestIndex.mergedRealtimeIndex()),
+            new QueryableIndexSegment(segmentId, TestIndex.mergedRealtimeIndex(), NullHandlingConfig.LEGACY_CONFIG),
             null
         )
     );

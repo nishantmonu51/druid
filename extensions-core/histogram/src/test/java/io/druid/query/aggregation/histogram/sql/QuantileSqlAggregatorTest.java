@@ -39,6 +39,7 @@ import io.druid.query.filter.NotDimFilter;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.spec.MultipleIntervalSegmentSpec;
 import io.druid.segment.IndexBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.TestHelper;
 import io.druid.segment.column.ValueType;
@@ -133,7 +134,8 @@ public class QuantileSqlAggregatorTest
         operatorTable,
         CalciteTests.createExprMacroTable(),
         plannerConfig,
-        CalciteTests.getJsonMapper()
+        CalciteTests.getJsonMapper(),
+        NullHandlingConfig.LEGACY_CONFIG
     );
   }
 
@@ -202,11 +204,11 @@ public class QuantileSqlAggregatorTest
                     new ApproximateHistogramAggregatorFactory("a4:agg", "a4:v", null, null, null, null),
                     new FilteredAggregatorFactory(
                         new ApproximateHistogramAggregatorFactory("a5:agg", "m1", null, null, null, null),
-                        new SelectorDimFilter("dim1", "abc", null)
+                        new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG)
                     ),
                     new FilteredAggregatorFactory(
                         new ApproximateHistogramAggregatorFactory("a6:agg", "m1", null, null, null, null),
-                        new NotDimFilter(new SelectorDimFilter("dim1", "abc", null))
+                        new NotDimFilter(new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG))
                     ),
                     new ApproximateHistogramAggregatorFactory("a8:agg", "cnt", null, null, null, null)
                 ))
@@ -265,11 +267,11 @@ public class QuantileSqlAggregatorTest
                     new ApproximateHistogramFoldingAggregatorFactory("a2:agg", "hist_m1", 200, null, null, null),
                     new FilteredAggregatorFactory(
                         new ApproximateHistogramFoldingAggregatorFactory("a4:agg", "hist_m1", null, null, null, null),
-                        new SelectorDimFilter("dim1", "abc", null)
+                        new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG)
                     ),
                     new FilteredAggregatorFactory(
                         new ApproximateHistogramFoldingAggregatorFactory("a5:agg", "hist_m1", null, null, null, null),
-                        new NotDimFilter(new SelectorDimFilter("dim1", "abc", null))
+                        new NotDimFilter(new SelectorDimFilter("dim1", "abc", null, NullHandlingConfig.LEGACY_CONFIG))
                     )
                 ))
                 .postAggregators(ImmutableList.<PostAggregator>of(

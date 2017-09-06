@@ -21,6 +21,7 @@ package io.druid.query.filter;
 
 import io.druid.query.extraction.IdentityExtractionFn;
 import io.druid.query.extraction.RegexDimExtractionFn;
+import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,14 +36,14 @@ public class ExtractionDimFilterTest
     ExtractionDimFilter extractionDimFilter = new ExtractionDimFilter(
         "abc",
         "d",
-        IdentityExtractionFn.getInstance(),
-        null
+        new IdentityExtractionFn(NullHandlingConfig.LEGACY_CONFIG),
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
     ExtractionDimFilter extractionDimFilter2 = new ExtractionDimFilter(
         "ab",
         "cd",
-        IdentityExtractionFn.getInstance(),
-        null
+        new IdentityExtractionFn(NullHandlingConfig.LEGACY_CONFIG),
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     Assert.assertFalse(Arrays.equals(extractionDimFilter.getCacheKey(), extractionDimFilter2.getCacheKey()));
@@ -51,11 +52,11 @@ public class ExtractionDimFilterTest
         "ab",
         "cd",
         new RegexDimExtractionFn("xx", null, null),
-        null
+        null, NullHandlingConfig.LEGACY_CONFIG
     );
 
     Assert.assertFalse(Arrays.equals(extractionDimFilter2.getCacheKey(), extractionDimFilter3.getCacheKey()));
 
-    Assert.assertNotNull(new ExtractionDimFilter("foo", null, new RegexDimExtractionFn("xx", null, null), null).getCacheKey());
+    Assert.assertNotNull(new ExtractionDimFilter("foo", null, new RegexDimExtractionFn("xx", null, null), null, NullHandlingConfig.LEGACY_CONFIG).getCacheKey());
   }
 }

@@ -33,6 +33,7 @@ import io.druid.query.BaseQuery;
 import io.druid.query.BitmapResultFactory;
 import io.druid.query.DefaultBitmapResultFactory;
 import io.druid.query.QueryMetrics;
+import io.druid.query.extraction.StringFormatExtractionFn;
 import io.druid.query.filter.Filter;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.column.BitmapIndex;
@@ -59,10 +60,12 @@ import java.util.Objects;
 public class QueryableIndexStorageAdapter implements StorageAdapter
 {
   private final QueryableIndex index;
+  private final NullHandlingConfig nullHandlingConfig;
 
-  public QueryableIndexStorageAdapter(QueryableIndex index)
+  public QueryableIndexStorageAdapter(QueryableIndex index, NullHandlingConfig nullHandlingConfig)
   {
     this.index = index;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -207,7 +210,8 @@ public class QueryableIndexStorageAdapter implements StorageAdapter
     final ColumnSelectorBitmapIndexSelector selector = new ColumnSelectorBitmapIndexSelector(
         index.getBitmapFactoryForDimensions(),
         virtualColumns,
-        index
+        index,
+        nullHandlingConfig
     );
 
     final int totalRows = index.getNumRows();

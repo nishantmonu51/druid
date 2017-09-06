@@ -37,6 +37,7 @@ import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.FilteredAggregatorFactory;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.segment.CloserRule;
+import io.druid.segment.NullHandlingConfig;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -84,7 +85,7 @@ public class IncrementalIndexTest
     AggregatorFactory[] metrics = {
         new FilteredAggregatorFactory(
             new CountAggregatorFactory("cnt"),
-            new SelectorDimFilter("billy", "A", null)
+            new SelectorDimFilter("billy", "A", null, NullHandlingConfig.LEGACY_CONFIG)
         )
     };
     final IncrementalIndexSchema schema = new IncrementalIndexSchema.Builder()
@@ -224,10 +225,14 @@ public class IncrementalIndexTest
 
     Row row = index.iterator().next();
 
-    Assert.assertEquals(Arrays.asList(new String[]{"", "", "A"}), row.getRaw("string"));
-    Assert.assertEquals(Arrays.asList(new String[]{"", "", String.valueOf(Float.POSITIVE_INFINITY)}), row.getRaw("float"));
-    Assert.assertEquals(Arrays.asList(new String[]{"", "", String.valueOf(Long.MIN_VALUE)}), row.getRaw("long"));
-    Assert.assertEquals(0.0, row.getRaw("double"));
+
+    Assert.assertEquals(Arrays.asList(new String[]{null, "", "A"}), row.getRaw("string"));
+    Assert.assertEquals(
+        Arrays.asList(new String[]{null, "", String.valueOf(Float.POSITIVE_INFINITY)}),
+        row.getRaw("float")
+    );
+    Assert.assertEquals(Arrays.asList(new String[]{null, "", String.valueOf(Long.MIN_VALUE)}), row.getRaw("long"));
+    Assert.assertEquals(null, row.getRaw("double"));
   }
 
   @Test

@@ -28,6 +28,7 @@ import io.druid.query.dimension.ListFilteredDimensionSpec;
 import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.topn.TopNQuery;
 import io.druid.query.topn.TopNQueryBuilder;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import org.joda.time.Interval;
 import org.junit.Assert;
@@ -63,7 +64,7 @@ public class DefaultQueryMetricsTest
         .intervals(QueryRunnerTestHelper.fullOnInterval)
         .aggregators(Collections.singletonList(new CountAggregatorFactory("count")))
         .threshold(5)
-        .filters(new SelectorDimFilter("tags", "t3", null))
+        .filters(new SelectorDimFilter("tags", "t3", null, NullHandlingConfig.LEGACY_CONFIG))
         .build();
     queryMetrics.query(query);
 

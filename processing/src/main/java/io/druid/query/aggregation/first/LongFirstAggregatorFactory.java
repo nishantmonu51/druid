@@ -19,6 +19,7 @@
 
 package io.druid.query.aggregation.first;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
@@ -34,6 +35,8 @@ import io.druid.query.aggregation.BufferAggregator;
 import io.druid.query.aggregation.AggregateCombiner;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.LongColumnSelector;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.ObjectColumnSelector;
 import io.druid.segment.column.Column;
 
@@ -52,11 +55,13 @@ public class LongFirstAggregatorFactory extends AggregatorFactory
 
   private final String fieldName;
   private final String name;
+  private final NullHandlingConfig nullHandlingConfig;
 
   @JsonCreator
   public LongFirstAggregatorFactory(
       @JsonProperty("name") String name,
-      @JsonProperty("fieldName") final String fieldName
+      @JsonProperty("fieldName") final String fieldName,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
   )
   {
     Preconditions.checkNotNull(name, "Must have a valid, non-null aggregator name");
@@ -64,25 +69,28 @@ public class LongFirstAggregatorFactory extends AggregatorFactory
 
     this.name = name;
     this.fieldName = fieldName;
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
   public Aggregator factorize(ColumnSelectorFactory metricFactory)
   {
-    return new LongFirstAggregator(
+    LongColumnSelector longColumnSelector = metricFactory.makeLongColumnSelector(fieldName);
+    return nullHandlingConfig.getNullableAggregator(new LongFirstAggregator(
         name,
         metricFactory.makeLongColumnSelector(Column.TIME_COLUMN_NAME),
-        metricFactory.makeLongColumnSelector(fieldName)
-    );
+        longColumnSelector
+    ), longColumnSelector);
   }
 
   @Override
   public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
   {
-    return new LongFirstBufferAggregator(
+    LongColumnSelector longColumnSelector = metricFactory.makeLongColumnSelector(fieldName);
+    return nullHandlingConfig.getNullableAggregator(new LongFirstBufferAggregator(
         metricFactory.makeLongColumnSelector(Column.TIME_COLUMN_NAME),
-        metricFactory.makeLongColumnSelector(fieldName)
-    );
+        longColumnSelector
+    ), longColumnSelector);
   }
 
   @Override
@@ -106,13 +114,13 @@ public class LongFirstAggregatorFactory extends AggregatorFactory
   @Override
   public AggregatorFactory getCombiningFactory()
   {
-    return new LongFirstAggregatorFactory(name, name)
+    return new LongFirstAggregatorFactory(name, name, nullHandlingConfig)
     {
       @Override
       public Aggregator factorize(ColumnSelectorFactory metricFactory)
       {
         final ObjectColumnSelector selector = metricFactory.makeObjectColumnSelector(name);
-        return new LongFirstAggregator(name, null, null)
+        return nullHandlingConfig.getNullableAggregator(new LongFirstAggregator(name, null, null)
         {
           @Override
           public void aggregate()
@@ -123,14 +131,14 @@ public class LongFirstAggregatorFactory extends AggregatorFactory
               firstValue = pair.rhs;
             }
           }
-        };
+        }, selector);
       }
 
       @Override
       public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
       {
         final ObjectColumnSelector selector = metricFactory.makeObjectColumnSelector(name);
-        return new LongFirstBufferAggregator(null, null)
+        return nullHandlingConfig.getNullableAggregator(new LongFirstBufferAggregator(null, null)
         {
           @Override
           public void aggregate(ByteBuffer buf, int position)
@@ -148,7 +156,7 @@ public class LongFirstAggregatorFactory extends AggregatorFactory
           {
             inspector.visit("selector", selector);
           }
-        };
+        }, selector);
       }
     };
   }
@@ -166,7 +174,7 @@ public class LongFirstAggregatorFactory extends AggregatorFactory
   @Override
   public List<AggregatorFactory> getRequiredColumns()
   {
-    return Arrays.<AggregatorFactory>asList(new LongFirstAggregatorFactory(fieldName, fieldName));
+    return Arrays.<AggregatorFactory>asList(new LongFirstAggregatorFactory(fieldName, fieldName, nullHandlingConfig));
   }
 
   @Override

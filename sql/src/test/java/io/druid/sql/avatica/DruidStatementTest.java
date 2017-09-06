@@ -23,6 +23,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import io.druid.java.util.common.DateTimes;
 import io.druid.math.expr.ExprMacroTable;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.sql.calcite.planner.Calcites;
 import io.druid.sql.calcite.planner.DruidOperatorTable;
 import io.druid.sql.calcite.planner.PlannerConfig;
@@ -71,7 +72,8 @@ public class DruidStatementTest
         operatorTable,
         macroTable,
         plannerConfig,
-        CalciteTests.getJsonMapper()
+        CalciteTests.getJsonMapper(),
+        NullHandlingConfig.LEGACY_CONFIG
     );
   }
 

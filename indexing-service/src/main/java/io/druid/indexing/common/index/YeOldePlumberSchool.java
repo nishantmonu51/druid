@@ -38,6 +38,7 @@ import io.druid.query.Query;
 import io.druid.query.QueryRunner;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.QueryableIndex;
 import io.druid.segment.SegmentUtils;
 import io.druid.segment.incremental.IndexSizeExceededException;
@@ -70,6 +71,7 @@ public class YeOldePlumberSchool implements PlumberSchool
   private final File tmpSegmentDir;
   private final IndexMergerV9 indexMergerV9;
   private final IndexIO indexIO;
+  private final NullHandlingConfig nullHandlingConfig;
 
   private static final Logger log = new Logger(YeOldePlumberSchool.class);
 
@@ -80,8 +82,9 @@ public class YeOldePlumberSchool implements PlumberSchool
       @JacksonInject("segmentPusher") DataSegmentPusher dataSegmentPusher,
       @JacksonInject("tmpSegmentDir") File tmpSegmentDir,
       @JacksonInject IndexMergerV9 indexMergerV9,
-      @JacksonInject IndexIO indexIO
-  )
+      @JacksonInject IndexIO indexIO,
+      @JacksonInject NullHandlingConfig nullHandlingConfig
+      )
   {
     this.interval = interval;
     this.version = version;
@@ -89,6 +92,7 @@ public class YeOldePlumberSchool implements PlumberSchool
     this.tmpSegmentDir = tmpSegmentDir;
     this.indexMergerV9 = Preconditions.checkNotNull(indexMergerV9, "Null IndexMergerV9");
     this.indexIO = Preconditions.checkNotNull(indexIO, "Null IndexIO");
+    this.nullHandlingConfig = nullHandlingConfig;
   }
 
   @Override
@@ -105,7 +109,8 @@ public class YeOldePlumberSchool implements PlumberSchool
         config.getShardSpec(),
         version,
         config.getMaxRowsInMemory(),
-        config.isReportParseExceptions()
+        config.isReportParseExceptions(),
+        nullHandlingConfig
     );
 
     // Temporary directory to hold spilled segments.

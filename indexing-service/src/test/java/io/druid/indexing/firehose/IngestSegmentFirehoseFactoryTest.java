@@ -65,6 +65,7 @@ import io.druid.query.filter.SelectorDimFilter;
 import io.druid.segment.IndexIO;
 import io.druid.segment.IndexMergerV9;
 import io.druid.segment.IndexSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.incremental.IncrementalIndex;
 import io.druid.segment.incremental.IncrementalIndexSchema;
 import io.druid.segment.loading.DataSegmentArchiver;
@@ -286,7 +287,7 @@ public class IngestSegmentFirehoseFactoryTest
                   {
                     return Lists.newArrayList();
                   }
-                }, MAPPER
+                }, MAPPER, NullHandlingConfig.LEGACY_CONFIG
             )
         ),
         MAPPER,
@@ -325,7 +326,7 @@ public class IngestSegmentFirehoseFactoryTest
                   new IngestSegmentFirehoseFactory(
                       DATA_SOURCE_NAME,
                       Intervals.ETERNITY,
-                      new SelectorDimFilter(DIM_NAME, DIM_VALUE, null),
+                      new SelectorDimFilter(DIM_NAME, DIM_VALUE, null, NullHandlingConfig.LEGACY_CONFIG),
                       dim_names,
                       metric_names,
                       Guice.createInjector(
@@ -338,7 +339,7 @@ public class IngestSegmentFirehoseFactoryTest
                             }
                           }
                       ),
-                      INDEX_IO
+                      INDEX_IO, NullHandlingConfig.LEGACY_CONFIG
                   ),
                   StringUtils.format(
                       "DimNames[%s]MetricNames[%s]ParserDimNames[%s]",
@@ -527,7 +528,7 @@ public class IngestSegmentFirehoseFactoryTest
         InputRow row = firehose.nextRow();
         Assert.assertArrayEquals(new String[]{DIM_NAME}, row.getDimensions().toArray());
         Assert.assertArrayEquals(new String[]{DIM_VALUE}, row.getDimension(DIM_NAME).toArray());
-        Assert.assertEquals(METRIC_LONG_VALUE.longValue(), row.getLongMetric(METRIC_LONG_NAME));
+        Assert.assertEquals(METRIC_LONG_VALUE.longValue(), row.getLongMetric(METRIC_LONG_NAME).longValue());
         Assert.assertEquals(METRIC_FLOAT_VALUE, row.getFloatMetric(METRIC_FLOAT_NAME), METRIC_FLOAT_VALUE * 0.0001);
         ++rowcount;
       }

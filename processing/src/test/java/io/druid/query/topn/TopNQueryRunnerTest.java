@@ -91,6 +91,7 @@ import io.druid.query.filter.SelectorDimFilter;
 import io.druid.query.lookup.LookupExtractionFn;
 import io.druid.query.ordering.StringComparators;
 import io.druid.query.spec.MultipleIntervalSegmentSpec;
+import io.druid.segment.NullHandlingConfig;
 import io.druid.segment.TestHelper;
 import io.druid.segment.column.Column;
 import io.druid.segment.column.ValueType;
@@ -289,7 +290,7 @@ public class TopNQueryRunnerTest
                     Lists.newArrayList(
                         new DoubleMaxAggregatorFactory("maxIndex", "index"),
                         new DoubleMinAggregatorFactory("minIndex", "index"),
-                        new DoubleFirstAggregatorFactory("first", "index")
+                        new DoubleFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG)
                     )
                 )
             )
@@ -830,8 +831,8 @@ public class TopNQueryRunnerTest
         .intervals(QueryRunnerTestHelper.fullOnInterval)
         .aggregators(
             Arrays.<AggregatorFactory>asList(
-                new LongFirstAggregatorFactory("first", "index"),
-                new LongLastAggregatorFactory("last", "index")
+                new LongFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG),
+                new LongLastAggregatorFactory("last", "index", NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .build();
@@ -941,8 +942,8 @@ public class TopNQueryRunnerTest
         .intervals(QueryRunnerTestHelper.fullOnInterval)
         .aggregators(
             Arrays.<AggregatorFactory>asList(
-                new LongFirstAggregatorFactory("first", "index"),
-                new LongLastAggregatorFactory("last", "index")
+                new LongFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG),
+                new LongLastAggregatorFactory("last", "index", NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .context(ImmutableMap.<String, Object>of("chunkPeriod", "P1D"))
@@ -1055,8 +1056,8 @@ public class TopNQueryRunnerTest
         .intervals(QueryRunnerTestHelper.fullOnInterval)
         .aggregators(
             Arrays.<AggregatorFactory>asList(
-                new FloatFirstAggregatorFactory("first", "index"),
-                new FloatLastAggregatorFactory("last", "index")
+                new FloatFirstAggregatorFactory("first", "index", NullHandlingConfig.LEGACY_CONFIG),
+                new FloatLastAggregatorFactory("last", "index", NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .build();
@@ -1166,8 +1167,8 @@ public class TopNQueryRunnerTest
         .intervals(QueryRunnerTestHelper.fullOnInterval)
         .aggregators(
             Arrays.<AggregatorFactory>asList(
-                new FloatFirstAggregatorFactory("first", "indexFloat"),
-                new FloatLastAggregatorFactory("last", "indexFloat")
+                new FloatFirstAggregatorFactory("first", "indexFloat", NullHandlingConfig.LEGACY_CONFIG),
+                new FloatLastAggregatorFactory("last", "indexFloat", NullHandlingConfig.LEGACY_CONFIG)
             )
         )
         .build();
@@ -2450,7 +2451,7 @@ public class TopNQueryRunnerTest
     query = query.withAggregatorSpecs(
         Arrays.asList(
             QueryRunnerTestHelper.rowsCount,
-            new DoubleSumAggregatorFactory("index", null, "-index + 100", ExprMacroTable.nil())
+            new DoubleSumAggregatorFactory("index", null, "-index + 100", ExprMacroTable.nil(), NullHandlingConfig.LEGACY_CONFIG)
         )
     );
 
@@ -2579,7 +2580,8 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), false, "MISSING", true,
-                    false
+                    false,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         )
@@ -2643,7 +2645,8 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), false, "MISSING", false,
-                    false
+                    false,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         )
@@ -2708,7 +2711,8 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), true, null, true,
-                    false
+                    false,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         )
@@ -2775,7 +2779,8 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), true, null, false,
-                    false
+                    false,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         )
@@ -2841,7 +2846,8 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), true, null, true,
-                    false
+                    false,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         )
@@ -2907,7 +2913,8 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), true, null, false,
-                    false
+                    false,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         )
@@ -2974,7 +2981,8 @@ public class TopNQueryRunnerTest
                         ),
                         false
                     ), true, null, true,
-                    false
+                    false,
+                    NullHandlingConfig.LEGACY_CONFIG
                 )
             )
         )
@@ -3978,7 +3986,7 @@ public class TopNQueryRunnerTest
         .granularity(QueryRunnerTestHelper.allGran)
         .dimension("null_column")
         .filters(
-            new SelectorDimFilter("null_column", null, null)
+            new SelectorDimFilter("null_column", null, null, NullHandlingConfig.LEGACY_CONFIG)
         )
         .metric(QueryRunnerTestHelper.indexMetric)
         .threshold(4)
@@ -4063,7 +4071,7 @@ public class TopNQueryRunnerTest
         .granularity(Granularities.ALL)
         .dimension("partial_null_column")
         .metric(QueryRunnerTestHelper.uniqueMetric)
-        .filters(new SelectorDimFilter("partial_null_column", null, null))
+        .filters(new SelectorDimFilter("partial_null_column", null, null, NullHandlingConfig.LEGACY_CONFIG))
         .threshold(1000)
         .intervals(QueryRunnerTestHelper.firstToThird)
         .aggregators(commonAggregators)
@@ -4095,7 +4103,7 @@ public class TopNQueryRunnerTest
         .granularity(Granularities.ALL)
         .dimension("partial_null_column")
         .metric(QueryRunnerTestHelper.uniqueMetric)
-        .filters(new SelectorDimFilter("partial_null_column", "value", null))
+        .filters(new SelectorDimFilter("partial_null_column", "value", null, NullHandlingConfig.LEGACY_CONFIG))
         .threshold(1000)
         .intervals(QueryRunnerTestHelper.firstToThird)
         .aggregators(commonAggregators)
@@ -4204,7 +4212,9 @@ public class TopNQueryRunnerTest
     Map<String, String> extractionMap = new HashMap<>();
     extractionMap.put("spot", "spot0");
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false,
+                                                                   NullHandlingConfig.LEGACY_CONFIG
+    );
 
     TopNQuery query = new TopNQueryBuilder().dataSource(QueryRunnerTestHelper.dataSource)
                                             .granularity(QueryRunnerTestHelper.allGran)
@@ -4219,7 +4229,8 @@ public class TopNQueryRunnerTest
                                                     QueryRunnerTestHelper.marketDimension,
                                                     "spot0",
                                                     lookupExtractionFn,
-                                                    null
+                                                    null,
+                                                    NullHandlingConfig.LEGACY_CONFIG
                                                 )
                                             )
                                             .build();
@@ -4254,8 +4265,10 @@ public class TopNQueryRunnerTest
     extractionMap.put("", "NULL");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false);
-    DimFilter extractionFilter = new ExtractionDimFilter("null_column", "NULL", lookupExtractionFn, null);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, false,
+                                                                   NullHandlingConfig.LEGACY_CONFIG
+    );
+    DimFilter extractionFilter = new ExtractionDimFilter("null_column", "NULL", lookupExtractionFn, null, NullHandlingConfig.LEGACY_CONFIG);
     TopNQueryBuilder topNQueryBuilder = new TopNQueryBuilder()
         .dataSource(QueryRunnerTestHelper.dataSource)
         .granularity(QueryRunnerTestHelper.allGran)
@@ -4324,11 +4337,13 @@ public class TopNQueryRunnerTest
   public void testTopNWithExtractionFilterNoExistingValue()
   {
     Map<String, String> extractionMap = new HashMap<>();
-    extractionMap.put("", "NULL");
+    extractionMap.put(null, "NULL");
 
     MapLookupExtractor mapLookupExtractor = new MapLookupExtractor(extractionMap, false);
-    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, null, true, true);
-    DimFilter extractionFilter = new ExtractionDimFilter("null_column", "NULL", lookupExtractionFn, null);
+    LookupExtractionFn lookupExtractionFn = new LookupExtractionFn(mapLookupExtractor, false, "NULL", true, true,
+                                                                   NullHandlingConfig.LEGACY_CONFIG
+    );
+    DimFilter extractionFilter = new ExtractionDimFilter("null_column", "NULL", lookupExtractionFn, null, NullHandlingConfig.LEGACY_CONFIG);
     TopNQueryBuilder topNQueryBuilder = new TopNQueryBuilder()
         .dataSource(QueryRunnerTestHelper.dataSource)
         .granularity(QueryRunnerTestHelper.allGran)
@@ -5607,7 +5622,8 @@ public class TopNQueryRunnerTest
             true,
             false,
             null,
-            StringComparators.NUMERIC
+            StringComparators.NUMERIC,
+            NullHandlingConfig.LEGACY_CONFIG
         ))
         .metric("Count")
         .threshold(5)
