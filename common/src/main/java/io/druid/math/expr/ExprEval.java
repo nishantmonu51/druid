@@ -20,11 +20,13 @@
 package io.druid.math.expr;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
+import io.druid.common.config.NullHandling;
 import io.druid.common.guava.GuavaUtils;
 import io.druid.java.util.common.IAE;
+
+import javax.annotation.Nullable;
 
 /**
  */
@@ -108,6 +110,7 @@ public abstract class ExprEval<T>
 
   public abstract double asDouble();
 
+  @Nullable
   public String asString()
   {
     return value == null ? null : String.valueOf(value);
@@ -230,7 +233,7 @@ public abstract class ExprEval<T>
   {
     private StringExprEval(String value)
     {
-      super(Strings.emptyToNull(value));
+      super(NullHandling.emptyToNullIfNeeded(value));
     }
 
     @Override

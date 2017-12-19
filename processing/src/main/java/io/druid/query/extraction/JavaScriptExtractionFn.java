@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.druid.common.config.NullHandling;
 import io.druid.java.util.common.StringUtils;
 import io.druid.js.JavaScriptConfig;
 import org.mozilla.javascript.Context;
@@ -126,7 +127,6 @@ public class JavaScriptExtractionFn implements ExtractionFn
       // JavaScript configuration should be checked when it's actually used because someone might still want Druid
       // nodes to be able to deserialize JavaScript-based objects even though JavaScript is disabled.
       Preconditions.checkState(config.isEnabled(), "JavaScript is disabled");
-
       synchronized (config) {
         if (fn == null) {
           fn = compile(function);
@@ -139,7 +139,7 @@ public class JavaScriptExtractionFn implements ExtractionFn
   @Nullable
   public String apply(@Nullable String value)
   {
-    return this.apply((Object) Strings.emptyToNull(value));
+    return this.apply((Object) NullHandling.emptyToNullIfNeeded(value));
   }
 
   @Override

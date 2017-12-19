@@ -141,7 +141,7 @@ public class AggregatorUtil
       final ExprMacroTable macroTable,
       final String fieldName,
       final String fieldExpression,
-      final float nullValue
+      final Float nullValue
   )
   {
     if (fieldName != null && fieldExpression == null) {
@@ -163,6 +163,12 @@ public class AggregatorUtil
         public void inspectRuntimeShape(RuntimeShapeInspector inspector)
         {
           inspector.visit("baseSelector", baseSelector);
+        }
+
+        @Override
+        public boolean isNull()
+        {
+          return baseSelector.getObject().isNull();
         }
       }
       return new ExpressionFloatColumnSelector();
@@ -198,6 +204,13 @@ public class AggregatorUtil
         {
           inspector.visit("baseSelector", baseSelector);
         }
+
+        @Override
+        public boolean isNull()
+        {
+          final ExprEval exprEval = baseSelector.getObject();
+          return exprEval.isNull();
+        }
       }
       return new ExpressionLongColumnSelector();
     }
@@ -231,6 +244,13 @@ public class AggregatorUtil
         public void inspectRuntimeShape(RuntimeShapeInspector inspector)
         {
           inspector.visit("baseSelector", baseSelector);
+        }
+
+        @Override
+        public boolean isNull()
+        {
+          final ExprEval exprEval = baseSelector.getObject();
+          return exprEval.isNull();
         }
       }
       return new ExpressionDoubleColumnSelector();

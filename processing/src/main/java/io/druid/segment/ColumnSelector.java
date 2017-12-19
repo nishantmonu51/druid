@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 public interface ColumnSelector
 {
   Indexed<String> getColumnNames();
+
   @Nullable
   Column getColumn(String columnName);
 }

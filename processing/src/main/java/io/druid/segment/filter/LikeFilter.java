@@ -22,6 +22,7 @@ package io.druid.segment.filter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import io.druid.collections.bitmap.ImmutableBitmap;
+import io.druid.common.config.NullHandling;
 import io.druid.query.BitmapResultFactory;
 import io.druid.query.extraction.ExtractionFn;
 import io.druid.query.filter.BitmapIndexSelector;
@@ -90,7 +91,10 @@ public class LikeFilter implements Filter
   {
     if (isSimpleEquals()) {
       // Verify that dimension equals prefix.
-      return ImmutableList.of(selector.getBitmapIndex(dimension, likeMatcher.getPrefix()));
+      return ImmutableList.of(selector.getBitmapIndex(
+          dimension,
+          NullHandling.emptyToNullIfNeeded(likeMatcher.getPrefix())
+      ));
     } else if (isSimplePrefix()) {
       // Verify that dimension startsWith prefix, and is accepted by likeMatcher.matchesSuffixOnly.
       final BitmapIndex bitmapIndex = selector.getBitmapIndex(dimension);

@@ -101,12 +101,11 @@ import io.druid.query.timeseries.TimeseriesQueryEngine;
 import io.druid.query.timeseries.TimeseriesQueryQueryToolChest;
 import io.druid.query.timeseries.TimeseriesQueryRunnerFactory;
 import io.druid.query.timeseries.TimeseriesResultValue;
+import io.druid.common.config.NullHandling;
 import io.druid.segment.TestHelper;
 import io.druid.segment.indexing.DataSchema;
-import io.druid.segment.transform.ExpressionTransform;
 import io.druid.segment.indexing.RealtimeIOConfig;
 import io.druid.segment.indexing.RealtimeTuningConfig;
-import io.druid.segment.transform.TransformSpec;
 import io.druid.segment.indexing.granularity.UniformGranularitySpec;
 import io.druid.segment.loading.SegmentLoaderConfig;
 import io.druid.segment.loading.SegmentLoaderLocalCacheManager;
@@ -115,6 +114,8 @@ import io.druid.segment.realtime.FireDepartment;
 import io.druid.segment.realtime.plumber.SegmentHandoffNotifier;
 import io.druid.segment.realtime.plumber.SegmentHandoffNotifierFactory;
 import io.druid.segment.realtime.plumber.ServerTimeRejectionPolicyFactory;
+import io.druid.segment.transform.ExpressionTransform;
+import io.druid.segment.transform.TransformSpec;
 import io.druid.server.DruidNode;
 import io.druid.server.coordination.DataSegmentServerAnnouncer;
 import io.druid.server.coordination.ServerType;
@@ -208,7 +209,8 @@ public class RealtimeIndexTaskTest
     @Override
     public Runnable commit()
     {
-      return () -> {};
+      return () -> {
+      };
     }
 
     @Override
@@ -354,8 +356,8 @@ public class RealtimeIndexTaskTest
     Assert.assertEquals(0, task.getMetrics().unparseable());
 
     // Do some queries.
-    Assert.assertEquals(2, sumMetric(task, null, "rows"));
-    Assert.assertEquals(3, sumMetric(task, null, "met1"));
+    Assert.assertEquals(2, sumMetric(task, null, "rows").longValue());
+    Assert.assertEquals(3, sumMetric(task, null, "met1").longValue());
 
     // Simulate handoff.
     for (Map.Entry<SegmentDescriptor, Pair<Executor, Runnable>> entry : handOffCallbacks.entrySet()) {
@@ -423,10 +425,14 @@ public class RealtimeIndexTaskTest
     Assert.assertEquals(0, task.getMetrics().unparseable());
 
     // Do some queries.
-    Assert.assertEquals(1, sumMetric(task, null, "rows"));
-    Assert.assertEquals(1, sumMetric(task, new SelectorDimFilter("dim1t", "foofoo", null), "rows"));
-    Assert.assertEquals(0, sumMetric(task, new SelectorDimFilter("dim1t", "barbar", null), "rows"));
-    Assert.assertEquals(1, sumMetric(task, null, "met1"));
+    Assert.assertEquals(1, sumMetric(task, null, "rows").longValue());
+    Assert.assertEquals(1, sumMetric(task, new SelectorDimFilter("dim1t", "foofoo", null), "rows").longValue());
+    if (NullHandling.useDefaultValuesForNull()) {
+      Assert.assertEquals(0, sumMetric(task, new SelectorDimFilter("dim1t", "barbar", null), "rows").longValue());
+    } else {
+      Assert.assertNull(sumMetric(task, new SelectorDimFilter("dim1t", "barbar", null), "rows"));
+    }
+    Assert.assertEquals(1, sumMetric(task, null, "met1").longValue());
 
     // Simulate handoff.
     for (Map.Entry<SegmentDescriptor, Pair<Executor, Runnable>> entry : handOffCallbacks.entrySet()) {
@@ -552,8 +558,8 @@ public class RealtimeIndexTaskTest
     Assert.assertEquals(2, task.getMetrics().unparseable());
 
     // Do some queries.
-    Assert.assertEquals(3, sumMetric(task, null, "rows"));
-    Assert.assertEquals(3, sumMetric(task, null, "met1"));
+    Assert.assertEquals(3, sumMetric(task, null, "rows").longValue());
+    Assert.assertEquals(3, sumMetric(task, null, "met1").longValue());
 
     // Simulate handoff.
     for (Map.Entry<SegmentDescriptor, Pair<Executor, Runnable>> entry : handOffCallbacks.entrySet()) {
@@ -625,7 +631,7 @@ public class RealtimeIndexTaskTest
       }
 
       // Do a query, at this point the previous data should be loaded.
-      Assert.assertEquals(1, sumMetric(task2, null, "rows"));
+      Assert.assertEquals(1, sumMetric(task2, null, "rows").longValue());
 
       final TestFirehose firehose = (TestFirehose) task2.getFirehose();
 
@@ -646,7 +652,7 @@ public class RealtimeIndexTaskTest
       publishedSegment = Iterables.getOnlyElement(mdc.getPublished());
 
       // Do a query.
-      Assert.assertEquals(2, sumMetric(task2, null, "rows"));
+      Assert.assertEquals(2, sumMetric(task2, null, "rows").longValue());
 
       // Simulate handoff.
       for (Map.Entry<SegmentDescriptor, Pair<Executor, Runnable>> entry : handOffCallbacks.entrySet()) {
@@ -707,7 +713,7 @@ public class RealtimeIndexTaskTest
       publishedSegment = Iterables.getOnlyElement(mdc.getPublished());
 
       // Do a query.
-      Assert.assertEquals(1, sumMetric(task1, null, "rows"));
+      Assert.assertEquals(1, sumMetric(task1, null, "rows").longValue());
 
       // Trigger graceful shutdown.
       task1.stopGracefully();
@@ -1096,7 +1102,7 @@ public class RealtimeIndexTaskTest
     return toolboxFactory.build(task);
   }
 
-  public long sumMetric(final Task task, final DimFilter filter, final String metric) throws Exception
+  public Long sumMetric(final Task task, final DimFilter filter, final String metric) throws Exception
   {
     // Do a query.
     TimeseriesQuery query = Druids.newTimeseriesQueryBuilder()
@@ -1114,6 +1120,9 @@ public class RealtimeIndexTaskTest
         task.getQueryRunner(query).run(QueryPlus.wrap(query), ImmutableMap.<String, Object>of()),
         Lists.<Result<TimeseriesResultValue>>newArrayList()
     );
-    return results.isEmpty() ? 0 : results.get(0).getValue().getLongMetric(metric);
+    if (results.isEmpty()) {
+      return NullHandling.nullToZeroIfNeeded((Long) null);
+    }
+    return results.get(0).getValue().getLongMetric(metric);
   }
 }

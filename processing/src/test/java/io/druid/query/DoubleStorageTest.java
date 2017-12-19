@@ -41,7 +41,6 @@ import io.druid.query.metadata.metadata.ColumnAnalysis;
 import io.druid.query.metadata.metadata.ListColumnIncluderator;
 import io.druid.query.metadata.metadata.SegmentAnalysis;
 import io.druid.query.metadata.metadata.SegmentMetadataQuery;
-
 import io.druid.query.scan.ScanQuery;
 import io.druid.query.scan.ScanQueryConfig;
 import io.druid.query.scan.ScanQueryEngine;
@@ -78,8 +77,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static io.druid.segment.column.Column.DOUBLE_STORAGE_TYPE_PROPERTY;
 import static io.druid.query.scan.ScanQueryRunnerTest.verify;
+import static io.druid.segment.column.Column.DOUBLE_STORAGE_TYPE_PROPERTY;
 
 @RunWith(Parameterized.class)
 public class DoubleStorageTest

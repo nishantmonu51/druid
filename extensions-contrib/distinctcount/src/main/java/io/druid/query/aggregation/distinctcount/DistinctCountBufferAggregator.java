@@ -21,6 +21,7 @@ package io.druid.query.aggregation.distinctcount;
 
 import io.druid.collections.bitmap.MutableBitmap;
 import io.druid.collections.bitmap.WrappedRoaringBitmap;
+import io.druid.common.config.NullHandling;
 import io.druid.query.aggregation.BufferAggregator;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.DimensionSelector;
@@ -34,12 +35,15 @@ public class DistinctCountBufferAggregator implements BufferAggregator
 {
   private final DimensionSelector selector;
   private final Int2ObjectMap<MutableBitmap> mutableBitmapCollection = new Int2ObjectOpenHashMap<>();
+  private final int idForNull;
+
 
   public DistinctCountBufferAggregator(
       DimensionSelector selector
   )
   {
     this.selector = selector;
+    this.idForNull = selector.nameLookupPossibleInAdvance() ? selector.idLookup().lookupId(null) : -1;
   }
 
   @Override
@@ -55,7 +59,9 @@ public class DistinctCountBufferAggregator implements BufferAggregator
     IndexedInts row = selector.getRow();
     for (int i = 0; i < row.size(); i++) {
       int index = row.get(i);
-      mutableBitmap.add(index);
+      if (NullHandling.useDefaultValuesForNull() || isNotNull(index)) {
+        mutableBitmap.add(index);
+      }
     }
     buf.putLong(position, mutableBitmap.size());
   }
@@ -68,6 +74,11 @@ public class DistinctCountBufferAggregator implements BufferAggregator
       mutableBitmapCollection.put(position, mutableBitmap);
     }
     return mutableBitmap;
+  }
+
+  private boolean isNotNull(int index)
+  {
+    return selector.nameLookupPossibleInAdvance() ? index != idForNull : selector.lookupName(index) != null;
   }
 
   @Override

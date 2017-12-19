@@ -19,6 +19,7 @@
 
 package io.druid.segment.column;
 
+import io.druid.collections.bitmap.ImmutableBitmap;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.ColumnValueSelector;
 import io.druid.segment.data.IndexedLongs;
@@ -29,10 +30,15 @@ import io.druid.segment.data.ReadableOffset;
 public class IndexedLongsGenericColumn implements GenericColumn
 {
   private final IndexedLongs column;
+  private final ImmutableBitmap nullValueBitmap;
 
-  public IndexedLongsGenericColumn(final IndexedLongs column)
+  public IndexedLongsGenericColumn(
+      final IndexedLongs column,
+      ImmutableBitmap nullValueBitmap
+  )
   {
     this.column = column;
+    this.nullValueBitmap = nullValueBitmap;
   }
 
   @Override
@@ -44,7 +50,7 @@ public class IndexedLongsGenericColumn implements GenericColumn
   @Override
   public ColumnValueSelector makeColumnValueSelector(ReadableOffset offset)
   {
-    return column.makeColumnValueSelector(offset);
+    return column.makeColumnValueSelector(offset, nullValueBitmap);
   }
 
   @Override
@@ -63,6 +69,12 @@ public class IndexedLongsGenericColumn implements GenericColumn
   public double getDoubleSingleValueRow(int rowNum)
   {
     return (double) column.get(rowNum);
+  }
+
+  @Override
+  public boolean isNull(int rowNum)
+  {
+    return nullValueBitmap.get(rowNum);
   }
 
   @Override

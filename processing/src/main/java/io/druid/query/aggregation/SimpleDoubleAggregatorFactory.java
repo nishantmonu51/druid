@@ -33,7 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class SimpleDoubleAggregatorFactory extends AggregatorFactory
+public abstract class SimpleDoubleAggregatorFactory extends NullableAggregatorFactory
 {
   protected final String name;
   protected final String fieldName;
@@ -91,7 +91,7 @@ public abstract class SimpleDoubleAggregatorFactory extends AggregatorFactory
   }
 
   @Override
-  public int getMaxIntermediateSize()
+  public int getMaxIntermediateSize2()
   {
     return Double.BYTES;
   }

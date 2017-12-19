@@ -552,5 +552,11 @@ public class DumpSegment extends GuiceRunnable
     {
       inspector.visit("delegate", delegate);
     }
+
+    @Override
+    public boolean isNull()
+    {
+      return delegate.isNull();
+    }
   }
 }

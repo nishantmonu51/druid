@@ -28,7 +28,7 @@ import java.io.Closeable;
  * An Aggregator is an object that can aggregate metrics.  Its aggregation-related methods (namely, aggregate() and get())
  * do not take any arguments as the assumption is that the Aggregator was given something in its constructor that
  * it can use to get at the next bit of data.
- *
+ * <p>
  * Thus, an Aggregator can be thought of as a closure over some other thing that is stateful and changes between calls
  * to aggregate(). This is currently (as of this documentation) implemented through the use of {@link
  * io.druid.segment.ColumnValueSelector} objects.
@@ -37,13 +37,17 @@ import java.io.Closeable;
 public interface Aggregator extends Closeable
 {
   void aggregate();
+
   /** @deprecated unused, to be removed in Druid 0.12 (or hopefully the whole Aggregator class is removed) */
   @Deprecated
   @SuppressWarnings("unused")
   void reset();
+
   @Nullable
   Object get();
+
   float getFloat();
+
   long getLong();
 
   /**
@@ -54,6 +58,16 @@ public interface Aggregator extends Closeable
   default double getDouble()
   {
     return (double) getFloat();
+  }
+
+  /**
+   * returns true if the Aggregator supports returning null values and the aggregated value is Null.
+   * The default implementation always return false to enable smooth backward compatibility, re-implement if your aggregator is nullable.
+   * For backwards compatibility, isNull() may return false even if {@link Aggregator#get()} returns null. Users of this method should account for this case.
+   */
+  default boolean isNull()
+  {
+    return false;
   }
 
   @Override

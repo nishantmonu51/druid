@@ -19,15 +19,22 @@
 
 package io.druid.segment.data;
 
+
+import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 
 /**
  */
 public class ByteBufferSerializer
 {
+  @Nullable
   public static <T> T read(ByteBuffer buffer, ObjectStrategy<T> strategy)
   {
     int size = buffer.getInt();
+    if (size < 0) {
+      // Size is less than 0 for null values.
+      return null;
+    }
     ByteBuffer bufferToUse = buffer.asReadOnlyBuffer();
     bufferToUse.limit(bufferToUse.position() + size);
     buffer.position(bufferToUse.limit());
