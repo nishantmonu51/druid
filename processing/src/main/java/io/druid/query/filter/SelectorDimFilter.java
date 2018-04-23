@@ -46,6 +46,7 @@ import java.util.Objects;
 public class SelectorDimFilter implements DimFilter
 {
   private final String dimension;
+
   @Nullable
   private final String value;
   private final ExtractionFn extractionFn;
