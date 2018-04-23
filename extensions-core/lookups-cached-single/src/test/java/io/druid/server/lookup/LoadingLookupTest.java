@@ -44,7 +44,7 @@ public class LoadingLookupTest
   public void testApplyEmptyOrNull()
   {
     Assert.assertEquals(null, loadingLookup.apply(null));
-    if(!NullHandling.replaceWithDefault()) {
+    if (!NullHandling.replaceWithDefault()) {
       // empty string should also have same behavior
       Assert.assertEquals(null, loadingLookup.apply(""));
     }
@@ -53,7 +53,7 @@ public class LoadingLookupTest
   @Test
   public void testUnapplyNull()
   {
-    if(NullHandling.sqlCompatible()) {
+    if (NullHandling.sqlCompatible()) {
       Assert.assertEquals(Collections.EMPTY_LIST, loadingLookup.unapply(null));
     } else {
       Assert.assertEquals(null, loadingLookup.unapply(null));
@@ -76,7 +76,10 @@ public class LoadingLookupTest
             .andReturn(Lists.newArrayList("key"))
             .once();
     EasyMock.replay(reverseLookupCache);
-    Assert.assertEquals(ImmutableMap.of("value", Lists.newArrayList("key")), loadingLookup.unapplyAll(ImmutableSet.<String>of("value")));
+    Assert.assertEquals(
+        ImmutableMap.of("value", Lists.newArrayList("key")),
+        loadingLookup.unapplyAll(ImmutableSet.<String>of("value"))
+    );
     EasyMock.verify(reverseLookupCache);
   }
 
