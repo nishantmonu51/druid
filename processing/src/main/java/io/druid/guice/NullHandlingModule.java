@@ -17,27 +17,23 @@
  * under the License.
  */
 
-package io.druid.common.config;
+package io.druid.guice;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.inject.Binder;
+import com.google.inject.Module;
+import io.druid.common.config.NullHandling;
+import io.druid.common.config.NullValueHandlingConfig;
 
-public class NullValueHandlingConfig
+/**
+ */
+public class NullHandlingModule implements Module
 {
-
-  @JsonProperty("useDefaultValueForNull")
-  private final boolean useDefaultValuesForNull;
-
-  @JsonCreator
-  public NullValueHandlingConfig(@JsonProperty("useDefaultValueForNull") Boolean useDefaultValuesForNull)
+  @Override
+  public void configure(Binder binder)
   {
-    this.useDefaultValuesForNull = useDefaultValuesForNull == null
-                                   ? true
-                                   : useDefaultValuesForNull;
-  }
+    JsonConfigProvider.bind(binder, "druid.generic", NullValueHandlingConfig.class);
+    binder.requestStaticInjection(NullHandling.class);
+    binder.requestStaticInjection(NullHandling.class);
 
-  public boolean isUseDefaultValuesForNull()
-  {
-    return useDefaultValuesForNull;
   }
 }
