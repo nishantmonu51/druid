@@ -26,9 +26,10 @@ import com.google.common.base.Preconditions;
 import io.druid.java.util.common.StringUtils;
 import io.druid.math.expr.ExprMacroTable;
 import io.druid.math.expr.Parser;
-import io.druid.segment.BaseLongColumnValueSelector;
 import io.druid.segment.ColumnSelectorFactory;
+import io.druid.segment.ColumnValueSelector;
 
+import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +39,7 @@ import java.util.Objects;
 
 /**
  */
-public class LongSumAggregatorFactory extends AggregatorFactory
+public class LongSumAggregatorFactory extends NullableAggregatorFactory
 {
   private final String name;
   private final String fieldName;
@@ -71,18 +72,7 @@ public class LongSumAggregatorFactory extends AggregatorFactory
   }
 
   @Override
-  public Aggregator factorize(ColumnSelectorFactory metricFactory)
-  {
-    return new LongSumAggregator(getLongColumnSelector(metricFactory));
-  }
-
-  @Override
-  public BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory)
-  {
-    return new LongSumBufferAggregator(getLongColumnSelector(metricFactory));
-  }
-
-  private BaseLongColumnValueSelector getLongColumnSelector(ColumnSelectorFactory metricFactory)
+  protected ColumnValueSelector selector(ColumnSelectorFactory metricFactory)
   {
     return AggregatorUtil.makeColumnValueSelectorWithLongDefault(
         metricFactory,
@@ -94,6 +84,18 @@ public class LongSumAggregatorFactory extends AggregatorFactory
   }
 
   @Override
+  protected Aggregator factorize(ColumnSelectorFactory metricFactory, ColumnValueSelector selector)
+  {
+    return new LongSumAggregator(selector);
+  }
+
+  @Override
+  protected BufferAggregator factorizeBuffered(ColumnSelectorFactory metricFactory, ColumnValueSelector selector)
+  {
+    return new LongSumBufferAggregator(selector);
+  }
+
+  @Override
   public Comparator getComparator()
   {
     return LongSumAggregator.COMPARATOR;
@@ -102,11 +104,17 @@ public class LongSumAggregatorFactory extends AggregatorFactory
   @Override
   public Object combine(Object lhs, Object rhs)
   {
+    if (lhs == null) {
+      return rhs;
+    }
+    if (rhs == null) {
+      return lhs;
+    }
     return LongSumAggregator.combineValues(lhs, rhs);
   }
 
   @Override
-  public AggregateCombiner makeAggregateCombiner()
+  public AggregateCombiner makeAggregateCombiner2()
   {
     return new LongSumAggregateCombiner();
   }
@@ -140,7 +148,8 @@ public class LongSumAggregatorFactory extends AggregatorFactory
   }
 
   @Override
-  public Object finalizeComputation(Object object)
+  @Nullable
+  public Object finalizeComputation(@Nullable Object object)
   {
     return object;
   }
@@ -193,7 +202,7 @@ public class LongSumAggregatorFactory extends AggregatorFactory
   }
 
   @Override
-  public int getMaxIntermediateSize()
+  public int getMaxIntermediateSize2()
   {
     return Long.BYTES;
   }
