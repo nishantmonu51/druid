@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class NullValueHandlingConfig
 {
-
+  
   @JsonProperty("useDefaultValueForNull")
   private final boolean useDefaultValuesForNull;
 
@@ -32,7 +32,7 @@ public class NullValueHandlingConfig
   public NullValueHandlingConfig(@JsonProperty("useDefaultValueForNull") Boolean useDefaultValuesForNull)
   {
     this.useDefaultValuesForNull = useDefaultValuesForNull == null
-                                   ? true
+                                   ? false
                                    : useDefaultValuesForNull;
   }
 
