@@ -23,7 +23,6 @@ import io.druid.query.monomorphicprocessing.CalledFromHotLoop;
 import io.druid.query.monomorphicprocessing.HotLoopCallee;
 import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
 import io.druid.segment.BaseNullableColumnValueSelector;
-import io.druid.segment.ColumnValueSelector;
 
 /**
  */
