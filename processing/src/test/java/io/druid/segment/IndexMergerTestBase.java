@@ -1087,7 +1087,7 @@ public class IndexMergerTestBase
       final QueryableIndexIndexableAdapter adapter = new QueryableIndexIndexableAdapter(merged);
       final List<DebugRow> rowList = RowIteratorHelper.toList(adapter.getRows());
 
-      if(NullHandling.replaceWithDefault()) {
+      if (NullHandling.replaceWithDefault()) {
         Assert.assertEquals(
             ImmutableList.of("d2", "d3", "d5", "d6", "d7", "d8", "d9"),
             ImmutableList.copyOf(adapter.getDimensionNames())
@@ -1099,7 +1099,7 @@ public class IndexMergerTestBase
         );
       }
       Assert.assertEquals(4, rowList.size());
-      if(NullHandling.replaceWithDefault()) {
+      if (NullHandling.replaceWithDefault()) {
         Assert.assertEquals(
             Arrays.asList(null, "310", null, null, null, null, "910"),
             rowList.get(0).dimensionValues()
@@ -1122,7 +1122,7 @@ public class IndexMergerTestBase
         checkBitmapIndex(Arrays.asList(0, 3), adapter.getBitmapIndex("d7", null));
       } else {
         Assert.assertEquals(
-            Arrays.asList("","", "310", null, null, "", null, "910"),
+            Arrays.asList("", "", "310", null, null, "", null, "910"),
             rowList.get(0).dimensionValues()
         );
         Assert.assertEquals(
@@ -1282,7 +1282,10 @@ public class IndexMergerTestBase
       Assert.assertEquals(Arrays.asList("", "", "310", null, null, "", null, "910"), rowList.get(0).dimensionValues());
       Assert.assertEquals(Arrays.asList("", "", "310", null, null, "", null, "910"), rowList.get(1).dimensionValues());
       Assert.assertEquals(Arrays.asList("", "", "310", null, null, "", null, "910"), rowList.get(2).dimensionValues());
-      Assert.assertEquals(Arrays.asList(null, null, null, "", "621", "", "821", "921"), rowList.get(3).dimensionValues());
+      Assert.assertEquals(
+          Arrays.asList(null, null, null, "", "621", "", "821", "921"),
+          rowList.get(3).dimensionValues()
+      );
     }
 
     checkBitmapIndex(Collections.singletonList(3), adapter.getBitmapIndex("d3", null));

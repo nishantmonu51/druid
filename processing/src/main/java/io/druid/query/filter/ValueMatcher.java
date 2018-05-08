@@ -32,8 +32,9 @@ public interface ValueMatcher extends HotLoopCallee
   @CalledFromHotLoop
   boolean matches();
 
-  // Utility method to match for null values.
-  static ValueMatcher nullValueMatcher(BaseNullableColumnValueSelector selector){
+  // Utility method to match null values.
+  static ValueMatcher nullValueMatcher(BaseNullableColumnValueSelector selector)
+  {
     return new ValueMatcher()
     {
       @Override
@@ -49,6 +50,4 @@ public interface ValueMatcher extends HotLoopCallee
       }
     };
   }
-
-
 }
