@@ -21,6 +21,9 @@ package io.druid.query.filter;
 
 import io.druid.query.monomorphicprocessing.CalledFromHotLoop;
 import io.druid.query.monomorphicprocessing.HotLoopCallee;
+import io.druid.query.monomorphicprocessing.RuntimeShapeInspector;
+import io.druid.segment.BaseNullableColumnValueSelector;
+import io.druid.segment.ColumnValueSelector;
 
 /**
  */
@@ -28,4 +31,24 @@ public interface ValueMatcher extends HotLoopCallee
 {
   @CalledFromHotLoop
   boolean matches();
+
+  // Utility method to match for null values.
+  static ValueMatcher nullValueMatcher(BaseNullableColumnValueSelector selector){
+    return new ValueMatcher()
+    {
+      @Override
+      public boolean matches()
+      {
+        return selector.isNull();
+      }
+
+      @Override
+      public void inspectRuntimeShape(RuntimeShapeInspector inspector)
+      {
+        inspector.visit("selector", selector);
+      }
+    };
+  }
+
+
 }
