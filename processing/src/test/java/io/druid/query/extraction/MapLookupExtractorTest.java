@@ -65,7 +65,7 @@ public class MapLookupExtractorTest
     );
 
     Assert.assertEquals(Arrays.asList("foo"), injectiveFn.unapply("bar"));
-    if(NullHandling.replaceWithDefault()) {
+    if (NullHandling.replaceWithDefault()) {
       Assert.assertEquals(
           "Null value should be equal to empty string",
           Sets.newHashSet("null"),
@@ -91,7 +91,6 @@ public class MapLookupExtractorTest
   @Test
   public void testApply()
   {
-
     Assert.assertEquals("bar", fn.apply("foo"));
   }
 
