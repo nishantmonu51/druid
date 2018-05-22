@@ -77,6 +77,7 @@ matrix:
     - sudo: false
       env:
         - NAME="other modules test with SQL Compatibility"
+        - AWS_REGION=us-east-1 # set a aws region for unit tests
       install: echo "MAVEN_OPTS='-Xmx3000m'" > ~/.mavenrc && mvn install -q -ff -DskipTests -B
       before_script:
         - unset _JAVA_OPTIONS
