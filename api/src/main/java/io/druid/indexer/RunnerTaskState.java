@@ -16,38 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package io.druid.query.filter;
-
-import com.google.common.collect.RangeSet;
-
-import java.nio.ByteBuffer;
-
+package io.druid.indexer;
 /**
+ * This includes the state of a task in the task runner not covered by {@link TaskState}, this state is not stored in database
  */
-public class NoopDimFilter implements DimFilter
+public enum RunnerTaskState
 {
-  @Override
-  public byte[] getCacheKey()
-  {        
-    return ByteBuffer.allocate(1).put(DimFilterUtils.NOOP_CACHE_ID).array();
-  }
-
-  @Override
-  public DimFilter optimize()
-  {
-    return this;
-  }
-
-  @Override
-  public Filter toFilter()
-  {
-    return null;
-  }
-
-  @Override
-  public RangeSet<String> getDimensionRangeSet(String dimension)
-  {
-    return null;
-  }
+  WAITING,
+  PENDING,
+  RUNNING,
+  NONE; // is used for a completed task
 }
