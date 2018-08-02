@@ -32,7 +32,6 @@ import io.druid.query.aggregation.NullableAggregatorFactory;
 import io.druid.query.aggregation.SerializablePairLongString;
 import io.druid.query.aggregation.first.StringFirstAggregatorFactory;
 import io.druid.query.cache.CacheKeyBuilder;
-import io.druid.segment.BaseNullableColumnValueSelector;
 import io.druid.segment.BaseObjectColumnValueSelector;
 import io.druid.segment.ColumnSelectorFactory;
 import io.druid.segment.column.Column;
