@@ -39,7 +39,7 @@ import java.util.HashSet;
  */
 public class BloomDimFilter implements DimFilter
 {
-  public static byte BLOOM_DIM_FILTER_CACHE_ID = 0x10;
+
   private final String dimension;
   private final BloomKFilter bloomKFilter;
   private final ExtractionFn extractionFn;
@@ -69,7 +69,7 @@ public class BloomDimFilter implements DimFilter
       throw new IllegalStateException(StringUtils.format("Exception when generating cache key for [%s]", this), e);
     }
     byte[] bloomFilterBytes = byteArrayOutputStream.toByteArray();
-    return new CacheKeyBuilder(BLOOM_DIM_FILTER_CACHE_ID)
+    return new CacheKeyBuilder(DimFilterUtils.BLOOM_DIM_FILTER_CACHE_ID)
         .appendString(dimension)
         .appendByte(DimFilterUtils.STRING_SEPARATOR)
         .appendByteArray(extractionFn == null ? new byte[0] : extractionFn.getCacheKey())

@@ -43,14 +43,14 @@ public class BloomFilterSerializersModule extends SimpleModule
     registerSubtypes(
         new NamedType(BloomDimFilter.class, BLOOM_FILTER_TYPE_NAME)
     );
-    addSerializer(BloomKFilter.class, new BloomKFilterserializer());
+    addSerializer(BloomKFilter.class, new BloomKFilterSerializer());
     addDeserializer(BloomKFilter.class, new BloomKFilterDeserializer());
   }
 
-  public static class BloomKFilterserializer extends StdSerializer<BloomKFilter>
+  public static class BloomKFilterSerializer extends StdSerializer<BloomKFilter>
   {
 
-    public BloomKFilterserializer()
+    public BloomKFilterSerializer()
     {
       super(BloomKFilter.class);
     }
