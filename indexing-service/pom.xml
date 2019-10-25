@@ -52,6 +52,22 @@
             <artifactId>druid-indexing-hadoop</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+          <groupId>io.fabric8</groupId>
+          <artifactId>kubernetes-client</artifactId>
+          <version>4.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+      <dependency>
+        <groupId>me.snowdrop</groupId>
+        <artifactId>istio-client</artifactId>
+        <version>1.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>openshift-client</artifactId>
+        <version>4.3.0</version>
+      </dependency>
 
         <!-- Tests -->
         <dependency>
