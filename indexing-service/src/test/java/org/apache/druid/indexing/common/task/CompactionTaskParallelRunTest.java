@@ -28,6 +28,7 @@ import org.apache.druid.data.input.InputSplit;
 import org.apache.druid.data.input.SegmentsSplitHintSpec;
 import org.apache.druid.data.input.impl.CsvInputFormat;
 import org.apache.druid.data.input.impl.DimensionsSpec;
+import org.apache.druid.data.input.impl.InputSourceSecurityConfig;
 import org.apache.druid.data.input.impl.LocalInputSource;
 import org.apache.druid.data.input.impl.TimestampSpec;
 import org.apache.druid.indexer.TaskState;
@@ -407,7 +408,8 @@ public class CompactionTaskParallelRunTest extends AbstractParallelIndexSupervis
             false,
             0
         ),
-        appendToExisting
+        appendToExisting,
+        InputSourceSecurityConfig.ALLOW_ALL
     );
     ParallelIndexTuningConfig tuningConfig = newTuningConfig(partitionsSpec, 2, !appendToExisting);
     ParallelIndexSupervisorTask indexTask = new ParallelIndexSupervisorTask(
@@ -430,7 +432,8 @@ public class CompactionTaskParallelRunTest extends AbstractParallelIndexSupervis
             ioConfig,
             tuningConfig
         ),
-        null
+        null,
+        InputSourceSecurityConfig.ALLOW_ALL
     );
 
     runTask(indexTask);

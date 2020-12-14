@@ -26,6 +26,7 @@ import org.apache.druid.data.input.InputFormat;
 import org.apache.druid.data.input.InputSplit;
 import org.apache.druid.data.input.MapBasedInputRow;
 import org.apache.druid.data.input.SplitHintSpec;
+import org.apache.druid.data.input.impl.InputSourceSecurityConfig;
 import org.apache.druid.data.input.impl.NoopInputFormat;
 import org.apache.druid.data.input.impl.SplittableInputSource;
 import org.apache.druid.indexer.RunnerTaskState;
@@ -123,7 +124,8 @@ public class ParallelIndexSupervisorTaskResourceTest extends AbstractParallelInd
             null,
             new TestInputSource(IntStream.range(0, NUM_SUB_TASKS).boxed().collect(Collectors.toList())),
             new NoopInputFormat(),
-            false
+            false,
+            InputSourceSecurityConfig.ALLOW_ALL
         )
     );
     getIndexingServiceClient().runTask(task.getId(), task);
@@ -483,6 +485,12 @@ public class ParallelIndexSupervisorTaskResourceTest extends AbstractParallelInd
     {
       return false;
     }
+
+    @Override
+    public void validateAllowDenyPrefixList(InputSourceSecurityConfig securityConfig)
+    {
+      // No URI to validate
+    }
   }
 
   private class TestSupervisorTask extends TestParallelIndexSupervisorTask
@@ -547,7 +555,8 @@ public class ParallelIndexSupervisorTaskResourceTest extends AbstractParallelInd
                   null,
                   baseInputSource.withSplit(split),
                   getIngestionSchema().getIOConfig().getInputFormat(),
-                  getIngestionSchema().getIOConfig().isAppendToExisting()
+                  getIngestionSchema().getIOConfig().isAppendToExisting(),
+                  InputSourceSecurityConfig.ALLOW_ALL
               ),
               getIngestionSchema().getTuningConfig()
           ),
